@@ -23,7 +23,7 @@ export default async function BookPage({ params }: Props) {
         {meta.abbreviation} – {meta.unit_type === "article" ? "Art." : "§"} {nr}
       </div>
       <div
-        className="prose prose-gray max-w-none"
+        className="prose prose-gray prose-rn max-w-none"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </article>
