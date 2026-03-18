@@ -1,44 +1,44 @@
 # Deployment
 
-OpenLex wird auf Vercel deployt und bezieht Inhalte aus privaten GitHub-Repos.
+OpenLex is deployed on Vercel and fetches content from private GitHub repos.
 
-## Voraussetzungen
+## Prerequisites
 
-- [Vercel](https://vercel.com)-Account
-- [GitHub](https://github.com)-Organisation mit Content-Repos
-- GitHub Personal Access Token (PAT) mit `repo`-Scope
+- [Vercel](https://vercel.com) account
+- [GitHub](https://github.com) organization with content repos
+- GitHub Personal Access Token (PAT) with `repo` scope
 
-## Umgebungsvariablen (Vercel)
+## Environment Variables (Vercel)
 
-| Variable | Beschreibung | Beispiel |
+| Variable | Description | Example |
 |---|---|---|
-| `GITHUB_PAT` | GitHub PAT mit Zugriff auf Content-Repos | `ghp_...` |
-| `CONTENT_REPOS` | Komma-getrennte Liste der Content-Repos | `org/oc-dsgvo,org/openlex-laws` |
-| `NEXTAUTH_SECRET` | Secret für NextAuth.js Session-Verschlüsselung | `openssl rand -base64 32` |
+| `GITHUB_PAT` | GitHub PAT with access to content repos | `ghp_...` |
+| `CONTENT_REPOS` | Comma-separated list of content repos | `org/oc-dsgvo,org/openlex-laws` |
+| `NEXTAUTH_SECRET` | Secret for NextAuth.js session encryption | `openssl rand -base64 32` |
 | `OAUTH_GITHUB_ID` | GitHub OAuth App Client ID | |
 | `OAUTH_GITHUB_SECRET` | GitHub OAuth App Client Secret | |
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL (für Lesezeichen) | `https://...upstash.io` |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis Token | |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL (for bookmarks) | `https://...upstash.io` |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token | |
 
-## Content-Repo einrichten
+## Setting Up a Content Repo
 
-### Kommentar / Buch
+### Commentary / Book
 
-1. Neues privates GitHub-Repo erstellen
-2. `meta.yaml` im Root anlegen (siehe [meta-yaml.md](meta-yaml.md))
-3. `toc.yaml` im Root anlegen (siehe [toc-yaml.md](toc-yaml.md))
-4. Markdown-Dateien in `content/` ablegen (siehe [content-guide.md](content-guide.md))
-5. Optional: `jura.csl` + `references.yaml` für Zitationen (siehe [references-yaml.md](references-yaml.md))
-6. Repo-Name zu `CONTENT_REPOS` auf Vercel hinzufügen
+1. Create a new private GitHub repo
+2. Add `meta.yaml` in the root (see [meta-yaml.md](meta-yaml.md))
+3. Add `toc.yaml` in the root (see [toc-yaml.md](toc-yaml.md))
+4. Place Markdown files in `content/` (see [content-guide.md](content-guide.md))
+5. Optional: add `jura.csl` + `references.yaml` for citations (see [references-yaml.md](references-yaml.md))
+6. Add repo name to `CONTENT_REPOS` on Vercel
 
-### Gesetze
+### Laws
 
-1. Privates GitHub-Repo erstellen (oder bestehendes Mono-Repo nutzen)
-2. `sync.yaml` im Root anlegen (siehe [sync-yaml.md](sync-yaml.md))
-3. Pro Gesetz ein Verzeichnis mit Markdown-Dateien
-4. Repo-Name zu `CONTENT_REPOS` auf Vercel hinzufügen
+1. Create a private GitHub repo (or use an existing mono-repo)
+2. Add `sync.yaml` in the root (see [sync-yaml.md](sync-yaml.md))
+3. Create a directory per law with Markdown files
+4. Add repo name to `CONTENT_REPOS` on Vercel
 
-## OAuth einrichten
+## OAuth Setup
 
 ### GitHub
 
@@ -53,14 +53,14 @@ OpenLex wird auf Vercel deployt und bezieht Inhalte aus privaten GitHub-Repos.
 2. Authorized redirect URI: `https://your-domain.vercel.app/api/auth/callback/google`
 3. Client ID → `OAUTH_GOOGLE_ID`, Client Secret → `OAUTH_GOOGLE_SECRET`
 
-## Build-Prozess
+## Build Process
 
 ```
-next build → postbuild (Pagefind-Index generieren) → deploy
+next build → postbuild (generate Pagefind index) → deploy
 ```
 
-Der Pagefind-Suchindex wird bei jedem Build aus den Content-Repos generiert. Dafür muss `GITHUB_PAT` und `CONTENT_REPOS` auch zur Build-Zeit verfügbar sein.
+The Pagefind search index is generated from the content repos on every build. `GITHUB_PAT` and `CONTENT_REPOS` must be available at build time.
 
 ## Revalidation
 
-Inhalte werden mit ISR (Incremental Static Regeneration) gecacht: 5 Minuten. Nach einem Push ins Content-Repo wird der Content beim nächsten Request nach Ablauf des Cache automatisch aktualisiert.
+Content is cached with ISR (Incremental Static Regeneration): 5 minutes. After a push to a content repo, content is automatically refreshed on the next request after cache expiry.

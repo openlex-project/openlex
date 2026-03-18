@@ -1,8 +1,8 @@
-# references.yaml (CSL-Referenzen)
+# references.yaml (CSL References)
 
-Die `references.yaml` enthält bibliographische Referenzen im CSL-JSON-Format (als YAML). Sie wird zusammen mit einer CSL-Datei (z.B. `jura.csl`) im Content-Repo abgelegt.
+The `references.yaml` contains bibliographic references in CSL-JSON format (as YAML). It is stored alongside a CSL style file (e.g., `jura.csl`) in the content repo.
 
-## Konfiguration in meta.yaml
+## Configuration in meta.yaml
 
 ```yaml
 csl: "jura.csl"
@@ -11,9 +11,9 @@ bibliography: "references.yaml"
 
 ## Format
 
-Jeder Eintrag ist ein CSL-JSON-Objekt. Die vollständige Spezifikation: [CSL-JSON Schema](https://citeproc-js.readthedocs.io/en/latest/csl-json/markup.html).
+Each entry is a CSL-JSON object. Full specification: [CSL-JSON Schema](https://citeproc-js.readthedocs.io/en/latest/csl-json/markup.html).
 
-## Beispiel
+## Example
 
 ```yaml
 - id: mustermann2024
@@ -45,25 +45,25 @@ Jeder Eintrag ist ein CSL-JSON-Objekt. Die vollständige Spezifikation: [CSL-JSO
   volume: "13"
 ```
 
-## Häufige CSL-Typen
+## Common CSL Types
 
-| Typ | Beschreibung |
+| Type | Description |
 |---|---|
-| `book` | Monographie |
-| `article-journal` | Zeitschriftenaufsatz |
-| `chapter` | Buchbeitrag / Festschrift |
-| `legal_case` | Gerichtsentscheidung |
-| `legislation` | Gesetz / Verordnung |
-| `thesis` | Dissertation / Habilitation |
+| `book` | Monograph |
+| `article-journal` | Journal article |
+| `chapter` | Book chapter / Festschrift contribution |
+| `legal_case` | Court decision |
+| `legislation` | Statute / regulation |
+| `thesis` | Dissertation / habilitation |
 
-## Verwendung im Markdown
+## Usage in Markdown
 
 ```markdown
-^[Vgl. @mustermann2024, S. 42 ff.]
+^[See @mustermann2024, S. 42 ff.]
 ```
 
-Der `@citation_key` wird durch die formatierte Zitation ersetzt. Am Dokumentende wird automatisch ein Literaturverzeichnis generiert.
+The `@citation_key` is replaced with the formatted citation. A bibliography is automatically generated at the end of the document.
 
-## CSL-Datei
+## CSL Style File
 
-Die CSL-Datei bestimmt das Zitationsformat. Für juristische Literatur empfiehlt sich ein juristisches CSL (z.B. `jura.csl`). CSL-Dateien können aus dem [Zotero Style Repository](https://www.zotero.org/styles) bezogen oder selbst erstellt werden.
+The CSL file determines the citation format. For legal literature, a legal CSL style (e.g., `jura.csl`) is recommended. CSL files can be obtained from the [Zotero Style Repository](https://www.zotero.org/styles) or created manually.

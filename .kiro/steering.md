@@ -34,7 +34,8 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 ## Code-Konventionen
 
 - Sprache im Code: **Englisch** (Variablen, Funktionen, Kommentare).
-- Sprache in UI-Texten und Docs: **Deutsch**.
+- Sprache in UI-Texten: **Deutsch** (default), Englisch via i18n.
+- Sprache in Dokumentation (`/docs/`): **Englisch**.
 - Dateinamen: kebab-case (`citation-bar.tsx`, `footnote-drawer.tsx`).
 - Komponenten: PascalCase (`CitationBar`, `FootnoteDrawer`).
 - Keine `any`-Types; strikte TypeScript-Konfiguration.

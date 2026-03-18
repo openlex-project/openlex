@@ -1,44 +1,44 @@
 # toc.yaml
 
-Die `toc.yaml` liegt im Root-Verzeichnis eines Book/Journal-Content-Repos und definiert die Struktur und Reihenfolge der Inhalte.
+The `toc.yaml` file is located in the root directory of a book/journal content repo and defines the structure and order of contents.
 
 ## Schema
 
 ```yaml
 contents:
-  - file: vorwort.md
-    title: Vorwort
+  - file: foreword.md
+    title: Foreword
 
-  - file: einleitung.md
-    title: Einleitung in die DSGVO
+  - file: introduction.md
+    title: Introduction to the GDPR
 
-  - file: vorbem-1-4.md
-    title: "Vorbemerkungen zu Art. 1–4"
+  - file: prelim-1-4.md
+    title: "Preliminary Remarks on Art. 1–4"
     provisions: [1, 2, 3, 4]
 
   - file: art-5.md
-    title: "Art. 5 – Grundsätze für die Verarbeitung"
+    title: "Art. 5 – Principles of Processing"
     provisions: [5]
 
-  - file: exkurs-accountability.md
-    title: "Exkurs: Accountability-Prinzip"
+  - file: excursus-accountability.md
+    title: "Excursus: Accountability Principle"
 ```
 
-## Felder pro Eintrag
+## Fields per Entry
 
-| Feld | Typ | Pflicht | Beschreibung |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `file` | string | ✓ | Dateiname relativ zu `content/` |
-| `title` | string | ✓ | Anzeige-Titel (für Navigation, Breadcrumbs) |
-| `provisions` | number[] | | Zugeordnete Norm-Nummern (für Cross-Links) |
+| `file` | string | ✓ | Filename relative to `content/` |
+| `title` | string | ✓ | Display title (for navigation, breadcrumbs) |
+| `provisions` | number[] | | Assigned provision numbers (for cross-links) |
 
-## Verhalten
+## Behavior
 
-- Die Reihenfolge in `contents` bestimmt die Reihenfolge im Inhaltsverzeichnis.
-- Der URL-Slug wird aus dem Dateinamen abgeleitet: `art-5.md` → `/book/{werk}/art-5`.
-- `provisions` ermöglicht Cross-Links vom Gesetz zum Kommentar: Die Gesetzesseite `/law/dsgvo/5` zeigt Links zu allen Kommentar-Einträgen mit `provisions: [5]`.
-- Einträge ohne `provisions` (Vorwort, Exkurse) erscheinen im Inhaltsverzeichnis, aber nicht als Cross-Link vom Gesetz.
+- The order in `contents` determines the table of contents order.
+- The URL slug is derived from the filename: `art-5.md` → `/book/{werk}/art-5`.
+- `provisions` enables cross-links from law to commentary: the law page `/law/dsgvo/5` shows links to all commentary entries with `provisions: [5]`.
+- Entries without `provisions` (forewords, excursuses) appear in the table of contents but not as cross-links from the law.
 
-## Ohne toc.yaml
+## Without toc.yaml
 
-Wenn keine `toc.yaml` vorhanden ist, werden alle `.md`-Dateien aus `content/` alphabetisch sortiert als Einträge verwendet. In diesem Fall sind keine `provisions`-Zuordnungen und keine Cross-Links möglich.
+If no `toc.yaml` is present, all `.md` files from `content/` are used as entries, sorted alphabetically. In this case, no `provisions` mappings and no cross-links are available.

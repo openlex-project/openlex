@@ -1,6 +1,6 @@
 # sync.yaml
 
-Die `sync.yaml` liegt im Root-Verzeichnis eines Gesetze-Repos (z.B. `openlex-laws`) und definiert alle enthaltenen Gesetze.
+The `sync.yaml` file is located in the root directory of a law repo (e.g., `openlex-laws`) and defines all contained laws.
 
 ## Schema
 
@@ -23,21 +23,21 @@ laws:
     gii_slug: "urhg"
 ```
 
-## Felder pro Gesetz
+## Fields per Law
 
-| Feld | Typ | Pflicht | Beschreibung |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| (Key) | string | ✓ | Slug des Gesetzes (= Verzeichnisname im Repo) |
-| `title` | string | ✓ | Vollständiger Titel |
-| `title_short` | string | | Kurztitel / Abkürzung (z.B. „DSGVO") |
-| `unit_type` | `article` \| `section` | ✓ | Gliederungseinheit: `article` → „Art.", `section` → „§" |
-| `lang` | string | ✓ | Sprache (ISO 639-1) |
-| `source` | string | | Quelle für Sync (z.B. `gii` für gesetze-im-internet.de) |
-| `gii_slug` | string | | Slug auf gesetze-im-internet.de |
+| (Key) | string | ✓ | Slug of the law (= directory name in repo) |
+| `title` | string | ✓ | Full title |
+| `title_short` | string | | Short title / abbreviation (e.g., "DSGVO") |
+| `unit_type` | `article` \| `section` | ✓ | Unit type: `article` → "Art.", `section` → "§" |
+| `lang` | string | ✓ | Language (ISO 639-1) |
+| `source` | string | | Source for sync (e.g., `gii` for gesetze-im-internet.de) |
+| `gii_slug` | string | | Slug on gesetze-im-internet.de |
 
-## Verzeichnisstruktur
+## Directory Structure
 
-Jedes Gesetz hat ein eigenes Verzeichnis im Repo, benannt nach dem Slug:
+Each law has its own directory in the repo, named after the slug:
 
 ```
 openlex-laws/
@@ -53,10 +53,10 @@ openlex-laws/
     ...
 ```
 
-Die Markdown-Dateien enthalten den reinen Gesetzestext ohne Frontmatter.
+Markdown files contain plain legal text without frontmatter.
 
-## Hinweise
+## Notes
 
-- `title_short` wird in der Navigation und bei Cross-Links bevorzugt angezeigt.
-- `unit_type` bestimmt das Präfix auf der Gesetzesseite: „Art. 5 DSGVO" vs. „§ 15 UrhG".
-- Ein Gesetze-Repo kann mehrere Gesetze enthalten (Mono-Repo).
+- `title_short` is preferred in navigation and cross-links.
+- `unit_type` determines the prefix on the law page: "Art. 5 DSGVO" vs. "§ 15 UrhG".
+- A law repo can contain multiple laws (mono-repo).

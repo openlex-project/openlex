@@ -1,43 +1,43 @@
-# Content-Guide für Autoren
+# Content Guide for Authors
 
-Dieses Dokument beschreibt die Markdown-Syntax und Konventionen für Inhalte auf OpenLex.
+This document describes the Markdown syntax and conventions for content on OpenLex.
 
-## Dateiformat
+## File Format
 
-Alle Inhalte werden in **Pandoc-Flavor Markdown** verfasst und im Verzeichnis `content/` des jeweiligen Content-Repos abgelegt. Der Dateiname (ohne `.md`) wird zum URL-Slug: `content/art-5.md` → `/book/{werk}/art-5`.
+All content is written in **Pandoc-flavor Markdown** and stored in the `content/` directory of the respective content repo. The filename (without `.md`) becomes the URL slug: `content/art-5.md` → `/book/{werk}/art-5`.
 
-## Randnummern
+## Margin Numbers
 
-Randnummern werden mit `[]{.rn}` gesetzt. Sie werden automatisch durchnummeriert.
+Margin numbers are set with `[]{.rn}`. They are automatically numbered sequentially.
 
 ```markdown
-[]{.rn} Dies ist der erste Absatz mit Randnummer 1.
+[]{.rn} This is the first paragraph with margin number 1.
 
-[]{.rn} Dies ist der zweite Absatz mit Randnummer 2.
+[]{.rn} This is the second paragraph with margin number 2.
 ```
 
-## Fußnoten (Inline)
+## Footnotes (Inline)
 
-Inline-Fußnoten mit `^[Text]`:
+Inline footnotes with `^[text]`:
 
 ```markdown
-Dies ist ein Satz mit einer Fußnote.^[Vgl. Mustermann, Datenschutzrecht, S. 42.]
+This is a sentence with a footnote.^[See Mustermann, Datenschutzrecht, p. 42.]
 ```
 
-## Zitationen (CSL)
+## Citations (CSL)
 
-Referenzen werden mit `@citation_key` aufgelöst. Die Keys müssen in der `references.yaml` des Repos definiert sein.
+References are resolved with `@citation_key`. Keys must be defined in the repo's `references.yaml`.
 
 ```markdown
-^[Vgl. @mustermann2024, S. 42 ff.]
+^[See @mustermann2024, S. 42 ff.]
 ^[@musterfrau2023, S. 45.]
 ```
 
-Locator (Seitenangaben) werden nach dem Key mit Komma getrennt angegeben. Am Ende des Dokuments wird automatisch ein Literaturverzeichnis generiert.
+Locators (page references) are separated from the key by a comma. A bibliography is automatically generated at the end of the document.
 
-## Autoren-Block
+## Author Block
 
-Der Autoren-Block wird als Fenced Div am Anfang des Dokuments gesetzt:
+The author block is placed as a fenced div at the beginning of the document:
 
 ```markdown
 ::: author
@@ -46,53 +46,53 @@ Max Mustermann
 :::
 ```
 
-Zeile 1: Name, Zeile 2: ORCID (optional). Der Name wird als Link zu orcid.org gerendert.
+Line 1: Name, Line 2: ORCID (optional). The name is rendered as a link to orcid.org.
 
-## Fenced Divs (Direktiven)
+## Fenced Divs (Directives)
 
-Pandoc-style Fenced Divs für strukturierte Blöcke:
+Pandoc-style fenced divs for structured blocks:
 
 ```markdown
 ::: note
-Dies ist ein Hinweis.
+This is a note.
 :::
 
 ::: example
-Dies ist ein Beispiel.
+This is an example.
 :::
 
 ::: warning
-Dies ist eine Warnung.
+This is a warning.
 :::
 ```
 
-## Überschriften-Nummerierung
+## Heading Numbering
 
-Die Nummerierung wird über das `numbering`-Feld in der `meta.yaml` gesteuert. Verfügbare Schemata:
+Numbering is controlled via the `numbering` field in `meta.yaml`. Available schemas:
 
-| Schema | Beschreibung |
+| Schema | Description |
 |---|---|
 | `commentary` | A. / I. / 1. / a) |
 | `textbook` | § 1 / A. / I. / 1. |
 | `decimal` | 1. / 1.1 / 1.1.1 |
-| `none` | Keine Nummerierung |
+| `none` | No numbering |
 
-### Manuelle Nummerierung
+### Manual Numbering
 
 ```markdown
-## Überschrift {number="III."}
+## Heading {number="III."}
 ```
 
-### Unnummerierte Überschriften
+### Unnumbered Headings
 
 ```markdown
-## Einleitung {.unnumbered}
+## Introduction {.unnumbered}
 ```
 
-## Pandoc-Attribute
+## Pandoc Attributes
 
-Pandoc-Attribute in geschweiften Klammern werden automatisch entfernt und nicht gerendert:
+Pandoc attributes in curly braces are automatically stripped and not rendered:
 
 ```markdown
-## Überschrift {#custom-id .class key="value"}
+## Heading {#custom-id .class key="value"}
 ```
