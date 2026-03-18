@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getRegistry, getLawContent } from "@/lib/registry";
+import { buildRegistry, getLawContent } from "@/lib/registry";
 
 interface Props {
   params: Promise<{ gesetz: string; nr: string }>;
@@ -7,11 +7,11 @@ interface Props {
 
 export default async function LawPage({ params }: Props) {
   const { gesetz, nr } = await params;
-  const registry = getRegistry();
+  const registry = await buildRegistry();
   const meta = registry.laws.get(gesetz);
   if (!meta) notFound();
 
-  const text = getLawContent(gesetz, nr);
+  const text = await getLawContent(meta.repo, gesetz, nr);
   if (!text) notFound();
 
   const unitLabel = meta.unit_type === "article" ? "Art." : "§";

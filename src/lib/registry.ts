@@ -1,6 +1,5 @@
-import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join } from "node:path";
 import { parse } from "yaml";
+import { fetchFile, listFiles } from "./github";
 
 export interface BookMeta {
   slug: string;
@@ -21,6 +20,7 @@ export interface LawMeta {
   abbreviation: string;
   unit_type: "article" | "section" | "chapter";
   lang: string;
+  repo: string;
 }
 
 interface SyncYaml {
@@ -33,82 +33,76 @@ interface SyncYaml {
 }
 
 export interface ContentRegistry {
-  books: Map<string, BookMeta>;
+  books: Map<string, BookMeta & { repo: string }>;
   laws: Map<string, LawMeta>;
 }
 
-const FIXTURES_DIR = join(process.cwd(), "fixtures");
+function getContentRepos(): string[] {
+  return (process.env.CONTENT_REPOS ?? "")
+    .split(",")
+    .map((r) => r.trim())
+    .filter(Boolean);
+}
 
-let cached: ContentRegistry | null = null;
-
-export function getRegistry(): ContentRegistry {
-  if (cached) return cached;
-
-  const books = new Map<string, BookMeta>();
+export async function buildRegistry(): Promise<ContentRegistry> {
+  const books = new Map<string, BookMeta & { repo: string }>();
   const laws = new Map<string, LawMeta>();
 
-  if (existsSync(FIXTURES_DIR)) {
-    for (const entry of readdirSync(FIXTURES_DIR, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
-      const dir = join(FIXTURES_DIR, entry.name);
+  for (const repo of getContentRepos()) {
+    // Try book repo (has meta.yaml)
+    const metaRaw = await fetchFile(repo, "meta.yaml");
+    if (metaRaw) {
+      const meta = parse(metaRaw) as BookMeta;
+      books.set(meta.slug, { ...meta, repo });
+      continue;
+    }
 
-      // Book repo: has meta.yaml
-      const metaPath = join(dir, "meta.yaml");
-      if (existsSync(metaPath)) {
-        const meta = parse(readFileSync(metaPath, "utf-8")) as BookMeta;
-        books.set(meta.slug, meta);
-        continue;
-      }
-
-      // Law repo: has sync.yaml
-      const syncPath = join(dir, "sync.yaml");
-      if (existsSync(syncPath)) {
-        const sync = parse(readFileSync(syncPath, "utf-8")) as SyncYaml;
-        for (const [slug, law] of Object.entries(sync.laws)) {
-          laws.set(slug, {
-            slug,
-            title: law.title,
-            abbreviation: law.abbreviation,
-            unit_type: law.unit_type as LawMeta["unit_type"],
-            lang: law.lang,
-          });
-        }
+    // Try law repo (has sync.yaml)
+    const syncRaw = await fetchFile(repo, "sync.yaml");
+    if (syncRaw) {
+      const sync = parse(syncRaw) as SyncYaml;
+      for (const [slug, law] of Object.entries(sync.laws)) {
+        laws.set(slug, {
+          slug,
+          title: law.title,
+          abbreviation: law.abbreviation,
+          unit_type: law.unit_type as LawMeta["unit_type"],
+          lang: law.lang,
+          repo,
+        });
       }
     }
   }
 
-  cached = { books, laws };
-  return cached;
+  return { books, laws };
 }
 
-export function getBookContent(slug: string, nr: string): string | null {
-  const dir = join(FIXTURES_DIR, slug, "content");
-  if (!existsSync(dir)) return null;
+export async function getBookContent(
+  repo: string,
+  slug: string,
+  nr: string,
+): Promise<string | null> {
+  // Single file
+  const single = await fetchFile(repo, `content/${nr}.md`);
+  if (single) return single;
 
-  const single = join(dir, `${nr}.md`);
-  if (existsSync(single)) return readFileSync(single, "utf-8");
-
-  const parts = readdirSync(dir)
+  // Split files: {nr}-01.md, {nr}-02.md, ...
+  const files = await listFiles(repo, "content");
+  const parts = files
     .filter((f) => f.startsWith(`${nr}-`) && f.endsWith(".md"))
     .sort();
   if (parts.length === 0) return null;
 
-  return parts.map((f) => readFileSync(join(dir, f), "utf-8")).join("\n\n");
+  const contents = await Promise.all(
+    parts.map((f) => fetchFile(repo, `content/${f}`)),
+  );
+  return contents.filter(Boolean).join("\n\n");
 }
 
-export function getLawContent(slug: string, nr: string): string | null {
-  // Laws live in a directory matching the fixture that contains sync.yaml
-  // Find which fixture dir contains this law slug
-  if (!existsSync(FIXTURES_DIR)) return null;
-
-  for (const entry of readdirSync(FIXTURES_DIR, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    const file = join(FIXTURES_DIR, entry.name, `${nr}.md`);
-    const syncPath = join(FIXTURES_DIR, entry.name, "sync.yaml");
-    if (existsSync(syncPath) && existsSync(file)) {
-      const sync = parse(readFileSync(syncPath, "utf-8")) as SyncYaml;
-      if (slug in sync.laws) return readFileSync(file, "utf-8");
-    }
-  }
-  return null;
+export async function getLawContent(
+  repo: string,
+  slug: string,
+  nr: string,
+): Promise<string | null> {
+  return fetchFile(repo, `${slug}/${nr}.md`);
 }

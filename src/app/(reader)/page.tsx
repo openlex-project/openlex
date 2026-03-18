@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getRegistry } from "@/lib/registry";
+import { buildRegistry } from "@/lib/registry";
 
-export default function Home() {
-  const { books, laws } = getRegistry();
+export default async function Home() {
+  const { books, laws } = await buildRegistry();
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">

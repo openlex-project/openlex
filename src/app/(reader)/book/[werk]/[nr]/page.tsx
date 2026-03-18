@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getRegistry, getBookContent } from "@/lib/registry";
+import { buildRegistry, getBookContent } from "@/lib/registry";
 import { renderMarkdown } from "@/lib/markdown";
 
 interface Props {
@@ -8,11 +8,11 @@ interface Props {
 
 export default async function BookPage({ params }: Props) {
   const { werk, nr } = await params;
-  const registry = getRegistry();
+  const registry = await buildRegistry();
   const meta = registry.books.get(werk);
   if (!meta) notFound();
 
-  const markdown = getBookContent(werk, nr);
+  const markdown = await getBookContent(meta.repo, werk, nr);
   if (!markdown) notFound();
 
   const html = await renderMarkdown(markdown);
