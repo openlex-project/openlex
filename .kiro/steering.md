@@ -286,6 +286,7 @@ schmieder-urheberrecht/
 slug: "oc-dsgvo"
 type: "book"                    # book | journal
 title: "OpenCommentary DSGVO"
+title_short: "OC-DSGVO"        # Optional: Kurztitel für Zitiervorschlag
 abbreviation: "OC-DSGVO"
 unit_type: "article"            # article | section | chapter
 lang: "de"
@@ -490,3 +491,17 @@ Beliebiger Text und Klammern um den Zähler herum:
 - Keine Client-seitigen GitHub-API-Calls.
 - Kein `tailwind.config.js` erzeugen (Tailwind v4 nutzt CSS-first Config).
 - Kein Monorepo-Setup (Turborepo etc.).
+
+## Phasenplan (ab Phase 7)
+
+- **Phase 7:** Suche + Feedback (Typesense, GitHub Issues)
+- **Phase 8:** Edition-Logik + i18n
+- **Phase 9:** Content-Modell-Refactor + Gesetze-Sync + Indizes
+  - `toc.yaml` für Kommentare (Vorbemerkungen, Exkurse, flexible Struktur)
+  - `provisions[]`-Mapping für Cross-Links Gesetz → Kommentar
+  - `meta.yaml` Cleanup: `abbreviation` raus, `title_short` rein, `unit_type` nur bei Law (`article` | `section`)
+  - URL-Umstellung: `/book/[werk]/[slug]` statt `/book/[werk]/[nr]`
+  - Gesetze-Sync via GitHub Actions (GII XML)
+  - Auto-generierte Indizes
+- **Phase 10:** Dokumentation (`/docs/`): content-guide, meta-yaml, toc-yaml, sync-yaml, references-yaml, deployment
+- **Phase 11:** PDF-Export + Polish
