@@ -80,6 +80,26 @@
   text-decoration: underline;
 }
 
+/* Bibliography */
+.bibliography {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.bibliography h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.bibliography .csl-entry {
+  margin-bottom: 0.5rem;
+  padding-left: 2rem;
+  text-indent: -2rem;
+  font-size: 0.875rem;
+}
+
 /* Footnotes */
 .fn-ref a {
   color: var(--color-blue-600);

@@ -1,0 +1,22 @@
+- id: mustermann2024
+  type: book
+  title: "Datenschutzrecht: Grundlagen und Praxis"
+  author:
+    - family: Mustermann
+      given: Max
+  issued:
+    date-parts: [[2024]]
+  publisher: "Juristische Verlagsgesellschaft"
+  publisher-place: "Berlin"
+
+- id: musterfrau2023
+  type: article-journal
+  title: "Die Grundsätze des Art. 5 DSGVO im Lichte der neueren Rechtsprechung"
+  author:
+    - family: Musterfrau
+      given: Erika
+  issued:
+    date-parts: [[2023]]
+  container-title: "Zeitschrift für Datenschutz"
+  volume: "13"
+  page: "42-58"

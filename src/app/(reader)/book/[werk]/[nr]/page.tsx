@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { buildRegistry, getBookContent } from "@/lib/registry";
+import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
 
 interface Props {
@@ -12,11 +13,16 @@ export default async function BookPage({ params }: Props) {
   const meta = registry.books.get(werk);
   if (!meta) notFound();
 
-  const markdown = await getBookContent(meta.repo, werk, nr);
+  const [markdown, cslXml, referencesYaml] = await Promise.all([
+    getBookContent(meta.repo, werk, nr),
+    meta.csl ? fetchFile(meta.repo, meta.csl) : null,
+    meta.bibliography ? fetchFile(meta.repo, meta.bibliography) : null,
+  ]);
   if (!markdown) notFound();
 
   const html = await renderMarkdown(markdown, {
     numbering: { schema: meta.numbering },
+    ...(cslXml && referencesYaml ? { cslXml, referencesYaml } : {}),
   });
 
   return (

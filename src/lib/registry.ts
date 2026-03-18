@@ -11,6 +11,8 @@ export interface BookMeta {
   license: string;
   numbering: string;
   comments_on?: string;
+  csl?: string;
+  bibliography?: string;
   editors: { name: string; orcid: string }[];
 }
 
