@@ -62,22 +62,23 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 
 ## URL-Schema
 
-- URL-Schema für Kommentare/Bücher: `/book/{werk}/{nr}#rn-{n}` (aktuell), `/book/{werk}/{n}ed/{nr}#rn-{n}` (explizite Auflage)
+- URL-Schema für Kommentare/Bücher: `/book/{werk}/{slug}` (aktuell), `/book/{werk}/{n}ed/{slug}` (explizite Auflage)
+- Slug = Dateiname ohne `.md` aus `toc.yaml` (z.B. `art-5`, `vorbem-1-4`, `einleitung`)
 - Editionen mappen auf Git-Branches: `main` = aktuelle Auflage, `{n}ed` = archivierte Auflage.
 - Edition von `main` wird abgeleitet: Anzahl `*ed`-Branches + 1. Kein `edition`-Feld in `meta.yaml`.
 - Workflow: Neue Auflage → aktuellen `main` als `{n}ed` branchen (einfrieren), `main` weiterarbeiten.
 - Zugriff auf `/{n}ed/` ohne existierenden Branch → Redirect auf aktuelle Auflage.
 - URL-Schema für Gesetze: `/law/{gesetz}/{nr}` (aktuell), `/law/{gesetz}/@{datum}/{nr}` (historische Fassung)
 - URL-Schema für Zeitschriften: `/journal/{zeitschrift}/{jahr}/{seite}`
-- Nur die Nummer in der URL – ob Art., § oder Kapitel bestimmt `meta.yaml` (`unit_type: "article"`, `"section"`, `"chapter"`)
+- `unit_type` nur bei Gesetzen (in `sync.yaml`): `article` (Art.) oder `section` (§)
 - Fragmente für Untergliederung: `#rn-1` (Kommentare), `#abs-1`, `#abs-1-s-1`, `#abs-1-lit-a` (Gesetze)
 
 Beispiele:
 ```
 /law/dsgvo/5#abs-1
-/book/oc-dsgvo/5#rn-3
-/book/oc-urhg/15#rn-7
-/book/schmieder-urheberrecht/3
+/book/oc-dsgvo/art-5#rn-3
+/book/oc-urhg/art-15#rn-7
+/book/schmieder-urheberrecht/kap-3
 /journal/zfkir/2025/42
 ```
 
@@ -112,7 +113,7 @@ openlex-laws/
     ...
 ```
 
-`sync.yaml` enthält alle Metadaten pro Gesetz (slug, source, title, abbreviation, unit_type). Keine separate `meta.yaml` pro Gesetz – der Sync-Job generiert die Ordnerstruktur aus `sync.yaml`.
+`sync.yaml` enthält alle Metadaten pro Gesetz (slug, source, title, title_short, unit_type). Keine separate `meta.yaml` pro Gesetz – der Sync-Job generiert die Ordnerstruktur aus `sync.yaml`.
 
 ### Gesetzesdateien
 - Pures Markdown ohne Frontmatter – nur der nackte Gesetzestext.
@@ -287,8 +288,6 @@ slug: "oc-dsgvo"
 type: "book"                    # book | journal
 title: "OpenCommentary DSGVO"
 title_short: "OC-DSGVO"        # Optional: Kurztitel für Zitiervorschlag
-abbreviation: "OC-DSGVO"
-unit_type: "article"            # article | section | chapter
 lang: "de"
 license: "CC-BY-SA-4.0"
 numbering: "commentary"         # commentary | textbook | decimal | none
@@ -299,6 +298,19 @@ translations: ["en"]            # Optional: verfügbare Übersetzungen
 editors:
   - name: "Max Mustermann"
     orcid: "0000-0000-0000-0000"
+```
+
+`toc.yaml` (Inhaltsverzeichnis):
+```yaml
+contents:
+  - file: vorwort.md
+    title: Vorwort
+  - file: vorbem-1-4.md
+    title: "Vorbemerkungen zu Art. 1–4"
+    provisions: [1, 2, 3, 4]
+  - file: art-5.md
+    title: "Art. 5 – Grundsätze"
+    provisions: [5]
 ```
 
 ### Law-Collection-Repo

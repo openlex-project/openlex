@@ -1,12 +1,17 @@
 import { parse } from "yaml";
 import { fetchFile, listFiles } from "./github";
 
+export interface TocEntry {
+  file: string;
+  title: string;
+  provisions?: number[];
+}
+
 export interface BookMeta {
   slug: string;
   type: "book" | "journal";
   title: string;
-  abbreviation: string;
-  unit_type: "article" | "section" | "chapter";
+  title_short?: string;
   lang: string;
   license: string;
   numbering: string;
@@ -19,8 +24,8 @@ export interface BookMeta {
 export interface LawMeta {
   slug: string;
   title: string;
-  abbreviation: string;
-  unit_type: "article" | "section" | "chapter";
+  title_short?: string;
+  unit_type: "article" | "section";
   lang: string;
   repo: string;
 }
@@ -28,14 +33,19 @@ export interface LawMeta {
 interface SyncYaml {
   laws: Record<string, {
     title: string;
-    abbreviation: string;
+    title_short?: string;
     unit_type: string;
     lang: string;
   }>;
 }
 
+export interface BookEntry extends BookMeta {
+  repo: string;
+  toc: TocEntry[];
+}
+
 export interface ContentRegistry {
-  books: Map<string, BookMeta & { repo: string }>;
+  books: Map<string, BookEntry>;
   laws: Map<string, LawMeta>;
 }
 
@@ -47,19 +57,30 @@ function getContentRepos(): string[] {
 }
 
 export async function buildRegistry(): Promise<ContentRegistry> {
-  const books = new Map<string, BookMeta & { repo: string }>();
+  const books = new Map<string, BookEntry>();
   const laws = new Map<string, LawMeta>();
 
   for (const repo of getContentRepos()) {
-    // Try book repo (has meta.yaml)
     const metaRaw = await fetchFile(repo, "meta.yaml");
     if (metaRaw) {
       const meta = parse(metaRaw) as BookMeta;
-      books.set(meta.slug, { ...meta, repo });
+      // Load toc.yaml or auto-generate from content/ directory
+      const tocRaw = await fetchFile(repo, "toc.yaml");
+      let toc: TocEntry[];
+      if (tocRaw) {
+        const parsed = parse(tocRaw) as { contents: TocEntry[] };
+        toc = parsed.contents;
+      } else {
+        const files = await listFiles(repo, "content");
+        toc = files
+          .filter((f) => f.endsWith(".md"))
+          .sort()
+          .map((f) => ({ file: f, title: f.replace(/\.md$/, "") }));
+      }
+      books.set(meta.slug, { ...meta, repo, toc });
       continue;
     }
 
-    // Try law repo (has sync.yaml)
     const syncRaw = await fetchFile(repo, "sync.yaml");
     if (syncRaw) {
       const sync = parse(syncRaw) as SyncYaml;
@@ -67,7 +88,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
         laws.set(slug, {
           slug,
           title: law.title,
-          abbreviation: law.abbreviation,
+          title_short: law.title_short,
           unit_type: law.unit_type as LawMeta["unit_type"],
           lang: law.lang,
           repo,
@@ -79,27 +100,22 @@ export async function buildRegistry(): Promise<ContentRegistry> {
   return { books, laws };
 }
 
+/** Find a toc entry by slug (filename without .md) */
+export function findTocEntry(toc: TocEntry[], slug: string): TocEntry | undefined {
+  return toc.find((e) => e.file.replace(/\.md$/, "") === slug);
+}
+
+/** Find toc entries that cover a given provision number */
+export function findByProvision(toc: TocEntry[], provision: number): TocEntry[] {
+  return toc.filter((e) => e.provisions?.includes(provision));
+}
+
 export async function getBookContent(
   repo: string,
-  slug: string,
-  nr: string,
+  fileSlug: string,
   ref = "main",
 ): Promise<string | null> {
-  // Single file
-  const single = await fetchFile(repo, `content/${nr}.md`, ref);
-  if (single) return single;
-
-  // Split files: {nr}-01.md, {nr}-02.md, ...
-  const files = await listFiles(repo, "content", ref);
-  const parts = files
-    .filter((f) => f.startsWith(`${nr}-`) && f.endsWith(".md"))
-    .sort();
-  if (parts.length === 0) return null;
-
-  const contents = await Promise.all(
-    parts.map((f) => fetchFile(repo, `content/${f}`, ref)),
-  );
-  return contents.filter(Boolean).join("\n\n");
+  return fetchFile(repo, `content/${fileSlug}.md`, ref);
 }
 
 export async function getLawContent(

@@ -19,17 +19,22 @@ export default async function Home() {
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-3">{t(locale, "section.books")}</h2>
           <ul className="space-y-2">
-            {[...books.values()].map((b) => (
-              <li key={b.slug}>
-                <Link
-                  href={`/book/${b.slug}/5`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {b.abbreviation}
-                </Link>
-                <span className="text-gray-500 ml-2 text-sm">{b.title}</span>
-              </li>
-            ))}
+            {[...books.values()].map((b) => {
+              const firstSlug = b.toc[0]?.file.replace(/\.md$/, "") ?? "";
+              return (
+                <li key={b.slug}>
+                  <Link
+                    href={`/book/${b.slug}/${firstSlug}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {b.title_short ?? b.title}
+                  </Link>
+                  {b.title_short && (
+                    <span className="text-gray-500 ml-2 text-sm">{b.title}</span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}
@@ -44,9 +49,11 @@ export default async function Home() {
                   href={`/law/${l.slug}/5`}
                   className="text-blue-600 hover:underline"
                 >
-                  {l.abbreviation}
+                  {l.title_short ?? l.title}
                 </Link>
-                <span className="text-gray-500 ml-2 text-sm">{l.title}</span>
+                {l.title_short && (
+                  <span className="text-gray-500 ml-2 text-sm">{l.title}</span>
+                )}
               </li>
             ))}
           </ul>

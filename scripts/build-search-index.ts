@@ -4,7 +4,6 @@
  * Called automatically via `pnpm run postbuild`.
  */
 import { buildRegistry, getBookContent, getLawContent } from "../src/lib/registry";
-import { listFiles } from "../src/lib/github";
 
 async function main() {
   const pagefind = await import("pagefind");
@@ -14,53 +13,49 @@ async function main() {
   const registry = await buildRegistry();
   let count = 0;
 
-  // Index book content
   for (const [slug, meta] of registry.books) {
-    const files = await listFiles(meta.repo, "content");
-    const mdFiles = files.filter((f) => f.endsWith(".md")).sort();
-
-    for (const file of mdFiles) {
-      const nr = file.replace(/\.md$/, "").replace(/-\d+$/, "");
-      const content = await getBookContent(meta.repo, slug, nr);
+    const displayName = meta.title_short ?? meta.title;
+    for (const entry of meta.toc) {
+      const fileSlug = entry.file.replace(/\.md$/, "");
+      const content = await getBookContent(meta.repo, fileSlug);
       if (!content) continue;
 
-      // Strip markdown syntax for plain-text indexing
       const plain = content
-        .replace(/^---[\s\S]*?---\n?/, "")  // frontmatter
-        .replace(/^#+\s+/gm, "")             // headings
-        .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // links
-        .replace(/[*_`~]/g, "")              // emphasis
-        .replace(/:::\s*\w+/g, "")           // directives
-        .replace(/\{[^}]*\}/g, "");          // attributes
+        .replace(/^---[\s\S]*?---\n?/, "")
+        .replace(/^#+\s+/gm, "")
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+        .replace(/[*_`~]/g, "")
+        .replace(/:::\s*\w+/g, "")
+        .replace(/\{[^}]*\}/g, "");
 
       await index.addCustomRecord({
-        url: `/book/${slug}/${nr}`,
+        url: `/book/${slug}/${fileSlug}`,
         content: plain,
         language: "de",
-        meta: { title: `${meta.abbreviation} – ${nr}`, werk: meta.title },
-        filters: { type: ["Kommentar"], werk: [meta.abbreviation] },
+        meta: { title: `${displayName} – ${entry.title}` },
+        filters: { type: ["Kommentar"], werk: [displayName] },
       });
       count++;
     }
   }
 
-  // Index law content
   for (const [slug, meta] of registry.laws) {
+    const displayName = meta.title_short ?? meta.title;
+    const unitLabel = meta.unit_type === "article" ? "Art." : "§";
+    // Index known law files by listing directory
+    const { listFiles } = await import("../src/lib/github");
     const files = await listFiles(meta.repo, slug);
-    const mdFiles = files.filter((f) => f.endsWith(".md")).sort();
-
-    for (const file of mdFiles) {
+    for (const file of files.filter((f) => f.endsWith(".md")).sort()) {
       const nr = file.replace(/\.md$/, "");
       const content = await getLawContent(meta.repo, slug, nr);
       if (!content) continue;
 
-      const unitLabel = meta.unit_type === "article" ? "Art." : "§";
       await index.addCustomRecord({
         url: `/law/${slug}/${nr}`,
         content,
         language: "de",
-        meta: { title: `${unitLabel} ${nr} ${meta.abbreviation}` },
-        filters: { type: ["Gesetz"], gesetz: [meta.abbreviation] },
+        meta: { title: `${unitLabel} ${nr} ${displayName}` },
+        filters: { type: ["Gesetz"], gesetz: [displayName] },
       });
       count++;
     }
