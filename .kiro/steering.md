@@ -13,7 +13,7 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 - **Hosting:** Vercel (Hobby-Tarif, Serverless Functions, Edge)
 - **Styling:** Tailwind CSS v4 (CSS-first Config, kein `tailwind.config.js`)
 - **Auth:** NextAuth.js – ausschließlich Social Login (GitHub, Google, Apple)
-- **Datenbank:** Vercel KV (Redis) – nur für Nutzerpräferenzen, Lesezeichen, Verlauf
+- **Datenbank:** Upstash Redis (via Vercel Marketplace) – nur für Nutzerpräferenzen, Lesezeichen, Verlauf
 - **Content-Source:** Private GitHub-Repos via PAT (serverseitig, niemals Client-seitig)
 - **Content-Format:** Markdown (Pandoc-Flavor) + YAML-Frontmatter
 - **Testing:** Vitest
@@ -46,7 +46,7 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 - `develop` = Preview-Deployments
 - Feature Branches: `feat/beschreibung`, Bugfixes: `fix/beschreibung`
 - Commit-Messages: Conventional Commits (`feat:`, `fix:`, `docs:`)
-- Env-Vars: `GITHUB_PAT`, `CONTENT_REPOS` (kommaseparierte Repo-Pfade), `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`
+- Env-Vars: `GITHUB_PAT`, `CONTENT_REPOS` (kommaseparierte Repo-Pfade), `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
 
 ## Content-Repo-Discovery
 

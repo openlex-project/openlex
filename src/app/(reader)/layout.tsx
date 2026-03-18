@@ -1,3 +1,5 @@
+import UserButton from "@/components/user-button";
+
 export default function ReaderLayout({
   children,
 }: Readonly<{
@@ -5,8 +7,9 @@ export default function ReaderLayout({
 }>) {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b px-6 py-3">
-        <span className="font-semibold">OpenLex</span>
+      <header className="border-b px-6 py-3 flex items-center justify-between">
+        <a href="/" className="font-semibold">OpenLex</a>
+        <UserButton />
       </header>
       <main className="flex-1">{children}</main>
       <footer className="border-t px-6 py-3 text-sm text-gray-500">

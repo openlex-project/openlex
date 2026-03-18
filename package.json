@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
+    "@upstash/redis": "^1.37.0",
     "next": "16.2.0",
+    "next-auth": "^4.24.13",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "rehype-slug": "^6.0.0",
