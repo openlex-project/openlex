@@ -19,7 +19,7 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 - **Testing:** Vitest
 - **Paketmanager:** pnpm
 - **Linting:** ESLint 10 (Flat Config), kein Prettier
-- **Suche:** Typesense (open-source, facettiert, typo-tolerant)
+- **Suche:** Pagefind (statisch, Build-Time-Index, zero Infrastruktur)
 - **Monorepo:** Nein – Single Next.js Repo. Content-Repos sind separat auf GitHub.
 
 ## Architektur-Regeln
@@ -432,10 +432,10 @@ Beliebiger Text und Klammern um den Zähler herum:
 ## Suche
 
 - Volltext-Suche über den gesamten Content (Gesetze, Kommentare, Bücher, Zeitschriften).
-- Facettierte Suche: Filtern nach Werk, Typ (law/book/journal), Autor, Gesetz.
-- Typo-Toleranz und Relevanz-Ranking.
-- Technologie: Typesense (open-source, Cloud-Tier verfügbar, schnell, facettiert).
-- Suchindex wird bei Content-Updates (Revalidation) aktualisiert.
+- Facettierte Suche: Filtern nach Werk, Typ (Kommentar/Gesetz).
+- Technologie: Pagefind (statisch, Build-Time-Index, client-seitig, zero Infrastruktur).
+- Indexing-Script (`scripts/build-search-index.ts`) läuft als `postbuild`.
+- Suchindex wird bei jedem Build neu generiert.
 - Suche ist auch für nicht-eingeloggte User verfügbar.
 
 ## Landing Page
@@ -494,7 +494,7 @@ Beliebiger Text und Klammern um den Zähler herum:
 
 ## Phasenplan (ab Phase 7)
 
-- **Phase 7:** Suche + Feedback (Typesense, GitHub Issues)
+- **Phase 7:** Suche + Feedback (Pagefind, GitHub Issues)
 - **Phase 8:** Edition-Logik + i18n
 - **Phase 9:** Content-Modell-Refactor + Gesetze-Sync + Indizes
   - `toc.yaml` für Kommentare (Vorbemerkungen, Exkurse, flexible Struktur)

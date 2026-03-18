@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { buildRegistry, getBookContent } from "@/lib/registry";
 import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
+import { FeedbackButton } from "@/components/feedback-button";
 
 interface Props {
   params: Promise<{ werk: string; nr: string }>;
@@ -37,6 +38,7 @@ export default async function BookPage({ params }: Props) {
         className="prose prose-gray prose-rn dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: html }}
       />
+      <FeedbackButton repo={meta.repo} />
     </article>
   );
 }
