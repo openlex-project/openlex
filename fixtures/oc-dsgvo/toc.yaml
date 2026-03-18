@@ -1,4 +1,27 @@
 contents:
+  - file: vorwort.md
+    title: Vorwort
+
+  - file: vorbem-1-4.md
+    title: "Vorbemerkungen zu Art. 1–4"
+    provisions: [1, 2, 3, 4]
+
+  - file: art-1.md
+    title: "Art. 1 – Gegenstand und Ziele"
+    provisions: [1]
+
+  - file: art-2.md
+    title: "Art. 2 – Sachlicher Anwendungsbereich"
+    provisions: [2]
+
+  - file: art-3.md
+    title: "Art. 3 – Räumlicher Anwendungsbereich"
+    provisions: [3]
+
+  - file: art-4.md
+    title: "Art. 4 – Begriffsbestimmungen"
+    provisions: [4]
+
   - file: art-5.md
     title: "Art. 5 – Grundsätze für die Verarbeitung personenbezogener Daten"
     provisions: [5]
