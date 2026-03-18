@@ -12,7 +12,8 @@ function normalizeFencedDivs(md: string): string {
   return md.replace(/^(:{3,})\s+(\w+)/gm, "$1$2");
 }
 
-const processor = unified()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const processor = (unified() as any)
   .use(remarkParse)
   .use(remarkDirective)
   .use(remarkDirectiveHandlers)
