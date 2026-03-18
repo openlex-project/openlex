@@ -83,20 +83,21 @@ export async function getBookContent(
   repo: string,
   slug: string,
   nr: string,
+  ref = "main",
 ): Promise<string | null> {
   // Single file
-  const single = await fetchFile(repo, `content/${nr}.md`);
+  const single = await fetchFile(repo, `content/${nr}.md`, ref);
   if (single) return single;
 
   // Split files: {nr}-01.md, {nr}-02.md, ...
-  const files = await listFiles(repo, "content");
+  const files = await listFiles(repo, "content", ref);
   const parts = files
     .filter((f) => f.startsWith(`${nr}-`) && f.endsWith(".md"))
     .sort();
   if (parts.length === 0) return null;
 
   const contents = await Promise.all(
-    parts.map((f) => fetchFile(repo, `content/${f}`)),
+    parts.map((f) => fetchFile(repo, `content/${f}`, ref)),
   );
   return contents.filter(Boolean).join("\n\n");
 }

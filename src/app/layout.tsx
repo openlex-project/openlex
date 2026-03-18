@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "@/components/providers";
+import { LocaleProvider } from "@/components/locale-provider";
+import type { Locale } from "@/lib/i18n";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,15 +21,20 @@ export const metadata: Metadata = {
   description: "Open-Access-Plattform für juristische Fachliteratur",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const h = await headers();
+  const locale = (h.get("x-locale") ?? "de") as Locale;
+
   return (
-    <html lang="de" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body className="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-        <Providers>{children}</Providers>
+        <Providers>
+          <LocaleProvider locale={locale}>{children}</LocaleProvider>
+        </Providers>
       </body>
     </html>
   );

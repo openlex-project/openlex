@@ -1,19 +1,23 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { buildRegistry } from "@/lib/registry";
+import { t, type Locale } from "@/lib/i18n";
 
 export default async function Home() {
   const { books, laws } = await buildRegistry();
+  const h = await headers();
+  const locale = (h.get("x-locale") ?? "de") as Locale;
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold">OpenLex</h1>
+      <h1 className="text-3xl font-bold">{t(locale, "site.title")}</h1>
       <p className="mt-2 text-gray-600 mb-8">
-        Open-Access-Plattform für juristische Fachliteratur
+        {t(locale, "site.tagline")}
       </p>
 
       {books.size > 0 && (
         <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-3">Kommentare &amp; Bücher</h2>
+          <h2 className="text-xl font-semibold mb-3">{t(locale, "section.books")}</h2>
           <ul className="space-y-2">
             {[...books.values()].map((b) => (
               <li key={b.slug}>
@@ -32,7 +36,7 @@ export default async function Home() {
 
       {laws.size > 0 && (
         <section>
-          <h2 className="text-xl font-semibold mb-3">Gesetze</h2>
+          <h2 className="text-xl font-semibold mb-3">{t(locale, "section.laws")}</h2>
           <ul className="space-y-2">
             {[...laws.values()].map((l) => (
               <li key={l.slug}>
