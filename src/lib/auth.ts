@@ -5,29 +5,29 @@ import AppleProvider from "next-auth/providers/apple";
 
 const providers: AuthOptions["providers"] = [];
 
-if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+if (process.env.OAUTH_GITHUB_ID && process.env.OAUTH_GITHUB_SECRET) {
   providers.push(
     GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      clientId: process.env.OAUTH_GITHUB_ID,
+      clientSecret: process.env.OAUTH_GITHUB_SECRET,
     }),
   );
 }
 
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+if (process.env.OAUTH_GOOGLE_ID && process.env.OAUTH_GOOGLE_SECRET) {
   providers.push(
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.OAUTH_GOOGLE_ID,
+      clientSecret: process.env.OAUTH_GOOGLE_SECRET,
     }),
   );
 }
 
-if (process.env.APPLE_ID && process.env.APPLE_SECRET) {
+if (process.env.OAUTH_APPLE_ID && process.env.OAUTH_APPLE_SECRET) {
   providers.push(
     AppleProvider({
-      clientId: process.env.APPLE_ID,
-      clientSecret: process.env.APPLE_SECRET,
+      clientId: process.env.OAUTH_APPLE_ID,
+      clientSecret: process.env.OAUTH_APPLE_SECRET,
     }),
   );
 }

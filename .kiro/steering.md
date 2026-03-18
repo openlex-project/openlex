@@ -46,7 +46,7 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 - `develop` = Preview-Deployments
 - Feature Branches: `feat/beschreibung`, Bugfixes: `fix/beschreibung`
 - Commit-Messages: Conventional Commits (`feat:`, `fix:`, `docs:`)
-- Env-Vars: `GITHUB_PAT`, `CONTENT_REPOS` (kommaseparierte Repo-Pfade), `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+- Env-Vars: `GITHUB_PAT`, `CONTENT_REPOS` (kommaseparierte Repo-Pfade), `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `OAUTH_GITHUB_ID`, `OAUTH_GITHUB_SECRET`, `OAUTH_GOOGLE_ID`, `OAUTH_GOOGLE_SECRET`, `OAUTH_APPLE_ID`, `OAUTH_APPLE_SECRET`
 
 ## Content-Repo-Discovery
 
