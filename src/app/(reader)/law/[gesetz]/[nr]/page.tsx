@@ -16,13 +16,33 @@ export default async function LawPage({ params }: Props) {
 
   const unitLabel = meta.unit_type === "article" ? "Art." : "§";
 
+  // Find commentaries that comment on this law
+  const commentaries = [...registry.books.values()].filter(
+    (b) => b.comments_on === gesetz,
+  );
+
   return (
     <article className="max-w-prose mx-auto px-6 py-8">
       <h1 className="text-2xl font-bold mb-1">
         {unitLabel} {nr} {meta.abbreviation}
       </h1>
-      <p className="text-sm text-gray-500 mb-6">{meta.title}</p>
-      <div className="prose prose-gray max-w-none whitespace-pre-line">
+      <div className="text-sm text-gray-500 mb-6">
+        {meta.title}
+        {commentaries.length > 0 && (
+          <span className="ml-2">
+            · Kommentare:{" "}
+            {commentaries.map((c, i) => (
+              <span key={c.slug}>
+                {i > 0 && ", "}
+                <a href={`/book/${c.slug}/${nr}`} className="text-blue-600 hover:underline">
+                  {c.abbreviation}
+                </a>
+              </span>
+            ))}
+          </span>
+        )}
+      </div>
+      <div className="prose prose-gray dark:prose-invert max-w-none whitespace-pre-line">
         {text}
       </div>
     </article>

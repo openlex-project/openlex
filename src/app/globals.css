@@ -20,7 +20,6 @@
   user-select: none;
 }
 
-/* Container für Randnummern-Offset */
 .prose-rn {
   padding-left: 4rem;
 }
@@ -70,4 +69,49 @@
   font-size: 0.875rem;
   color: var(--color-gray-500);
   margin-bottom: 1.5rem;
+}
+
+.directive-author .author-link {
+  color: var(--color-gray-600);
+  text-decoration: none;
+}
+
+.directive-author .author-link:hover {
+  text-decoration: underline;
+}
+
+/* Footnotes */
+.fn-ref a {
+  color: var(--color-blue-600);
+  text-decoration: none;
+  font-size: 0.75rem;
+}
+
+.fn-back {
+  text-decoration: none;
+  margin-left: 0.25rem;
+}
+
+.footnotes {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  .directive-note {
+    background-color: color-mix(in srgb, var(--color-blue-900) 30%, transparent);
+  }
+  .directive-law {
+    background-color: color-mix(in srgb, var(--color-amber-900) 30%, transparent);
+  }
+  .directive-review {
+    background-color: color-mix(in srgb, var(--color-green-900) 30%, transparent);
+  }
+  .directive-warning {
+    background-color: color-mix(in srgb, var(--color-red-900) 30%, transparent);
+  }
+  .directive-example {
+    background-color: color-mix(in srgb, var(--color-purple-900) 30%, transparent);
+  }
 }
