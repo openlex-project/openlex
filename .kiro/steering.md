@@ -257,14 +257,34 @@ Neue Varianten werden bei Bedarf zentral in LexOpen ergänzt.
 ```
 oc-dsgvo/
   meta.yaml              # Pflicht: Selbstbeschreibung
+  toc.yaml               # Pflicht: Inhaltsverzeichnis (SSOT für Reihenfolge)
   jura.csl               # Pflicht: Zitationsstil
   references.yaml        # Pflicht: Bibliographie
+  pandoc.yaml            # Pandoc-Config (Template, Filter, Engine)
   divs.yaml              # Optional: Custom-Div-Mapping
+  Makefile               # make pdf
+  pandoc/
+    templates/
+      openlex-book.tex   # LaTeX-Template
+      openlex.sty        # Style-Paket
+    filters/
+      rn.lua             # Randnummern
+      directives.lua     # Fenced Divs → LaTeX
+      xref.lua           # Querverweise
+      index.lua          # Stichwortverzeichnis
+      glossary.lua       # Glossar
+      split-bib.lua      # Literatur/Rechtsprechung
+      table.lua          # Tabellen
+      nbsp.lua           # Geschützte Leerzeichen
+    fonts/
+      DeGruyterSans-*.otf
+      DeGruyterSerif-*.otf
   content/
-    5.md                 # Art. 5
-    6.md                 # Art. 6
-    312d.md              # § 312d (bei BGB-Kommentar)
+    vorwort.md
+    art-5.md
     ...
+  .github/workflows/
+    build-pdf.yml
 ```
 
 Textbook-Variante:
@@ -289,6 +309,8 @@ slug: "oc-dsgvo"
 type: "book"                    # book | journal
 title: "OpenCommentary DSGVO"
 title_short: "OC-DSGVO"        # Optional: Kurztitel für Zitiervorschlag
+isbn: "978-3-11-123456-7"      # Optional: ISBN (Print + Metadaten)
+doi: "10.1515/9783111234567"    # Optional: DOI des Gesamtwerks
 lang: "de"
 license: "CC-BY-SA-4.0"
 numbering: "commentary"         # commentary | textbook | decimal | none
@@ -299,6 +321,12 @@ translations: ["en"]            # Optional: verfügbare Übersetzungen
 editors:
   - name: "Max Mustermann"
     orcid: "0000-0000-0000-0000"
+backmatter:                     # Optional: Auto-generierte Verzeichnisse
+  bibliography: split           # split | merged | false
+  index: auto                   # true | false | auto
+  glossary: auto
+  list-of-tables: auto
+  list-of-figures: auto
 ```
 
 `toc.yaml` (Inhaltsverzeichnis):
@@ -518,3 +546,59 @@ Beliebiger Text und Klammern um den Zähler herum:
   - Auto-generierte Indizes
 - **Phase 10:** Dokumentation (`/docs/`): content-guide, meta-yaml, toc-yaml, sync-yaml, references-yaml, deployment
 - **Phase 11:** PDF-Export + Polish
+
+### Phase 11: Print-Pipeline + Polish
+
+#### 11a: Pandoc/LaTeX Print-Pipeline (Content-Repos)
+
+Jedes Book-Repo generiert aus denselben `/content`-Dateien eine druckfertige PDF.
+
+**Architektur:**
+- `pandoc.yaml` im Repo-Root: Pandoc-Config (Template, Filter, Engine) – keine `input-files`
+- `pandoc/templates/`: `openlex-book.tex` + `openlex.sty` (basiert auf De Gruyter Template, rebranded)
+- `pandoc/filters/`: Lua-Filter für LaTeX-Rendering
+- `pandoc/fonts/`: De Gruyter Sans/Serif (OFL-lizenziert, direkt im Repo)
+- `Makefile`: `make pdf` liest `toc.yaml` (SSOT), übergibt Dateien an Pandoc
+- `.github/workflows/build-pdf.yml`: TeX Live + Pandoc + yq → `make pdf` → PDF-Artifact
+
+**Lua-Filter-Inventar:**
+
+| Filter | Basis | Anpassung |
+|---|---|---|
+| `rn.lua` | `randnummern.lua` | Erkennt `[]{.rn}` Spans statt jeden Absatz |
+| `directives.lua` | `latex-div.lua` | `::: note` → Gesetzestext-Box, `::: author` → Autorenblock |
+| `table.lua` | `dgruyter-table.lua` | Umbenannt, De-Gruyter-Referenzen entfernt |
+| `xref.lua` | 1:1 | Querverweise mit `\ref` + `\pageref` |
+| `index.lua` | 1:1 | `[Text]{.idx}` → `\index{}` |
+| `glossary.lua` | 1:1 | Glossar-Einträge + `[Term]{.gls}` |
+| `split-bib.lua` | 1:1 | Literatur/Rechtsprechung trennen |
+| `nbsp.lua` | 1:1 | Geschützte Leerzeichen (§~2, Rn.~14) |
+
+**SSOT-Prinzip:**
+
+| Daten | SSOT | Web nutzt | Print nutzt |
+|---|---|---|---|
+| Dateireihenfolge | `toc.yaml` | Registry → Navigation | Makefile → Pandoc-Args |
+| Metadaten | `meta.yaml` | Registry → Rendering | Pandoc-Metadaten |
+| Bibliographie | `references.yaml` | citeproc.ts | citeproc (Pandoc) |
+| Zitierstil | `jura.csl` | citeproc.ts | citeproc (Pandoc) |
+| Content | `content/*.md` | GitHub API → Remark | Pandoc direkt |
+
+**Backmatter** (gesteuert über `meta.yaml` → `backmatter`):
+- Literatur-/Rechtsprechungsverzeichnis, Stichwortverzeichnis, Glossar, Tabellen-/Abbildungsverzeichnis
+- Auto-generiert in beiden Pipelines wenn Einträge vorhanden
+- `auto` = nur generieren wenn tatsächlich Einträge existieren
+
+#### 11b: Online-Pipeline erweitern
+
+Neue Remark-Plugins für Backmatter-Features:
+- `remark-index`: Sammelt `{.idx}` Spans → Stichwortverzeichnis-Sektion
+- `remark-glossary`: Sammelt `{.gls}` + `::: {.glossary-entries}` → Glossar-Sektion
+- `citeproc.ts` erweitern: Split Literatur/Rechtsprechung nach `type`
+- Tabellen-/Abbildungsverzeichnis aus Captions
+
+#### 11c: Polish
+- WCAG 2.1 AA Accessibility-Audit
+- Schema.org Metadaten
+- License-Badge
+- Performance-Optimierung

@@ -26,6 +26,7 @@ Inhalte werden in Pandoc-Flavor Markdown verfasst, in privaten GitHub-Repos verw
 - [toc.yaml](docs/toc-yaml.md) – Inhaltsverzeichnis
 - [sync.yaml](docs/sync-yaml.md) – Gesetze-Konfiguration
 - [references.yaml](docs/references-yaml.md) – CSL-Referenzen
+- [Print-Pipeline](docs/print-pipeline.md) – Pandoc/LaTeX PDF-Generierung
 - [Deployment](docs/deployment.md) – Vercel, Env-Vars, Setup
 
 ## Quickstart

@@ -89,6 +89,79 @@ Numbering is controlled via the `numbering` field in `meta.yaml`. Available sche
 ## Introduction {.unnumbered}
 ```
 
+## Cross-References
+
+Internal cross-references with page numbers in print, regular links online:
+
+```markdown
+[Linktext](#header-id){.xref}
+```
+
+In print output, this renders as: → Linktext, § 24 A., S. 21 (with actual section and page references). In the online version, it renders as a regular link with an arrow prefix.
+
+For inline-style (bold) cross-references:
+
+```markdown
+[Linktext](#header-id){.xref-inline}
+```
+
+## Index Entries
+
+Mark terms for the index (Stichwortverzeichnis):
+
+```markdown
+[Text]{.idx}
+[Text]{.idx entry="Main!Sub"}
+[Text]{.idx see="Other Term"}
+[Text]{.idx sort="Aesthetik"}
+```
+
+| Attribute | Effect |
+|---|---|
+| (none) | Index entry equals the visible text |
+| `entry` | Custom index entry (supports `!` for sub-entries) |
+| `see` | "see" reference to another term |
+| `sort` | Custom sort key (useful for umlauts) |
+
+The index is auto-generated in both print and online output when `{.idx}` entries exist.
+
+## Glossary
+
+Define glossary entries with a fenced div containing a definition list:
+
+```markdown
+::: {.glossary-entries}
+Term One
+:   Definition of term one.
+
+Term Two
+:   Definition of term two.
+:::
+```
+
+Reference glossary terms inline:
+
+```markdown
+The [Term One]{.gls} is important here.
+```
+
+The glossary is auto-generated in both print and online output when entries exist.
+
+## Backmatter (Auto-Generated)
+
+The following sections are generated automatically by both the online and print pipelines when corresponding entries exist in the content. No separate backmatter files are needed.
+
+| Section | Trigger | Controlled by |
+|---|---|---|
+| Literaturverzeichnis | `@citation_key` references | `meta.yaml` → `backmatter.bibliography` |
+| Rechtsprechungsverzeichnis | References with `type: legal_case` | `meta.yaml` → `backmatter.bibliography: split` |
+| Stichwortverzeichnis | `[]{.idx}` spans | `meta.yaml` → `backmatter.index` |
+| Glossar | `[]{.gls}` spans + `::: {.glossary-entries}` | `meta.yaml` → `backmatter.glossary` |
+| Tabellenverzeichnis | Tables with captions | `meta.yaml` → `backmatter.list-of-tables` |
+| Abbildungsverzeichnis | Images with captions | `meta.yaml` → `backmatter.list-of-figures` |
+
+See [meta.yaml](meta-yaml.md) for configuration options.
+
 ## Pandoc Attributes
 
 Pandoc attributes in curly braces are automatically stripped and not rendered:

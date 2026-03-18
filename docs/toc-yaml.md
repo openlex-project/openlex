@@ -11,14 +11,17 @@ contents:
 
   - file: introduction.md
     title: Introduction to the GDPR
+    doi: "10.1515/9783111234567-001"
 
   - file: prelim-1-4.md
     title: "Preliminary Remarks on Art. 1–4"
     provisions: [1, 2, 3, 4]
+    doi: "10.1515/9783111234567-002"
 
   - file: art-5.md
     title: "Art. 5 – Principles of Processing"
     provisions: [5]
+    doi: "10.1515/9783111234567-003"
 
   - file: excursus-accountability.md
     title: "Excursus: Accountability Principle"
@@ -31,6 +34,7 @@ contents:
 | `file` | string | ✓ | Filename relative to `content/` |
 | `title` | string | ✓ | Display title (for navigation, breadcrumbs) |
 | `provisions` | number[] | | Assigned provision numbers (for cross-links) |
+| `doi` | string | | Chapter-level DOI (without `https://doi.org/` prefix) |
 
 ## Behavior
 
