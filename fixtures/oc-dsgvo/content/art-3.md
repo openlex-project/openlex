@@ -17,7 +17,7 @@ b) das Verhalten betroffener Personen zu beobachten, soweit ihr Verhalten in der
 **(3)** Diese Verordnung findet Anwendung auf die Verarbeitung personenbezogener Daten durch einen nicht in der Union niedergelassenen Verantwortlichen an einem Ort, der aufgrund Völkerrechts dem Recht eines Mitgliedstaats unterliegt.
 :::
 
-## A. Überblick
+## Überblick
 
 []{.rn}
 Art. 3 DSGVO regelt den räumlichen Anwendungsbereich der Verordnung. Die Vorschrift verfolgt einen extraterritorialen Ansatz, der weit über das Territorium der Europäischen Union hinausreicht. Dies ist eine der bedeutsamsten Neuerungen gegenüber der Datenschutzrichtlinie 95/46/EG^[Vgl. @mustermann2024, S. 35.].
@@ -25,7 +25,7 @@ Art. 3 DSGVO regelt den räumlichen Anwendungsbereich der Verordnung. Die Vorsch
 []{.rn}
 Die Vorschrift enthält drei Anknüpfungspunkte: das Niederlassungsprinzip (Abs. 1), das Marktortprinzip (Abs. 2) und die völkerrechtliche Anknüpfung (Abs. 3). In der Praxis hat insbesondere das Marktortprinzip erhebliche Auswirkungen auf Unternehmen außerhalb der EU.
 
-## B. Niederlassungsprinzip (Abs. 1)
+## Niederlassungsprinzip (Abs. 1)
 
 []{.rn}
 Nach Abs. 1 findet die DSGVO Anwendung, wenn die Verarbeitung im Rahmen der Tätigkeiten einer Niederlassung in der Union erfolgt. Der Begriff der Niederlassung ist weit zu verstehen und setzt die effektive und tatsächliche Ausübung einer Tätigkeit mittels einer festen Einrichtung voraus^[@musterfrau2023, S. 47.].
@@ -33,7 +33,7 @@ Nach Abs. 1 findet die DSGVO Anwendung, wenn die Verarbeitung im Rahmen der Tät
 []{.rn}
 Entscheidend ist nicht, wo die Verarbeitung technisch stattfindet, sondern ob sie im Rahmen der Tätigkeiten einer Unionsniederlassung erfolgt. Auch eine Verarbeitung auf Servern in Drittstaaten kann daher der DSGVO unterfallen, wenn sie der Niederlassung in der Union zuzurechnen ist.
 
-## C. Marktortprinzip (Abs. 2)
+## Marktortprinzip (Abs. 2)
 
 []{.rn}
 Das Marktortprinzip des Abs. 2 erstreckt den Anwendungsbereich auf Verantwortliche und Auftragsverarbeiter außerhalb der Union, sofern sie betroffenen Personen in der Union Waren oder Dienstleistungen anbieten (lit. a) oder deren Verhalten beobachten (lit. b).

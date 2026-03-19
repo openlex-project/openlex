@@ -23,7 +23,7 @@ d) durch die zuständigen Behörden zum Zwecke der Verhütung, Ermittlung, Aufde
 **(4)** Die vorliegende Verordnung lässt die Anwendung der Richtlinie 2000/31/EG und speziell deren Artikel 12 bis 15 unberührt.
 :::
 
-## A. Überblick
+## Überblick
 
 []{.rn}
 Art. 2 DSGVO bestimmt den sachlichen Anwendungsbereich der Verordnung. Die Vorschrift folgt einem weiten Ansatz: Erfasst wird grundsätzlich jede ganz oder teilweise automatisierte Verarbeitung personenbezogener Daten (Abs. 1). Abs. 2 enthält einen abschließenden Katalog von Ausnahmen.
@@ -31,7 +31,7 @@ Art. 2 DSGVO bestimmt den sachlichen Anwendungsbereich der Verordnung. Die Vorsc
 []{.rn}
 Die Weite des Anwendungsbereichs ist Ausdruck des umfassenden Schutzanspruchs der Verordnung. In der Praxis führt dies dazu, dass nahezu jede digitale Datenverarbeitung mit Personenbezug der DSGVO unterfällt^[Vgl. @mustermann2024, S. 28 ff.].
 
-## B. Automatisierte Verarbeitung (Abs. 1 Alt. 1)
+## Automatisierte Verarbeitung (Abs. 1 Alt. 1)
 
 []{.rn}
 Die erste Alternative erfasst die ganz oder teilweise automatisierte Verarbeitung. Eine Verarbeitung ist automatisiert, wenn sie unter Einsatz von Datenverarbeitungsanlagen erfolgt. Bereits die teilweise Automatisierung genügt; es ist nicht erforderlich, dass der gesamte Verarbeitungsvorgang maschinell abläuft.
@@ -39,7 +39,7 @@ Die erste Alternative erfasst die ganz oder teilweise automatisierte Verarbeitun
 []{.rn}
 Der Begriff der Automatisierung ist technologieneutral zu verstehen. Er umfasst klassische EDV-Systeme ebenso wie Cloud-Computing, Künstliche Intelligenz und das Internet der Dinge^[@musterfrau2023, S. 46.].
 
-## C. Dateisysteme (Abs. 1 Alt. 2)
+## Dateisysteme (Abs. 1 Alt. 2)
 
 []{.rn}
 Die zweite Alternative erstreckt den Anwendungsbereich auf die nichtautomatisierte Verarbeitung, sofern die Daten in einem Dateisystem gespeichert sind oder gespeichert werden sollen. Der Begriff des Dateisystems ist in Art. 4 Nr. 6 DSGVO legaldefiniert.
@@ -47,7 +47,7 @@ Die zweite Alternative erstreckt den Anwendungsbereich auf die nichtautomatisier
 []{.rn}
 Durch diese Erweiterung werden auch strukturierte Papierakten erfasst, soweit sie nach bestimmten Kriterien geordnet sind. Lose Zettelsammlungen ohne erkennbare Struktur fallen hingegen nicht unter die Verordnung^[Vgl. @mustermann2024, S. 33.].
 
-## D. Ausnahmen (Abs. 2)
+## Ausnahmen (Abs. 2)
 
 []{.rn}
 Abs. 2 enthält vier Ausnahmetatbestände, die eng auszulegen sind. Von besonderer praktischer Bedeutung ist die sog. Haushaltsausnahme (lit. c), die Verarbeitungen zur Ausübung ausschließlich persönlicher oder familiärer Tätigkeiten vom Anwendungsbereich ausnimmt.
