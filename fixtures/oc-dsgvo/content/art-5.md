@@ -1,8 +1,5 @@
 # Art. 5 – Grundsätze für die Verarbeitung personenbezogener Daten
 
-::: author
-Max Mustermann
-:::
 
 ## Überblick
 

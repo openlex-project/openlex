@@ -1,8 +1,5 @@
 # Art. 1 – Gegenstand und Ziele
 
-::: author
-Max Mustermann
-:::
 
 ::: note
 **(1)** Diese Verordnung enthält Vorschriften zum Schutz natürlicher Personen bei der Verarbeitung personenbezogener Daten und zum freien Verkehr solcher Daten.

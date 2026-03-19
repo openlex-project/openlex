@@ -1,8 +1,5 @@
 # Art. 3 – Räumlicher Anwendungsbereich
 
-::: author
-Max Mustermann
-:::
 
 ::: note
 **(1)** Diese Verordnung findet Anwendung auf die Verarbeitung personenbezogener Daten, soweit diese im Rahmen der Tätigkeiten einer Niederlassung eines Verantwortlichen oder eines Auftragsverarbeiters in der Union erfolgt, unabhängig davon, ob die Verarbeitung in der Union stattfindet.

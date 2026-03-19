@@ -21,6 +21,8 @@ export interface RenderOptions {
   numbering?: NumberingOptions;
   cslXml?: string;
   referencesYaml?: string;
+  tocAuthor?: string | { name: string; orcid: string };
+  editors?: { name: string; orcid: string }[];
 }
 
 function buildProcessor(opts?: RenderOptions) {
@@ -28,7 +30,7 @@ function buildProcessor(opts?: RenderOptions) {
   let p = (unified() as any)
     .use(remarkParse)
     .use(remarkDirective)
-    .use(remarkAuthor)
+    .use(remarkAuthor, { tocAuthor: opts?.tocAuthor, editors: opts?.editors })
     .use(remarkDirectiveHandlers)
     .use(remarkMarginNumbers);
 

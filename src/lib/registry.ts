@@ -5,6 +5,7 @@ export interface TocEntry {
   file: string;
   title: string;
   provisions?: number[];
+  author?: string | { name: string; orcid: string };
 }
 
 export interface BookMeta {

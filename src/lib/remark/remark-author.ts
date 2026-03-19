@@ -1,11 +1,17 @@
 /**
- * remark plugin: transforms ::: author directive content into structured HTML.
- * Input:  :::author\nname: Max Mustermann\norcid: 0000-0000-0000-0000\n:::
- * Output: <aside class="directive-author"><a href="https://orcid.org/...">Name</a></aside>
+ * remark plugin: resolves author for each chapter/section.
+ * Priority: 1. ::: author in content (override)  2. toc.yaml author  3. none
+ * ORCID registry: built from toc.yaml author objects + meta.yaml editors.
  */
 import type { Root } from "mdast";
 import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
+
+interface AuthorObj { name: string; orcid: string }
+interface AuthorOptions {
+  tocAuthor?: string | AuthorObj;
+  editors?: AuthorObj[];
+}
 
 interface DirectiveNode {
   type: string;
@@ -14,15 +20,39 @@ interface DirectiveNode {
   data?: Record<string, unknown>;
 }
 
-const remarkAuthor: Plugin<[], Root> = () => {
+const remarkAuthor: Plugin<[AuthorOptions?], Root> = (opts) => {
   const orcidRegistry = new Map<string, string>();
 
+  // Build ORCID registry from editors
+  if (opts?.editors) {
+    for (const e of opts.editors) {
+      if (e.orcid) orcidRegistry.set(e.name, e.orcid);
+    }
+  }
+  // From toc author (long form)
+  if (opts?.tocAuthor && typeof opts.tocAuthor === "object") {
+    orcidRegistry.set(opts.tocAuthor.name, opts.tocAuthor.orcid);
+  }
+
+  // Resolve toc author name
+  const tocName = opts?.tocAuthor
+    ? typeof opts.tocAuthor === "string" ? opts.tocAuthor : opts.tocAuthor.name
+    : undefined;
+
   return (tree) => {
+    let hasInlineAuthor = false;
+
+    // First pass: check if ::: author exists (override)
+    visit(tree, "containerDirective", (node) => {
+      const n = node as unknown as DirectiveNode;
+      if (n.name === "author") hasInlineAuthor = true;
+    });
+
+    // Process ::: author directives
     visit(tree, "containerDirective", (node) => {
       const n = node as unknown as DirectiveNode;
       if (n.name !== "author") return;
 
-      // Extract text from children (paragraphs contain "name: ...\norcid: ...")
       const text = n.children
         .flatMap((c) =>
           c.type === "paragraph" && c.children
@@ -31,8 +61,6 @@ const remarkAuthor: Plugin<[], Root> = () => {
         )
         .join("\n");
 
-      // Support "name: X\norcid: Y" and plain "X" formats
-      // ORCID registry: once set, remembered for plain name uses
       const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
       let name = "Unbekannt";
       let orcid: string | undefined;
@@ -44,7 +72,6 @@ const remarkAuthor: Plugin<[], Root> = () => {
         else if (name === "Unbekannt") name = line;
       }
 
-      // Store/lookup ORCID in registry
       if (orcid) orcidRegistry.set(name, orcid);
       else orcid = orcidRegistry.get(name);
 
@@ -52,9 +79,23 @@ const remarkAuthor: Plugin<[], Root> = () => {
         ? `<a href="https://orcid.org/${orcid}" target="_blank" rel="noopener" class="author-link">${name}</a>`
         : name;
 
-      // Replace children with rendered HTML
       n.children = [{ type: "html" as const, value: nameHtml }] as DirectiveNode["children"];
     });
+
+    // If no ::: author but toc.yaml has author, inject it after first heading
+    if (!hasInlineAuthor && tocName) {
+      const orcid = orcidRegistry.get(tocName);
+      const nameHtml = orcid
+        ? `<aside class="directive-author"><a href="https://orcid.org/${orcid}" target="_blank" rel="noopener" class="author-link">${tocName}</a></aside>`
+        : `<aside class="directive-author">${tocName}</aside>`;
+
+      visit(tree, "heading", (_node, index, parent) => {
+        if (index !== undefined && parent) {
+          parent.children.splice(index + 1, 0, { type: "html", value: nameHtml } as never);
+          return false; // stop after first heading
+        }
+      });
+    }
   };
 };
 

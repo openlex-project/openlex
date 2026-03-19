@@ -1,8 +1,5 @@
 # Art. 4 – Begriffsbestimmungen
 
-::: author
-Erika Musterfrau
-:::
 
 ::: note
 Im Sinne dieser Verordnung bezeichnet der Ausdruck:

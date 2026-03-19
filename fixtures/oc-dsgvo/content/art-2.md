@@ -1,9 +1,5 @@
 # Art. 2 – Sachlicher Anwendungsbereich
 
-::: author
-name: Erika Musterfrau
-orcid: 0000-0000-0000-0001
-:::
 
 ::: note
 **(1)** Diese Verordnung gilt für die ganz oder teilweise automatisierte Verarbeitung personenbezogener Daten sowie für die nichtautomatisierte Verarbeitung personenbezogener Daten, die in einem Dateisystem gespeichert sind oder gespeichert werden sollen.

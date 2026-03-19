@@ -34,7 +34,30 @@ contents:
 | `file` | string | ✓ | Filename relative to `content/` |
 | `title` | string | ✓ | Display title (for navigation, breadcrumbs) |
 | `provisions` | number[] | | Assigned provision numbers (for cross-links) |
+| `author` | string \| object | | Chapter author (see below) |
 | `doi` | string | | Chapter-level DOI (without `https://doi.org/` prefix) |
+
+## Author Field
+
+The `author` field assigns an author to a chapter. Two forms:
+
+```yaml
+# Short form (name only, ORCID looked up from editors or other entries)
+- file: art-1.md
+  title: "Art. 1"
+  author: Max Mustermann
+
+# Long form (name + ORCID)
+- file: art-2.md
+  title: "Art. 2"
+  author:
+    name: Erika Musterfrau
+    orcid: "0000-0000-0000-0001"
+```
+
+ORCID is resolved from: 1. long-form `author` entries in toc.yaml, 2. `editors` in meta.yaml. Once set for a name, it applies everywhere.
+
+A `::: author` block in the content file overrides the toc.yaml assignment.
 
 ## Behavior
 

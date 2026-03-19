@@ -37,16 +37,20 @@ Locators (page references) are separated from the key by a comma. A bibliography
 
 ## Author Block
 
-The author block is placed as a fenced div at the beginning of the document:
+Authors are assigned in `toc.yaml` (see [toc.yaml](toc-yaml.md)). A `::: author` block in the content file overrides the toc.yaml assignment:
 
 ```markdown
 ::: author
 Max Mustermann
-0000-0001-2345-6789
+:::
+
+::: author
+name: Erika Musterfrau
+orcid: 0000-0000-0000-0001
 :::
 ```
 
-Line 1: Name, Line 2: ORCID (optional). Only supported after `#` and `##` headings. No inheritance — each chapter/section needs its own block.
+Only supported after `#` and `##` headings. No inheritance — each chapter/section needs its own assignment.
 
 ## Fenced Divs (Directives)
 

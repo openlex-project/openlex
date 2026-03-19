@@ -37,6 +37,8 @@ export default async function BookPage({ params }: Props) {
   const html = await renderMarkdown(markdown, {
     numbering: { schema: meta.numbering },
     ...(cslXml && referencesYaml ? { cslXml, referencesYaml } : {}),
+    tocAuthor: tocEntry?.author,
+    editors: meta.editors,
   });
 
   const displayName = meta.title_short ?? meta.title;

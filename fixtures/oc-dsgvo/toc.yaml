@@ -4,24 +4,34 @@ contents:
 
   - file: vorbem-1-4.md
     title: "Vorbemerkungen zu Art. 1–4"
+    author:
+      name: Max Mustermann
+      orcid: "0000-0000-0000-0000"
     provisions: [1, 2, 3, 4]
 
   - file: art-1.md
     title: "Art. 1 – Gegenstand und Ziele"
+    author: Max Mustermann
     provisions: [1]
 
   - file: art-2.md
     title: "Art. 2 – Sachlicher Anwendungsbereich"
+    author:
+      name: Erika Musterfrau
+      orcid: "0000-0000-0000-0001"
     provisions: [2]
 
   - file: art-3.md
     title: "Art. 3 – Räumlicher Anwendungsbereich"
+    author: Max Mustermann
     provisions: [3]
 
   - file: art-4.md
     title: "Art. 4 – Begriffsbestimmungen"
+    author: Erika Musterfrau
     provisions: [4]
 
   - file: art-5.md
     title: "Art. 5 – Grundsätze für die Verarbeitung personenbezogener Daten"
+    author: Max Mustermann
     provisions: [5]
