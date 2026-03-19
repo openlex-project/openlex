@@ -46,7 +46,7 @@ Max Mustermann
 :::
 ```
 
-Line 1: Name, Line 2: ORCID (optional). The name is rendered as a link to orcid.org.
+Line 1: Name, Line 2: ORCID (optional). Only supported after `#` and `##` headings. No inheritance — each chapter/section needs its own block.
 
 ## Fenced Divs (Directives)
 
