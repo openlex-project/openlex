@@ -29,11 +29,18 @@ const remarkAuthor: Plugin<[], Root> = () => {
         )
         .join("\n");
 
-      const nameMatch = text.match(/name:\s*(.+)/);
-      const orcidMatch = text.match(/orcid:\s*(\S+)/);
+      // Support both "name: X\norcid: Y" and plain "X\nY" formats
+      const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+      let name = "Unbekannt";
+      let orcid: string | undefined;
 
-      const name = nameMatch?.[1]?.trim() ?? "Unbekannt";
-      const orcid = orcidMatch?.[1]?.trim();
+      for (const line of lines) {
+        const kv = line.match(/^(\w+):\s*(.+)$/);
+        if (kv?.[1] === "name" && kv[2]) name = kv[2].trim();
+        else if (kv?.[1] === "orcid" && kv[2]) orcid = kv[2].trim();
+        else if (name === "Unbekannt") name = line;
+        else if (!orcid && /^\d{4}-/.test(line)) orcid = line;
+      }
 
       const nameHtml = orcid
         ? `<a href="https://orcid.org/${orcid}" target="_blank" rel="noopener" class="author-link">${name}</a>`
