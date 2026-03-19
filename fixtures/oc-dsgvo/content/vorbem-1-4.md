@@ -1,8 +1,8 @@
 # Vorbemerkungen zu Art. 1–4 DSGVO
 
 ::: author
-Max Mustermann
-0000-0000-0000-0000
+name: Max Mustermann
+orcid: 0000-0000-0000-0000
 :::
 
 ## Regelungsgegenstand und Systematik

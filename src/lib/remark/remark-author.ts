@@ -15,6 +15,8 @@ interface DirectiveNode {
 }
 
 const remarkAuthor: Plugin<[], Root> = () => {
+  const orcidRegistry = new Map<string, string>();
+
   return (tree) => {
     visit(tree, "containerDirective", (node) => {
       const n = node as unknown as DirectiveNode;
@@ -29,7 +31,8 @@ const remarkAuthor: Plugin<[], Root> = () => {
         )
         .join("\n");
 
-      // Support both "name: X\norcid: Y" and plain "X\nY" formats
+      // Support "name: X\norcid: Y" and plain "X" formats
+      // ORCID registry: once set, remembered for plain name uses
       const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
       let name = "Unbekannt";
       let orcid: string | undefined;
@@ -39,8 +42,11 @@ const remarkAuthor: Plugin<[], Root> = () => {
         if (kv?.[1] === "name" && kv[2]) name = kv[2].trim();
         else if (kv?.[1] === "orcid" && kv[2]) orcid = kv[2].trim();
         else if (name === "Unbekannt") name = line;
-        else if (!orcid && /^\d{4}-/.test(line)) orcid = line;
       }
+
+      // Store/lookup ORCID in registry
+      if (orcid) orcidRegistry.set(name, orcid);
+      else orcid = orcidRegistry.get(name);
 
       const nameHtml = orcid
         ? `<a href="https://orcid.org/${orcid}" target="_blank" rel="noopener" class="author-link">${name}</a>`

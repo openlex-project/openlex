@@ -2,7 +2,6 @@
 
 ::: author
 Max Mustermann
-0000-0000-0000-0000
 :::
 
 ## Überblick
