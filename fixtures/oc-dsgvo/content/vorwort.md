@@ -1,9 +1,5 @@
 # Vorwort
 
-::: author
-Max Mustermann
-0000-0000-0000-0000
-:::
 
 []{.rn}
 Der vorliegende OpenCommentary zur Datenschutz-Grundverordnung versteht sich als frei zugängliches, wissenschaftliches Kommentarwerk. Er richtet sich an Praktikerinnen und Praktiker des Datenschutzrechts ebenso wie an Studierende und Forschende.
