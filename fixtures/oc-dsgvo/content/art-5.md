@@ -1,8 +1,8 @@
 # Art. 5 – Grundsätze für die Verarbeitung personenbezogener Daten
 
 ::: author
-name: Max Mustermann
-orcid: 0000-0000-0000-0000
+Max Mustermann
+0000-0000-0000-0000
 :::
 
 ## Überblick
