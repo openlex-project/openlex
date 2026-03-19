@@ -68,7 +68,20 @@ function applyFormat(template: string, counter: number): string {
 
 const SCHEMAS: Record<string, { format: Record<string, string>; reset: Record<string, boolean> }> = {
   none: { format: {}, reset: {} },
-  commentary: { format: {}, reset: {} },
+  commentary: {
+    format: {
+      "##": "{A}.",
+      "###": "{I}.",
+      "####": "{1}.",
+      "#####": "{a})",
+    },
+    reset: {
+      "##": true,
+      "###": true,
+      "####": true,
+      "#####": true,
+    },
+  },
   textbook: {
     format: {
       "#": "Teil {1}:",
