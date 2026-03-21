@@ -366,12 +366,12 @@ zfkir/
   references.yaml        # Optional: Bibliographie
   2026/
     01/                  # Heft 1
-      meta.yaml          # Artikelliste mit Metadaten
+      issue.yaml          # Artikelliste mit Metadaten
       mustermann-ki-haftung.md   # Pures Markdown, kein Frontmatter
       schmidt-algorithmen.md
 ```
 
-**Kein `toc.yaml`, kein Frontmatter** — Metadaten in per-issue `meta.yaml`:
+**Kein `toc.yaml`, kein Frontmatter** — Metadaten in per-issue `issue.yaml`:
 ```yaml
 articles:
   - file: mustermann-ki-haftung.md

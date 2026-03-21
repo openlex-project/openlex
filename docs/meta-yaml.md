@@ -82,14 +82,14 @@ No configuration needed — sections appear in both online sidebar and print PDF
 
 ## Journal-Specific
 
-Journals use `type: "journal"` and do **not** use `toc.yaml`. Structure is defined by per-issue `meta.yaml` files:
+Journals use `type: "journal"` and do **not** use `toc.yaml`. Structure is defined by per-issue `issue.yaml` files:
 
 ```
 zfkir/
   meta.yaml              # type: "journal", doi_prefix
   2026/
     01/
-      meta.yaml          # Article list with metadata
+      issue.yaml          # Article list with metadata
       mustermann-ki.md   # Pure markdown, no frontmatter
 ```
 
@@ -138,4 +138,4 @@ articles:
 | `numbering` | string | | Heading numbering schema (commentary, textbook, decimal, none) |
 | `doi` | string | | Explicit DOI override (otherwise derived from `doi_prefix`) |
 
-Discovery: directories matching `YYYY/` are years, subdirectories are issues, each must contain a `meta.yaml`.
+Discovery: directories matching `YYYY/` are years, subdirectories are issues, each must contain an `issue.yaml`.

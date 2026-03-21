@@ -96,7 +96,7 @@ async function discoverJournal(repo: string, doiPrefix?: string): Promise<Journa
   for (const year of years) {
     const nums = (await listDirs(repo, year)).sort().reverse();
     for (const issueNr of nums) {
-      const raw = await fetchFile(repo, `${year}/${issueNr}/meta.yaml`);
+      const raw = await fetchFile(repo, `${year}/${issueNr}/issue.yaml`);
       if (!raw) continue;
       const issueMeta = parse(raw) as { articles: { file: string; title: string; authors: { name: string; orcid?: string }[]; rubrik: string; pages?: string; numbering?: string; doi?: string }[] };
       if (!issueMeta.articles?.length) continue;
