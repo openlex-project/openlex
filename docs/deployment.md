@@ -56,10 +56,10 @@ OpenLex is deployed on Vercel and fetches content from private GitHub repos.
 ## Build Process
 
 ```
-next build → postbuild (generate Pagefind index) → deploy
+build-search-index → next build → deploy
 ```
 
-The Pagefind search index is generated from the content repos on every build. `GITHUB_PAT` and `CONTENT_REPOS` must be available at build time.
+The Pagefind search index is generated *before* `next build` so the static files are available in `public/pagefind/`. `GITHUB_PAT` and `CONTENT_REPOS` must be available at build time. The index covers books, laws, and journals.
 
 ## Revalidation
 

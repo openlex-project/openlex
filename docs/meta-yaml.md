@@ -38,11 +38,12 @@ bibliography: "references.yaml"     # Path to references file in repo
 | `title_short` | string | | Short title for navigation |
 | `subtitle` | string | | Subtitle (print title page) |
 | `isbn` | string | | ISBN (print impressum) |
+| `issn` | string | | ISSN (journals only) |
 | `edition` | string | | Edition string (print title page) |
 | `copyrightyear` | string | | Copyright year (print impressum, defaults to current year) |
 | `lang` | string | ✓ | Language (ISO 639-1) |
 | `license` | string | ✓ | License identifier |
-| `numbering` | string | ✓ | Numbering schema |
+| `numbering` | string | books only | Numbering schema |
 | `comments_on` | string | | Slug of the commented law |
 | `csl` | string | | Path to CSL file |
 | `bibliography` | string | | Path to `references.yaml` |
@@ -78,3 +79,35 @@ No configuration needed — sections appear in both online sidebar and print PDF
 - `title_short` is preferred in navigation. Falls back to `title`.
 - `comments_on` links a commentary to a law. The value must match a law's `slug` in `sync.yaml`.
 - `csl` and `bibliography` paths are relative to the repo root.
+
+## Journal-Specific
+
+Journals use `type: "journal"` and do **not** use `toc.yaml`. Structure is derived from the filesystem:
+
+```
+zfkir/
+  meta.yaml              # type: "journal"
+  2026/
+    01/                  # Issue (Heft)
+      mustermann-ki.md   # Article with frontmatter
+```
+
+Each article has YAML frontmatter:
+
+```yaml
+---
+title: "Haftung für KI-generierte Inhalte"
+author: "Prof. Dr. Max Mustermann"
+rubrik: "Aufsätze"
+pages: "1-12"
+---
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `title` | ✓ | Article title |
+| `author` | ✓ | Author name |
+| `rubrik` | ✓ | Section grouping (Aufsätze, Rechtsprechung, etc.) |
+| `pages` | | Page range, enables citation redirect (`/journal/zfkir/2026/5` → article containing page 5) |
+
+Discovery: directories matching `YYYY/` are years, subdirectories are issues, `.md` files are articles.

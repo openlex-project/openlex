@@ -1,6 +1,8 @@
 # toc.yaml
 
-The `toc.yaml` file is located in the root directory of a book/journal content repo and defines the structure and order of contents. It is the single source of truth (SSOT) for both the online and print pipelines.
+The `toc.yaml` file is located in the root directory of a book content repo and defines the structure and order of contents. It is the single source of truth (SSOT) for both the online and print pipelines.
+
+> **Note:** Journals do not use `toc.yaml`. Their structure is derived from the filesystem (see [meta-yaml.md](meta-yaml.md#journal-specific)).
 
 ## Schema
 
