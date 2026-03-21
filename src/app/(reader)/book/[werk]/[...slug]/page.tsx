@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { buildRegistry, getBookContent, findTocEntry, findTocNeighbors } from "@/lib/registry";
+import { buildRegistry, getBookContent, findTocEntry, findTocNeighbors, extractHeadings } from "@/lib/registry";
 import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
 import { FeedbackButton } from "@/components/feedback-button";
@@ -36,6 +36,8 @@ export default async function BookPage({ params }: Props) {
   ]);
   if (!markdown) notFound();
 
+  const headings = extractHeadings(markdown);
+
   const html = await renderMarkdown(markdown, {
     numbering: { schema: meta.numbering },
     ...(cslXml && referencesYaml ? { cslXml, referencesYaml } : {}),
@@ -65,7 +67,7 @@ export default async function BookPage({ params }: Props) {
 
   return (
     <div className="flex">
-      <BookSidebar werk={werk} toc={meta.toc} edition={ref} />
+      <BookSidebar werk={werk} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
         {navBar("top")}
         <div className="mb-6 text-sm text-gray-500">

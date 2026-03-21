@@ -2,9 +2,17 @@
 
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import type { TocEntry } from "@/lib/registry";
+import type { TocEntry, Heading } from "@/lib/registry";
 
-export function BookSidebar({ werk, toc, edition }: { werk: string; toc: TocEntry[]; edition: string }) {
+interface Props {
+  werk: string;
+  toc: TocEntry[];
+  edition: string;
+  activeSlug?: string;
+  headings?: Heading[];
+}
+
+export function BookSidebar({ werk, toc, edition, activeSlug, headings = [] }: Props) {
   const pathname = usePathname();
   const prefix = edition === "main" ? `/book/${werk}` : `/book/${werk}/${edition}`;
   const [open, setOpen] = useState(true);
@@ -21,9 +29,50 @@ export function BookSidebar({ werk, toc, edition }: { werk: string; toc: TocEntr
     });
   };
 
+  const renderEntry = (entry: TocEntry, depth = 0) => {
+    const slug = entry.file.replace(/\.md$/, "");
+    const href = `${prefix}/${slug}`;
+    const active = pathname === href;
+
+    return (
+      <li key={slug}>
+        <a
+          href={href}
+          className={`block py-1.5 truncate transition-colors ${
+            active
+              ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30"
+              : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+          }`}
+          style={{ paddingLeft: `${1 + depth * 0.75}rem`, paddingRight: "1rem" }}
+        >
+          {entry.title}
+        </a>
+        {/* Children from toc.yaml */}
+        {entry.children && entry.children.length > 0 && (
+          <ul>{entry.children.map((c) => renderEntry(c, depth + 1))}</ul>
+        )}
+        {/* In-document headings for active entry */}
+        {active && headings.length > 0 && (
+          <ul className="text-xs text-gray-500 dark:text-gray-400">
+            {headings.map((h) => (
+              <li key={h.id}>
+                <a
+                  href={`#${h.id}`}
+                  className="block py-1 truncate hover:text-blue-600 dark:hover:text-blue-400"
+                  style={{ paddingLeft: `${1 + (h.level - 1) * 0.75}rem`, paddingRight: "1rem" }}
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </li>
+    );
+  };
+
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
         <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={toggle} />
       )}
@@ -37,7 +86,6 @@ export function BookSidebar({ werk, toc, edition }: { werk: string; toc: TocEntr
           ${open ? "w-64 translate-x-0" : "w-0 -translate-x-full lg:w-10 lg:translate-x-0"}
         `}
       >
-        {/* Toggle */}
         <button
           onClick={toggle}
           className="hidden lg:flex items-center justify-center h-10 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -47,32 +95,12 @@ export function BookSidebar({ werk, toc, edition }: { werk: string; toc: TocEntr
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        {/* TOC list */}
         <nav className={`overflow-y-auto flex-1 ${open ? "opacity-100" : "opacity-0 lg:hidden"}`}>
           <ul className="py-2 text-sm">
-            {toc.map((entry) => {
-              const slug = entry.file.replace(/\.md$/, "");
-              const href = `${prefix}/${slug}`;
-              const active = pathname === href;
-              return (
-                <li key={slug}>
-                  <a
-                    href={href}
-                    className={`block px-4 py-1.5 truncate transition-colors ${
-                      active
-                        ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30"
-                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                    }`}
-                  >
-                    {entry.title}
-                  </a>
-                </li>
-              );
-            })}
+            {toc.map((entry) => renderEntry(entry))}
           </ul>
         </nav>
       </aside>
-      {/* Mobile toggle */}
       {!open && (
         <button
           onClick={toggle}

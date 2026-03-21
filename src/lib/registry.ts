@@ -6,6 +6,13 @@ export interface TocEntry {
   title: string;
   provisions?: number[];
   author?: string | { name: string; orcid: string };
+  children?: TocEntry[];
+}
+
+export interface Heading {
+  level: number;
+  text: string;
+  id: string;
 }
 
 export interface BookMeta {
@@ -103,13 +110,42 @@ export async function buildRegistry(): Promise<ContentRegistry> {
 
 /** Find a toc entry by slug (filename without .md) */
 export function findTocEntry(toc: TocEntry[], slug: string): TocEntry | undefined {
-  return toc.find((e) => e.file.replace(/\.md$/, "") === slug);
+  for (const e of toc) {
+    if (e.file.replace(/\.md$/, "") === slug) return e;
+    if (e.children) {
+      const found = findTocEntry(e.children, slug);
+      if (found) return found;
+    }
+  }
+  return undefined;
 }
 
 export function findTocNeighbors(toc: TocEntry[], slug: string): { prev?: TocEntry; next?: TocEntry } {
-  const idx = toc.findIndex((e) => e.file.replace(/\.md$/, "") === slug);
+  const flat = flattenToc(toc);
+  const idx = flat.findIndex((e) => e.file.replace(/\.md$/, "") === slug);
   if (idx < 0) return {};
-  return { prev: toc[idx - 1], next: toc[idx + 1] };
+  return { prev: flat[idx - 1], next: flat[idx + 1] };
+}
+
+/** Flatten nested toc for prev/next navigation */
+function flattenToc(toc: TocEntry[]): TocEntry[] {
+  const result: TocEntry[] = [];
+  for (const e of toc) {
+    result.push(e);
+    if (e.children) result.push(...flattenToc(e.children));
+  }
+  return result;
+}
+
+/** Extract ## and ### headings from markdown for sub-navigation */
+export function extractHeadings(markdown: string): Heading[] {
+  const headings: Heading[] = [];
+  for (const match of markdown.matchAll(/^(#{2,3})\s+(.+)$/gm)) {
+    const text = match[2]!.replace(/\{[^}]*\}/g, "").trim();
+    const id = text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
+    headings.push({ level: match[1]!.length, text, id });
+  }
+  return headings;
 }
 
 /** Find toc entries that cover a given provision number */
