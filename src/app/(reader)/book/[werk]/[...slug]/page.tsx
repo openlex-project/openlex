@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { buildRegistry, getBookContent, findTocEntry } from "@/lib/registry";
+import { buildRegistry, getBookContent, findTocEntry, findTocNeighbors } from "@/lib/registry";
 import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
 import { FeedbackButton } from "@/components/feedback-button";
@@ -26,6 +26,7 @@ export default async function BookPage({ params }: Props) {
   if (!meta) notFound();
 
   const tocEntry = findTocEntry(meta.toc, fileSlug);
+  const { prev, next } = findTocNeighbors(meta.toc, fileSlug);
 
   const [markdown, cslXml, referencesYaml] = await Promise.all([
     getBookContent(meta.repo, fileSlug, ref),
@@ -44,6 +45,9 @@ export default async function BookPage({ params }: Props) {
   const displayName = meta.title_short ?? meta.title;
   const edition = ref === "main" ? null : ref.replace("ed", ". Auflage");
 
+  const slugPrefix = ref === "main" ? `/book/${werk}` : `/book/${werk}/${ref}`;
+  const toHref = (entry: typeof prev) => entry ? `${slugPrefix}/${entry.file.replace(/\.md$/, "")}` : null;
+
   return (
     <article className="max-w-prose mx-auto px-6 py-8">
       <div className="mb-6 text-sm text-gray-500">
@@ -57,6 +61,18 @@ export default async function BookPage({ params }: Props) {
         className="prose prose-gray prose-rn dark:prose-invert max-w-none"
         dangerouslySetInnerHTML={{ __html: html }}
       />
+      <nav className="mt-12 flex justify-between border-t border-gray-200 dark:border-gray-700 pt-6 text-sm">
+        {prev ? (
+          <a href={toHref(prev)!} className="text-blue-600 hover:underline dark:text-blue-400">
+            ← {prev.title}
+          </a>
+        ) : <span />}
+        {next ? (
+          <a href={toHref(next)!} className="text-blue-600 hover:underline dark:text-blue-400 text-right">
+            {next.title} →
+          </a>
+        ) : <span />}
+      </nav>
       <FeedbackButton repo={meta.repo} />
     </article>
   );

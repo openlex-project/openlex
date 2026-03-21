@@ -106,6 +106,12 @@ export function findTocEntry(toc: TocEntry[], slug: string): TocEntry | undefine
   return toc.find((e) => e.file.replace(/\.md$/, "") === slug);
 }
 
+export function findTocNeighbors(toc: TocEntry[], slug: string): { prev?: TocEntry; next?: TocEntry } {
+  const idx = toc.findIndex((e) => e.file.replace(/\.md$/, "") === slug);
+  if (idx < 0) return {};
+  return { prev: toc[idx - 1], next: toc[idx + 1] };
+}
+
 /** Find toc entries that cover a given provision number */
 export function findByProvision(toc: TocEntry[], provision: number): TocEntry[] {
   return toc.filter((e) => e.provisions?.includes(provision));
