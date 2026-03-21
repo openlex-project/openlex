@@ -3,6 +3,7 @@ import { buildRegistry, getBookContent, findTocEntry, findTocNeighbors } from "@
 import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
 import { FeedbackButton } from "@/components/feedback-button";
+import { BookSidebar } from "@/components/book-sidebar";
 
 interface Props {
   params: Promise<{ werk: string; slug: string[] }>;
@@ -49,31 +50,34 @@ export default async function BookPage({ params }: Props) {
   const toHref = (entry: typeof prev) => entry ? `${slugPrefix}/${entry.file.replace(/\.md$/, "")}` : null;
 
   return (
-    <article className="max-w-prose mx-auto px-6 py-8">
-      <div className="mb-6 text-sm text-gray-500">
-        {displayName} – {tocEntry?.title ?? fileSlug}
-        {edition && <span className="ml-2 text-amber-600 dark:text-amber-400">({edition})</span>}
-        {meta.comments_on && tocEntry?.provisions?.[0] && (
-          <> · <a href={`/law/${meta.comments_on}/${tocEntry.provisions[0]}`} className="text-blue-600 hover:underline">Gesetzestext →</a></>
-        )}
-      </div>
-      <div
-        className="prose prose-gray prose-rn dark:prose-invert max-w-none"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-      <nav className="mt-12 flex justify-between border-t border-gray-200 dark:border-gray-700 pt-6 text-sm">
-        {prev ? (
-          <a href={toHref(prev)!} className="text-blue-600 hover:underline dark:text-blue-400">
-            ← {prev.title}
-          </a>
-        ) : <span />}
-        {next ? (
-          <a href={toHref(next)!} className="text-blue-600 hover:underline dark:text-blue-400 text-right">
-            {next.title} →
-          </a>
-        ) : <span />}
-      </nav>
-      <FeedbackButton repo={meta.repo} />
-    </article>
+    <div className="flex">
+      <BookSidebar werk={werk} toc={meta.toc} ref={ref} />
+      <article className="max-w-prose mx-auto px-6 py-8 min-w-0">
+        <div className="mb-6 text-sm text-gray-500">
+          {displayName} – {tocEntry?.title ?? fileSlug}
+          {edition && <span className="ml-2 text-amber-600 dark:text-amber-400">({edition})</span>}
+          {meta.comments_on && tocEntry?.provisions?.[0] && (
+            <> · <a href={`/law/${meta.comments_on}/${tocEntry.provisions[0]}`} className="text-blue-600 hover:underline">Gesetzestext →</a></>
+          )}
+        </div>
+        <div
+          className="prose prose-gray prose-rn dark:prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+        <nav className="mt-12 flex justify-between border-t border-gray-200 dark:border-gray-700 pt-6 text-sm">
+          {prev ? (
+            <a href={toHref(prev)!} className="text-blue-600 hover:underline dark:text-blue-400">
+              ← {prev.title}
+            </a>
+          ) : <span />}
+          {next ? (
+            <a href={toHref(next)!} className="text-blue-600 hover:underline dark:text-blue-400 text-right">
+              {next.title} →
+            </a>
+          ) : <span />}
+        </nav>
+        <FeedbackButton repo={meta.repo} />
+      </article>
+    </div>
   );
 }
