@@ -12,6 +12,7 @@ const CITE_RE = /@([a-zA-Z0-9_-]+)(?:,\s*([^@\]]+?)\.?(?=\]|@|$))?/g;
 
 export interface CitationPluginOptions {
   engine: CitationEngine;
+  suppressBibliography?: boolean;
 }
 
 function resolveCitations(text: string, engine: CitationEngine): string {
@@ -43,12 +44,14 @@ const remarkCitations: Plugin<[CitationPluginOptions], Root> = (opts) => {
     walk(tree as unknown as { type: string; children: unknown[] });
 
     // Append bibliography
-    const bib = engine.bibliography();
-    if (bib) {
-      tree.children.push({
-        type: "html",
-        value: `<section class="bibliography"><h2>Literaturverzeichnis</h2>${bib}</section>`,
-      });
+    if (!opts.suppressBibliography) {
+      const bib = engine.bibliography();
+      if (bib) {
+        tree.children.push({
+          type: "html",
+          value: `<section class="bibliography"><h2>Literaturverzeichnis</h2>${bib}</section>`,
+        });
+      }
     }
   };
 };

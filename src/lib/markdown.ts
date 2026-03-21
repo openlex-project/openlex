@@ -38,7 +38,7 @@ function buildProcessor(opts?: RenderOptions) {
   if (opts?.cslXml && opts?.referencesYaml) {
     const refs = parseReferencesYaml(opts.referencesYaml);
     const engine = createCitationEngine(opts.cslXml, refs);
-    p = p.use(remarkCitations, { engine });
+    p = p.use(remarkCitations, { engine, suppressBibliography: true });
   }
 
   p = p.use(remarkInlineFootnotes);

@@ -135,3 +135,27 @@
     background-color: color-mix(in srgb, var(--color-purple-900) 30%, transparent);
   }
 }
+
+/* Footnote hover tooltip */
+.fn-tooltip {
+  display: none;
+  position: absolute;
+  z-index: 50;
+  max-width: 360px;
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  pointer-events: auto;
+}
+.dark .fn-tooltip {
+  background: #1f2937;
+  border-color: #374151;
+  color: #d1d5db;
+}
+.fn-tooltip p { margin: 0.25em 0; }
+.fn-tooltip p:first-child { margin-top: 0; }
+.fn-tooltip p:last-child { margin-bottom: 0; }

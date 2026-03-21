@@ -4,15 +4,21 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import type { TocEntry, Heading } from "@/lib/registry";
 
+export interface BackmatterSection {
+  id: string;
+  title: string;
+}
+
 interface Props {
   werk: string;
   toc: TocEntry[];
   edition: string;
   activeSlug?: string;
   headings?: Heading[];
+  backmatter?: BackmatterSection[];
 }
 
-export function BookSidebar({ werk, toc, edition, activeSlug, headings = [] }: Props) {
+export function BookSidebar({ werk, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
   const pathname = usePathname();
   const prefix = edition === "main" ? `/book/${werk}` : `/book/${werk}/${edition}`;
   const [open, setOpen] = useState(true);
@@ -99,6 +105,28 @@ export function BookSidebar({ werk, toc, edition, activeSlug, headings = [] }: P
           <ul className="py-2 text-sm">
             {toc.map((entry) => renderEntry(entry))}
           </ul>
+          {backmatter.length > 0 && (
+            <ul className="py-2 text-sm border-t border-gray-200 dark:border-gray-700 mt-2">
+              {backmatter.map((s) => {
+                const href = `/book/${werk}/backmatter?section=${s.id}`;
+                const active = pathname === `/book/${werk}/backmatter` && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("section") === s.id;
+                return (
+                  <li key={s.id}>
+                    <a
+                      href={href}
+                      className={`block px-4 py-1.5 truncate transition-colors ${
+                        active
+                          ? "font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30"
+                          : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                      }`}
+                    >
+                      {s.title}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </nav>
       </aside>
       {!open && (

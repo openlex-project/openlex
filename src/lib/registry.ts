@@ -137,7 +137,16 @@ function flattenToc(toc: TocEntry[]): TocEntry[] {
   return result;
 }
 
-/** Extract ## and ### headings from markdown for sub-navigation */
+/** Determine which backmatter sections exist for a book */
+export function getBackmatterSections(meta: BookEntry): { id: string; title: string }[] {
+  const sections: { id: string; title: string }[] = [];
+  if (meta.bibliography) sections.push({ id: "literaturverzeichnis", title: "Literaturverzeichnis" });
+  const hasAuthors = meta.toc.some(function check(e: TocEntry): boolean {
+    return !!e.author || (e.children?.some(check) ?? false);
+  });
+  if (hasAuthors) sections.push({ id: "autorenverzeichnis", title: "Autorenverzeichnis" });
+  return sections;
+}
 export function extractHeadings(markdown: string): Heading[] {
   const headings: Heading[] = [];
   for (const match of markdown.matchAll(/^(#{2,3})\s+(.+)$/gm)) {
