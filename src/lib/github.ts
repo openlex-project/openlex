@@ -42,7 +42,22 @@ export async function listFiles(
     `${API}/repos/${repo}/contents/${path}?ref=${ref}`,
   );
   if (!res.ok) return [];
-  const data = (await res.json()) as { name: string }[];
+  const data = (await res.json()) as { name: string; type: string }[];
   if (!Array.isArray(data)) return [];
-  return data.map((f) => f.name);
+  return data.filter((f) => f.type === "file").map((f) => f.name);
+}
+
+/** List subdirectories in a directory of a GitHub repo. */
+export async function listDirs(
+  repo: string,
+  path: string,
+  ref = "main",
+): Promise<string[]> {
+  const res = await ghFetch(
+    `${API}/repos/${repo}/contents/${path}?ref=${ref}`,
+  );
+  if (!res.ok) return [];
+  const data = (await res.json()) as { name: string; type: string }[];
+  if (!Array.isArray(data)) return [];
+  return data.filter((f) => f.type === "dir").map((f) => f.name);
 }

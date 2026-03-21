@@ -1,0 +1,9 @@
+slug: "zfkir"
+type: "journal"
+title: "Zeitschrift für KI-Recht"
+title_short: "ZfKIR"
+lang: "de"
+license: "CC-BY-SA-4.0"
+issn: "0800-0001"
+editors:
+  - name: "Prof. Dr. Anna Beispiel"

@@ -1,5 +1,5 @@
 import { parse } from "yaml";
-import { fetchFile, listFiles } from "./github";
+import { fetchFile, listFiles, listDirs } from "./github";
 
 export interface TocEntry {
   file: string;
@@ -22,11 +22,12 @@ export interface BookMeta {
   title_short?: string;
   lang: string;
   license: string;
-  numbering: string;
+  numbering?: string;
   comments_on?: string;
   csl?: string;
   bibliography?: string;
-  editors: { name: string; orcid: string }[];
+  issn?: string;
+  editors: { name: string; orcid?: string }[];
 }
 
 export interface LawMeta {
@@ -52,9 +53,30 @@ export interface BookEntry extends BookMeta {
   toc: TocEntry[];
 }
 
+/** Article frontmatter in a journal */
+export interface JournalArticle {
+  slug: string;
+  title: string;
+  author: string;
+  rubrik: string;
+  pages?: string;
+}
+
+export interface JournalIssue {
+  year: string;
+  issue: string;
+  articles: JournalArticle[];
+}
+
+export interface JournalEntry extends BookMeta {
+  repo: string;
+  issues: JournalIssue[];
+}
+
 export interface ContentRegistry {
   books: Map<string, BookEntry>;
   laws: Map<string, LawMeta>;
+  journals: Map<string, JournalEntry>;
 }
 
 function getContentRepos(): string[] {
@@ -64,15 +86,56 @@ function getContentRepos(): string[] {
     .filter(Boolean);
 }
 
+/** Parse YAML frontmatter from markdown */
+function parseFrontmatter(md: string): Record<string, string> {
+  const m = md.match(/^---\n([\s\S]*?)\n---/);
+  if (!m) return {};
+  return parse(m[1]!) as Record<string, string>;
+}
+
+/** Discover journal issues and articles from filesystem */
+async function discoverJournal(repo: string): Promise<JournalIssue[]> {
+  const years = (await listDirs(repo, ".")).filter((d) => /^\d{4}$/.test(d)).sort().reverse();
+  const issues: JournalIssue[] = [];
+  for (const year of years) {
+    const nums = (await listDirs(repo, year)).sort().reverse();
+    for (const issue of nums) {
+      const files = await listFiles(repo, `${year}/${issue}`);
+      const articles: JournalArticle[] = [];
+      for (const f of files.filter((f) => f.endsWith(".md"))) {
+        const raw = await fetchFile(repo, `${year}/${issue}/${f}`);
+        if (!raw) continue;
+        const fm = parseFrontmatter(raw);
+        articles.push({
+          slug: f.replace(/\.md$/, ""),
+          title: fm.title ?? f,
+          author: fm.author ?? "",
+          rubrik: fm.rubrik ?? "Sonstiges",
+          pages: fm.pages,
+        });
+      }
+      if (articles.length) issues.push({ year, issue, articles });
+    }
+  }
+  return issues;
+}
+
 export async function buildRegistry(): Promise<ContentRegistry> {
   const books = new Map<string, BookEntry>();
   const laws = new Map<string, LawMeta>();
+  const journals = new Map<string, JournalEntry>();
 
   for (const repo of getContentRepos()) {
     const metaRaw = await fetchFile(repo, "meta.yaml");
     if (metaRaw) {
       const meta = parse(metaRaw) as BookMeta;
-      // Load toc.yaml or auto-generate from content/ directory
+
+      if (meta.type === "journal") {
+        const issues = await discoverJournal(repo);
+        journals.set(meta.slug, { ...meta, repo, issues });
+        continue;
+      }
+
       const tocRaw = await fetchFile(repo, "toc.yaml");
       let toc: TocEntry[];
       if (tocRaw) {
@@ -105,7 +168,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
     }
   }
 
-  return { books, laws };
+  return { books, laws, journals };
 }
 
 /** Find a toc entry by slug (filename without .md) */
@@ -193,4 +256,16 @@ export async function getLawProvisions(repo: string, slug: string): Promise<numb
     .map((f) => parseInt(f.replace(".md", ""), 10))
     .filter((n) => !isNaN(n))
     .sort((a, b) => a - b);
+}
+
+export async function getJournalArticleContent(
+  repo: string,
+  year: string,
+  issue: string,
+  slug: string,
+): Promise<string | null> {
+  const raw = await fetchFile(repo, `${year}/${issue}/${slug}.md`);
+  if (!raw) return null;
+  // Strip frontmatter
+  return raw.replace(/^---\n[\s\S]*?\n---\n*/, "");
 }

@@ -22,7 +22,7 @@ export interface RenderOptions {
   cslXml?: string;
   referencesYaml?: string;
   tocAuthor?: string | { name: string; orcid: string };
-  editors?: { name: string; orcid: string }[];
+  editors?: { name: string; orcid?: string }[];
 }
 
 function buildProcessor(opts?: RenderOptions) {
