@@ -1,30 +1,39 @@
 # toc.yaml
 
-The `toc.yaml` file is located in the root directory of a book/journal content repo and defines the structure and order of contents.
+The `toc.yaml` file is located in the root directory of a book/journal content repo and defines the structure and order of contents. It is the single source of truth (SSOT) for both the online and print pipelines.
 
 ## Schema
 
 ```yaml
 contents:
-  - file: foreword.md
-    title: Foreword
+  - file: vorwort.md
+    title: Vorwort
+    frontmatter: true
 
-  - file: introduction.md
-    title: Introduction to the GDPR
-    doi: "10.1515/9783111234567-001"
-
-  - file: prelim-1-4.md
-    title: "Preliminary Remarks on Art. 1–4"
+  - file: vorbem-1-4.md
+    title: "Vorbemerkungen zu Art. 1–4"
+    author:
+      name: Max Mustermann
+      affiliation: "Hochschule Musterstadt"
+      orcid: "0000-0000-0000-0000"
     provisions: [1, 2, 3, 4]
-    doi: "10.1515/9783111234567-002"
+
+  - file: art-4.md
+    title: "Art. 4 – Begriffsbestimmungen"
+    author: Erika Musterfrau
+    provisions: [4]
+    children:
+      - file: art-4-nr-1.md
+        title: "Nr. 1 – Personenbezogene Daten"
+      - file: art-4-nr-2.md
+        title: "Nr. 2 – Verarbeitung"
+      - file: art-4-nr-7.md
+        title: "Nr. 7 – Verantwortlicher"
 
   - file: art-5.md
-    title: "Art. 5 – Principles of Processing"
+    title: "Art. 5 – Grundsätze"
+    author: Max Mustermann
     provisions: [5]
-    doi: "10.1515/9783111234567-003"
-
-  - file: excursus-accountability.md
-    title: "Excursus: Accountability Principle"
 ```
 
 ## Fields per Entry
@@ -32,40 +41,62 @@ contents:
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `file` | string | ✓ | Filename relative to `content/` |
-| `title` | string | ✓ | Display title (for navigation, breadcrumbs) |
+| `title` | string | ✓ | Display title (navigation, sidebar, TOC) |
 | `provisions` | number[] | | Assigned provision numbers (for cross-links) |
 | `author` | string \| object | | Chapter author (see below) |
-| `doi` | string | | Chapter-level DOI (without `https://doi.org/` prefix) |
+| `frontmatter` | boolean | | If `true`, placed before TOC in print (e.g. Vorwort) |
+| `children` | TocEntry[] | | Sub-entries for multi-file chapters |
 
 ## Author Field
 
-The `author` field assigns an author to a chapter. Two forms:
+Two forms:
 
 ```yaml
-# Short form (name only, ORCID looked up from editors or other entries)
+# Short form (name only, ORCID resolved from editors or other entries)
 - file: art-1.md
-  title: "Art. 1"
   author: Max Mustermann
 
-# Long form (name + ORCID)
+# Long form (name + affiliation + ORCID)
 - file: art-2.md
-  title: "Art. 2"
   author:
     name: Erika Musterfrau
+    affiliation: "Universität Musterstadt"
     orcid: "0000-0000-0000-0001"
 ```
 
-ORCID is resolved from: 1. long-form `author` entries in toc.yaml, 2. `editors` in meta.yaml. Once set for a name, it applies everywhere.
+`affiliation` is optional. ORCID is resolved from: 1. long-form entries in toc.yaml, 2. `editors` in meta.yaml.
 
 A `::: author` block in the content file overrides the toc.yaml assignment.
 
+## Children (Multi-File Chapters)
+
+Large chapters can be split into separate files using `children`. Children inherit the parent's `author` if they don't define their own.
+
+```yaml
+- file: art-4.md
+  title: "Art. 4 – Begriffsbestimmungen"
+  author: Erika Musterfrau
+  children:
+    - file: art-4-nr-1.md
+      title: "Nr. 1 – Personenbezogene Daten"
+    - file: art-4-nr-7.md
+      title: "Nr. 7 – Verantwortlicher"
+      author: Max Mustermann  # overrides parent
+```
+
+In the online version, children appear indented in the sidebar. In print, all files are concatenated in order. Prev/next navigation traverses the flat sequence including children.
+
+## Frontmatter
+
+Entries with `frontmatter: true` are placed before the table of contents in the print PDF (e.g. Vorwort). They get a manual heading without TOC entry. In the online version, they are regular pages.
+
 ## Behavior
 
-- The order in `contents` determines the table of contents order.
+- The order in `contents` determines the table of contents and navigation order.
 - The URL slug is derived from the filename: `art-5.md` → `/book/{werk}/art-5`.
-- `provisions` enables cross-links from law to commentary: the law page `/law/dsgvo/5` shows links to all commentary entries with `provisions: [5]`.
-- Entries without `provisions` (forewords, excursuses) appear in the table of contents but not as cross-links from the law.
+- `provisions` enables cross-links from law to commentary.
+- The Makefile extracts all files recursively: `yq '.. | select(has("file")) | .file' toc.yaml`.
 
 ## Without toc.yaml
 
-If no `toc.yaml` is present, all `.md` files from `content/` are used as entries, sorted alphabetically. In this case, no `provisions` mappings and no cross-links are available.
+If no `toc.yaml` is present, all `.md` files from `content/` are used, sorted alphabetically. No provisions mappings, no cross-links, no children.

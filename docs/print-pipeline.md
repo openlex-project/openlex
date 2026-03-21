@@ -11,129 +11,123 @@ oc-dsgvo/
   toc.yaml              # Content order (SSOT for both pipelines)
   references.yaml       # Bibliography (CSL-YAML)
   jura.csl              # Citation style
-  pandoc.yaml           # Pandoc defaults (template, filters, engine)
+  pandoc.yaml           # Pandoc defaults
+  openlex-logo.png      # Publisher logo placeholder
+  Makefile
   pandoc/
     templates/
       openlex-book.tex  # LaTeX book template
-      openlex.sty       # Style package
+      openlex.sty       # Style package (De Gruyter derived, rebranded)
     filters/
-      rn.lua            # []{.rn} → \rn{N} margin numbers
-      directives.lua    # ::: note/author/example → LaTeX environments
-      xref.lua          # [Text](#id){.xref} → \ref + \pageref
-      index.lua         # [Text]{.idx} → \index{}
-      glossary.lua      # ::: {.glossary-entries} + [Term]{.gls}
-      split-bib.lua     # Split bibliography: Literatur + Rechtsprechung
+      frontmatter.lua   # Extract Vorwort before TOC
+      numbering.lua     # LaTeX counter setup from meta.yaml schema
+      glossary.lua      # Glossary entries
+      xref.lua          # Cross-references with page numbers
+      index.lua         # Index entries → \index{}
+      rn.lua            # Margin numbers → \rn{N}
+      directives.lua    # Author, notes, examples → LaTeX environments
+      strip-urls.lua    # Remove URLs from legal_case before citeproc
       table.lua         # Tables → supertabular format
-      nbsp.lua          # § 2 → §~2, Rn. 14 → Rn.~14
+      nbsp.lua          # Non-breaking spaces (§~2, Rn.~14)
+      split-bib.lua     # Split bibliography + backmatter generation
     fonts/
       DeGruyterSans-*.otf
       DeGruyterSerif-*.otf
-  Makefile
-  .github/workflows/
-    build-pdf.yml
 ```
 
-## SSOT Principle
+## Filter Execution Order
 
-`toc.yaml` is the single source of truth for content order. The `pandoc.yaml` contains only rendering configuration (template, filters, engine) — no `input-files`. The Makefile derives the file list from `toc.yaml` at build time:
-
-```makefile
-CONTENT_FILES := $(shell yq -r '.[].file' toc.yaml | sed 's|^|content/|;s|$$|.md|')
-
-pdf:
-	pandoc -d pandoc.yaml $(CONTENT_FILES) -o output/book.pdf
-```
-
-## pandoc.yaml
-
-Located in the repo root. Contains all Pandoc configuration except input files:
+Order matters. Defined in `pandoc.yaml`:
 
 ```yaml
-# Engine
-pdf-engine: latexmk
-pdf-engine-opts:
-  - "-xelatex"
-  - "-shell-escape"
-
-# Template
-template: pandoc/templates/openlex-book.tex
-top-level-division: chapter
-number-sections: true
-listings: true
-
-# Filters (order matters)
 filters:
+  - pandoc/filters/frontmatter.lua  # 1. Extract Vorwort → template variable
+  - pandoc/filters/numbering.lua    # 2. LaTeX counter setup from schema
   - pandoc/filters/glossary.lua
   - pandoc/filters/xref.lua
   - pandoc/filters/index.lua
   - pandoc/filters/rn.lua
-  - pandoc/filters/directives.lua
-  - pandoc-crossref
-  - citeproc
-  - pandoc/filters/table.lua
+  - pandoc/filters/directives.lua   # Author blocks, Autorenverzeichnis
+  - pandoc/filters/strip-urls.lua   # Strip URLs from legal_case
+  - citeproc                        # Resolve @citations
+  - pandoc/filters/table.lua        # Convert tables → supertabular
   - pandoc/filters/nbsp.lua
-  - pandoc/filters/split-bib.lua
-
-# Bibliography
-csl: jura.csl
-bibliography: references.yaml
-
-# Resource paths
-resource-path:
-  - .
-  - ./content
-  - ./pandoc/fonts
-  - ./pandoc/templates
+  - pandoc/filters/split-bib.lua    # Backmatter: Lit, Rspr, LOF, LOT, Index
 ```
 
-## Lua Filters
+## Title Pages (Titelei)
 
-### Adapted for OpenLex
+The template uses the sty's `\maketitle` which generates De Gruyter-style title pages:
 
-| Filter | Source | Changes |
+1. **Schmutztitel** (half title) — Author + Title
+2. **Blank page**
+3. **Haupttitel** (full title) — Author, Title, Subtitle, Edition
+4. **Impressum** — ISBN, DNB info, Copyright, Typesetter, openlex.org
+
+Title page data comes from `meta.yaml`:
+
+| meta.yaml field | LaTeX command | Appears on |
 |---|---|---|
-| `rn.lua` | `randnummern.lua` | Counts explicit `[]{.rn}` spans instead of every paragraph |
-| `directives.lua` | `latex-div.lua` | Maps `::: note` → law-text box, `::: author` → author block, `::: example` / `::: warning` |
-| `table.lua` | `dgruyter-table.lua` | Renamed, De Gruyter references removed |
+| `title` | `\title` | Schmutztitel + Haupttitel |
+| `subtitle` | `\subtitle` | Haupttitel |
+| `edition` | `\edition` | Haupttitel |
+| `isbn` | `\isbn` | Impressum |
+| `copyrightyear` | `\copyrightyear` | Impressum |
+| `editors` | `\author` + `\authorinfo` | All title pages + Impressum |
 
-### Reused As-Is
+Editors are shown as "Name (Hrsg.)" on title pages. On the impressum, editors are listed with affiliation. If an explicit `author` field exists in meta.yaml, it takes precedence over editors on title pages.
 
-| Filter | Purpose |
-|---|---|
-| `xref.lua` | `[Text](#id){.xref}` → `→ Text, § 24 A., S. 21` with `\ref` + `\pageref` |
-| `index.lua` | `[Text]{.idx}` → `\index{Text}` with umlaut sort keys |
-| `glossary.lua` | `::: {.glossary-entries}` + `[Term]{.gls}` → glossary |
-| `split-bib.lua` | Splits refs div into Literatur + Rechtsprechung by `type: legal_case` |
-| `nbsp.lua` | Non-breaking spaces: `§ 2` → `§~2`, `Rn. 14` → `Rn.~14` |
+## Frontmatter
 
-## Fonts
+Entries with `frontmatter: true` in `toc.yaml` are extracted by `frontmatter.lua` and placed before the table of contents. The heading is rendered as raw LaTeX (no `\chapter*`, no TOC entry). Typical use: Vorwort.
 
-De Gruyter Sans and Serif fonts (OFL-licensed, open source) are stored in `pandoc/fonts/`. Source: <https://gitlab.com/degruyter-public/font/de-gruyter-sans_serif>
+Result: Titelei → Vorwort (S. V, roman) → TOC → Hauptteil (S. 1ff, arabic).
+
+## Numbering
+
+`numbering.lua` reads the `numbering` field from `meta.yaml` and generates LaTeX `\renewcommand` via `header-includes`:
+
+| Schema | ## | ### | #### | ##### |
+|---|---|---|---|---|
+| `commentary` | A. | I. | 1. | a) |
+| `textbook` | § 1 | A. | I. | 1. |
+| `decimal` | 1. | 1.1 | 1.1.1 | 1.1.1.1 |
+
+The sty has fallback Lehrbuch numbering if no schema is specified.
+
+## Backmatter
+
+`split-bib.lua` auto-generates all backmatter sections:
+
+- **Literaturverzeichnis**: All non-`legal_case` references
+- **Rechtsprechungsverzeichnis**: Only `legal_case` references
+- **Tabellenverzeichnis**: Only when tables exist (detected via RawBlock patterns)
+- **Abbildungsverzeichnis**: Only when figures exist
+- **Stichwortverzeichnis**: Only when `{.idx}` markers exist
+
+## Makefile
+
+The Makefile derives input files recursively from `toc.yaml`:
+
+```makefile
+CONTENT_FILES := $(shell yq '.. | select(has("file")) | .file' toc.yaml | sed 's|^|content/|')
+
+pdf: output/book.pdf
+
+output/book.pdf: $(CONTENT_FILES) pandoc.yaml toc.yaml references.yaml jura.csl
+	@mkdir -p output
+	pandoc -d pandoc.yaml $(CONTENT_FILES)
+```
 
 ## Building Locally
 
-Prerequisites: Pandoc ≥ 3.1, TeX Live (full or custom scheme with XeLaTeX), yq.
+Prerequisites: Pandoc ≥ 3.1, TeX Live (with XeLaTeX), yq (mikefarah).
 
 ```bash
-make pdf
-# Output: output/book.pdf
+make pdf          # → output/book.pdf
+make clean        # remove output/
 ```
 
-## GitHub Actions
+## Fonts
 
-The `.github/workflows/build-pdf.yml` workflow:
-
-1. Installs TeX Live + Pandoc + yq
-2. Runs `make pdf`
-3. Uploads `output/book.pdf` as artifact
-
-Triggered on push to `main` and on manual dispatch.
-
-## Backmatter Generation
-
-Controlled by `meta.yaml` → `backmatter` (see [meta.yaml](meta-yaml.md)). The Lua filters and build script handle:
-
-- **Bibliography split**: `split-bib.lua` separates Literatur from Rechtsprechung
-- **Index**: `index.lua` collects `\index{}` entries, LaTeX generates Stichwortverzeichnis via `makeindex`
-- **Glossary**: `glossary.lua` renders the glossary chapter
-- **LOT/LOF**: LaTeX `\listoftables` / `\listoffigures` when captions exist
+De Gruyter Sans and Serif fonts (OFL-licensed) in `pandoc/fonts/`. Source: <https://gitlab.com/degruyter-public/font/de-gruyter-sans_serif>
