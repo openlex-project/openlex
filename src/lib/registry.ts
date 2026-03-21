@@ -36,6 +36,7 @@ export interface LawMeta {
   title_short?: string;
   unit_type: "article" | "section";
   lang: string;
+  license?: string;
   repo: string;
 }
 
@@ -45,6 +46,7 @@ interface SyncYaml {
     title_short?: string;
     unit_type: string;
     lang: string;
+    license?: string;
   }>;
 }
 
@@ -161,6 +163,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
           title_short: law.title_short,
           unit_type: law.unit_type as LawMeta["unit_type"],
           lang: law.lang,
+          license: law.license,
           repo,
         });
       }
