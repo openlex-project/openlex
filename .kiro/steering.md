@@ -70,7 +70,8 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 - Workflow: Neue Auflage → aktuellen `main` als `{n}ed` branchen (einfrieren), `main` weiterarbeiten.
 - Zugriff auf `/{n}ed/` ohne existierenden Branch → Redirect auf aktuelle Auflage.
 - URL-Schema für Gesetze: `/law/{gesetz}/{nr}` (aktuell), `/law/{gesetz}/@{datum}/{nr}` (historische Fassung)
-- URL-Schema für Zeitschriften: `/journal/{zeitschrift}/{jahr}/{seite}`
+- URL-Schema für Zeitschriften: `/journal/{zeitschrift}/{jahr}/{heft}/{slug}` (Beitrag), `/journal/{zeitschrift}/{jahr}/{seite}` (Zitier-Redirect)
+- Journal-Struktur wird aus dem Dateisystem abgeleitet (kein `toc.yaml`): Jahrgänge → Hefte → Artikel mit Frontmatter (title, author, rubrik, pages)
 - `unit_type` nur bei Gesetzen (in `sync.yaml`): `article` (Art.) oder `section` (§)
 - Fragmente für Untergliederung: `#rn-1` (Kommentare), `#abs-1`, `#abs-1-s-1`, `#abs-1-lit-a` (Gesetze)
 
@@ -80,7 +81,8 @@ Beispiele:
 /book/oc-dsgvo/art-5#rn-3
 /book/oc-urhg/art-15#rn-7
 /book/schmieder-urheberrecht/kap-3
-/journal/zfkir/2025/42
+/journal/zfkir/2025/01/mustermann-ki       # Beitrag (kanonisch)
+/journal/zfkir/2025/42                      # Zitier-Redirect → Beitrag
 ```
 
 ## Gesetze
@@ -359,15 +361,32 @@ openlex-laws/
 
 ```
 zfkir/
-  meta.yaml              # type: "journal"
-  jura.csl
-  references.yaml
-  2025/
+  meta.yaml              # type: "journal", slug, title, issn, editors
+  jura.csl               # Optional: Zitationsstil
+  references.yaml        # Optional: Bibliographie
+  2026/
     01/                  # Heft 1
-      meta.yaml          # Heft-Metadaten
-      mustermann-ki.md   # Einzelbeitrag
-      ...
+      mustermann-ki-haftung.md   # Einzelbeitrag
+      schmidt-algorithmen.md
 ```
+
+**Kein `toc.yaml`** — Struktur wird aus dem Dateisystem abgeleitet:
+- Verzeichnisse mit 4 Ziffern = Jahrgänge
+- Unterverzeichnisse = Hefte
+- `.md`-Dateien = Beiträge
+
+**Artikel-Frontmatter** (statt separater Metadaten):
+```yaml
+---
+title: "Haftung für KI-generierte Inhalte"
+author: "Prof. Dr. Max Mustermann"
+rubrik: "Aufsätze"
+pages: "1-12"
+---
+```
+
+- `rubrik` gruppiert Beiträge im Heft-Inhaltsverzeichnis (Aufsätze, Rechtsprechung, Buchbesprechungen)
+- `pages` ermöglicht Zitier-Redirect: `/journal/zfkir/2026/42` → löst auf den Beitrag auf, der Seite 42 enthält
 
 ## Domänen-Glossar
 
