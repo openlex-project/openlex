@@ -94,11 +94,11 @@ export function BookSidebar({ werk, toc, edition, activeSlug, headings = [], bac
       >
         <button
           onClick={toggle}
-          className="hidden lg:flex items-center justify-center h-10 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="hidden lg:flex items-center justify-end px-3 h-10 w-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           aria-label={open ? "Sidebar schließen" : "Sidebar öffnen"}
         >
-          <svg className={`w-4 h-4 transition-transform ${open ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          <svg className={`w-5 h-5 transition-transform duration-200 ${open ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
           </svg>
         </button>
         <nav className={`overflow-y-auto flex-1 ${open ? "opacity-100" : "opacity-0 lg:hidden"}`}>
