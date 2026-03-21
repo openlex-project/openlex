@@ -8,7 +8,7 @@ import { useEffect } from "react";
  */
 export function FootnoteTooltips() {
   useEffect(() => {
-    const refs = document.querySelectorAll<HTMLAnchorElement>("a.footnote-ref, a[role='doc-noteref']");
+    const refs = document.querySelectorAll<HTMLAnchorElement>(".fn-ref a, a.footnote-ref, a[role='doc-noteref']");
     if (!refs.length) return;
 
     const tooltip = document.createElement("div");
@@ -24,7 +24,7 @@ export function FootnoteTooltips() {
       if (!fn) return;
       // Clone content, remove back-reference link
       const clone = fn.cloneNode(true) as HTMLElement;
-      clone.querySelectorAll("a.footnote-back, a[role='doc-backlink']").forEach((a) => a.remove());
+      clone.querySelectorAll("a.fn-back, a.footnote-back, a[role='doc-backlink']").forEach((a) => a.remove());
       tooltip.innerHTML = clone.innerHTML;
       tooltip.style.display = "block";
 
