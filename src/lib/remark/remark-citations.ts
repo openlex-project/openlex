@@ -17,7 +17,9 @@ export interface CitationPluginOptions {
 
 function resolveCitations(text: string, engine: CitationEngine): string {
   return text.replace(CITE_RE, (_, key: string, locator?: string) => {
-    return engine.cite(key, locator?.trim());
+    const cited = engine.cite(key, locator?.trim());
+    const url = engine.getUrl(key);
+    return url ? `<a href="${url}" target="_blank" rel="noopener">${cited}</a>` : cited;
   });
 }
 

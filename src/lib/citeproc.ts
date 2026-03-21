@@ -20,6 +20,8 @@ export interface CitationEngine {
   cite(key: string, locator?: string): string;
   /** Generate full bibliography HTML */
   bibliography(): string;
+  /** Get URL for a reference (if any) */
+  getUrl(key: string): string | undefined;
 }
 
 export function createCitationEngine(
@@ -101,6 +103,10 @@ export function createCitationEngine(
       } catch {
         return "";
       }
+    },
+
+    getUrl(key: string): string | undefined {
+      return itemsById[key]?.URL as string | undefined;
     },
   };
 }
