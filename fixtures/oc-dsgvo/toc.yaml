@@ -30,6 +30,13 @@ contents:
     title: "Art. 4 – Begriffsbestimmungen"
     author: Erika Musterfrau
     provisions: [4]
+    children:
+      - file: art-4-nr-1.md
+        title: "Nr. 1 – Personenbezogene Daten"
+      - file: art-4-nr-2.md
+        title: "Nr. 2 – Verarbeitung"
+      - file: art-4-nr-7.md
+        title: "Nr. 7 – Verantwortlicher"
 
   - file: art-5.md
     title: "Art. 5 – Grundsätze für die Verarbeitung personenbezogener Daten"
