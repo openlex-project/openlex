@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { buildRegistry, getBookContent, findTocEntry, findTocNeighbors, extractHeadings, getBackmatterSections, type TocEntry, type BookEntry } from "@/lib/registry";
+import { SetLicense } from "@/components/license-context";
 import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
 import { createCitationEngine, parseReferencesYaml } from "@/lib/citeproc";
@@ -206,7 +207,7 @@ export default async function BookPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: html }}
         />
         {navBar("bottom")}
-        <p className="text-xs mt-4" style={{ color: "var(--text-tertiary)" }}>{meta.license}</p>
+        <SetLicense value={meta.license} />
         <FeedbackButton repo={meta.repo} />
         <FootnoteTooltips />
       </article>

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { buildRegistry, getLawContent, getLawProvisions, findByProvision } from "@/lib/registry";
+import { SetLicense } from "@/components/license-context";
 import { LawSidebar } from "@/components/law-sidebar";
 
 interface Props {
@@ -61,7 +62,7 @@ export default async function LawPage({ params }: Props) {
           {prevNr !== undefined ? navLink(`/law/${gesetz}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {nextNr !== undefined ? navLink(`/law/${gesetz}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
-        {meta.license && <p className="text-xs mt-4" style={{ color: "var(--text-tertiary)" }}>{meta.license}</p>}
+        {meta.license && <SetLicense value={meta.license} />}
       </article>
     </div>
   );

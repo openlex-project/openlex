@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { buildRegistry, getJournalArticleContent, type JournalArticle } from "@/lib/registry";
+import { SetLicense } from "@/components/license-context";
 import { renderMarkdown } from "@/lib/markdown";
 import { JournalSidebar } from "@/components/journal-sidebar";
 import Link from "next/link";
@@ -163,7 +164,7 @@ export default async function JournalPage({ params }: Props) {
             {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {prev.title}</Link> : <span />}
             {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right" style={{ color: "var(--active-text)" }}>{next.title} →</Link> : <span />}
           </nav>
-          <p className="text-xs mt-4" style={{ color: "var(--text-tertiary)" }}>{journal.license}</p>
+          <SetLicense value={journal.license} />
         </article>
       </div>
     );
