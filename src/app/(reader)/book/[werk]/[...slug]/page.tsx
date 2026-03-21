@@ -51,7 +51,7 @@ export default async function BookPage({ params }: Props) {
 
   return (
     <div className="flex">
-      <BookSidebar werk={werk} toc={meta.toc} ref={ref} />
+      <BookSidebar werk={werk} toc={meta.toc} edition={ref} />
       <article className="max-w-prose mx-auto px-6 py-8 min-w-0">
         <div className="mb-6 text-sm text-gray-500">
           {displayName} – {tocEntry?.title ?? fileSlug}

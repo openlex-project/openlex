@@ -3,9 +3,9 @@
 import { usePathname } from "next/navigation";
 import type { TocEntry } from "@/lib/registry";
 
-export function BookSidebar({ werk, toc, ref }: { werk: string; toc: TocEntry[]; ref: string }) {
+export function BookSidebar({ werk, toc, edition }: { werk: string; toc: TocEntry[]; edition: string }) {
   const pathname = usePathname();
-  const prefix = ref === "main" ? `/book/${werk}` : `/book/${werk}/${ref}`;
+  const prefix = edition === "main" ? `/book/${werk}` : `/book/${werk}/${edition}`;
 
   return (
     <nav className="w-64 shrink-0 border-r border-gray-200 dark:border-gray-700 overflow-y-auto h-[calc(100vh-57px)] sticky top-[57px] hidden lg:block">
