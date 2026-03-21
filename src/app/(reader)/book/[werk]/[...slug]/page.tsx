@@ -74,7 +74,18 @@ async function renderBackmatter(section: string, meta: BookEntry): Promise<{ tit
     if (filtered.length === 0) return null;
     const engine = createCitationEngine(cslXml, filtered);
     for (const r of filtered) engine.cite(r.id);
-    return { title: isCase ? "Rechtsprechungsverzeichnis" : "Literaturverzeichnis", html: engine.bibliography() || "" };
+    let bib = engine.bibliography() || "";
+    // Post-process: link each csl-entry whose ref has a URL
+    const urlMap = new Map(filtered.filter((r) => r.URL).map((r) => [r.title as string, r.URL as string]));
+    bib = bib.replace(/<div class="csl-entry">(.*?)<\/div>/gs, (match, inner: string) => {
+      for (const [title, url] of urlMap) {
+        if (inner.includes(title)) {
+          return `<div class="csl-entry"><a href="${url}" target="_blank" rel="noopener">${inner}</a></div>`;
+        }
+      }
+      return match;
+    });
+    return { title: isCase ? "Rechtsprechungsverzeichnis" : "Literaturverzeichnis", html: bib };
   }
   if (section === "autorenverzeichnis") {
     const authors = collectAuthors(meta.toc);
