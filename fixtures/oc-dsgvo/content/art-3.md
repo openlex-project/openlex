@@ -38,4 +38,4 @@ Das Marktortprinzip des Abs. 2 erstreckt den Anwendungsbereich auf Verantwortlic
 Für das Anbieten von Waren oder Dienstleistungen genügt die bloße Zugänglichkeit einer Website aus der Union nicht. Erforderlich ist vielmehr die offensichtliche Absicht, Personen in der Union anzusprechen. Indizien hierfür sind etwa die Verwendung der Sprache oder Währung eines Mitgliedstaats^[Vgl. @mustermann2024, S. 39.].
 
 []{.rn}
-Die Verhaltensbeobachtung nach lit. b erfasst insbesondere das Tracking von Internetnutzern durch Cookies, Browser-Fingerprinting oder vergleichbare Technologien, sofern das beobachtete Verhalten in der Union erfolgt.
+Die Verhaltensbeobachtung nach lit. b erfasst insbesondere das Tracking von Internetnutzern durch Cookies, Browser-Fingerprinting oder vergleichbare Technologien, sofern das beobachtete Verhalten in der Union erfolgt^[Zur Bedeutung des räumlichen Anwendungsbereichs für Drittlandtransfers vgl. @eugh-schrems-ii.].

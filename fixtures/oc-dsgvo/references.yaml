@@ -20,3 +20,12 @@
   container-title: "Zeitschrift für Datenschutz"
   volume: "13"
   page: "42-58"
+
+- id: eugh-schrems-ii
+  type: legal_case
+  title: "Schrems II"
+  authority: "EuGH"
+  number: "C-311/18"
+  issued:
+    date-parts: [[2020, 7, 16]]
+  URL: "https://curia.europa.eu/juris/liste.jsf?num=C-311/18"

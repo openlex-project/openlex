@@ -114,8 +114,8 @@ export function BookSidebar({ werk, toc, edition, activeSlug, headings = [], bac
           {backmatter.length > 0 && (
             <ul className="py-2 text-sm border-t border-gray-200 dark:border-gray-700 mt-2">
               {backmatter.map((s) => {
-                const href = `/book/${werk}/backmatter?section=${s.id}`;
-                const active = pathname === `/book/${werk}/backmatter` && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("section") === s.id;
+                const href = `/book/${werk}/${s.id}`;
+                const active = pathname === href;
                 return (
                   <li key={s.id}>
                     <a
