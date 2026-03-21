@@ -3,9 +3,21 @@
  * Run: npx tsx scripts/build-search-index.ts
  * Called automatically via `pnpm run postbuild`.
  */
-import { buildRegistry, getBookContent, getLawContent } from "../src/lib/registry";
+import { readFileSync, existsSync } from "fs";
+import { resolve } from "path";
+
+// Load .env.local BEFORE any other imports (Next.js does this automatically, tsx doesn't)
+for (const envFile of [".env.local", ".env"]) {
+  const p = resolve(process.cwd(), envFile);
+  if (!existsSync(p)) continue;
+  for (const line of readFileSync(p, "utf-8").split("\n")) {
+    const m = line.match(/^([A-Z_]+)=(.*)$/);
+    if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!;
+  }
+}
 
 async function main() {
+  const { buildRegistry, getBookContent, getLawContent, getJournalArticleContent } = await import("../src/lib/registry");
   const pagefind = await import("pagefind");
   const { index } = await pagefind.createIndex({ forceLanguage: "de" });
   if (!index) throw new Error("Failed to create pagefind index");
@@ -58,6 +70,24 @@ async function main() {
         filters: { type: ["Gesetz"], gesetz: [displayName] },
       });
       count++;
+    }
+  }
+
+  for (const [slug, journal] of registry.journals) {
+    const displayName = journal.title_short ?? journal.title;
+    for (const issue of journal.issues) {
+      for (const article of issue.articles) {
+        const content = await getJournalArticleContent(journal.repo, issue.year, issue.issue, article.slug);
+        if (!content) continue;
+        await index.addCustomRecord({
+          url: `/journal/${slug}/${issue.year}/${issue.issue}/${article.slug}`,
+          content,
+          language: "de",
+          meta: { title: `${article.author}, ${article.title} – ${displayName} ${issue.issue}/${issue.year}` },
+          filters: { type: ["Zeitschrift"], werk: [displayName] },
+        });
+        count++;
+      }
     }
   }
 
