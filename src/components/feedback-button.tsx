@@ -17,8 +17,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
   if (!session?.user) return null;
 
   const handleOpen = () => {
-    const sel = window.getSelection()?.toString().trim() ?? "";
-    setSelectedText(sel);
+    setSelectedText(window.getSelection()?.toString().trim() ?? "");
     setOpen(true);
     setDone(false);
   };
@@ -30,13 +29,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
       const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          repo,
-          category,
-          location: window.location.href,
-          selectedText,
-          comment,
-        }),
+        body: JSON.stringify({ repo, category, location: window.location.href, selectedText, comment }),
       });
       if (res.ok) {
         setDone(true);
@@ -52,7 +45,8 @@ export function FeedbackButton({ repo }: { repo: string }) {
     <>
       <button
         onClick={handleOpen}
-        className="fixed bottom-6 right-6 bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-blue-700 text-xl"
+        className="fixed bottom-6 right-6 rounded-full w-12 h-12 flex items-center justify-center shadow-lg text-white text-xl transition-transform hover:scale-105"
+        style={{ background: "var(--color-brand-600)" }}
         aria-label="Feedback geben"
         title="Feedback geben"
       >
@@ -61,18 +55,16 @@ export function FeedbackButton({ repo }: { repo: string }) {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-end p-6">
-          <div
-            className="fixed inset-0 bg-black/20"
-            onClick={() => setOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black/20" onClick={() => setOpen(false)} />
           <form
             onSubmit={handleSubmit}
-            className="relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-5 w-80 space-y-3"
+            className="relative rounded-xl shadow-xl p-5 w-80 space-y-3"
+            style={{ background: "var(--surface-elevated)", border: "1px solid var(--border)" }}
           >
             <h3 className="font-semibold">Feedback</h3>
 
             {selectedText && (
-              <blockquote className="text-sm text-gray-500 border-l-2 border-gray-300 pl-2 truncate">
+              <blockquote className="text-sm pl-2 truncate" style={{ borderLeft: "2px solid var(--border)", color: "var(--text-secondary)" }}>
                 {selectedText.slice(0, 120)}
               </blockquote>
             )}
@@ -83,11 +75,12 @@ export function FeedbackButton({ repo }: { repo: string }) {
                   key={c}
                   type="button"
                   onClick={() => setCategory(c)}
-                  className={`text-xs px-2 py-1 rounded-full border ${
-                    category === c
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "border-gray-300 dark:border-gray-600"
-                  }`}
+                  className="text-xs px-2 py-1 rounded-full border transition-colors"
+                  style={{
+                    background: category === c ? "var(--color-brand-600)" : "transparent",
+                    color: category === c ? "white" : "var(--text-secondary)",
+                    borderColor: category === c ? "var(--color-brand-600)" : "var(--border)",
+                  }}
                 >
                   {c}
                 </button>
@@ -100,21 +93,19 @@ export function FeedbackButton({ repo }: { repo: string }) {
               placeholder="Ihr Kommentar…"
               required
               rows={3}
-              className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg px-3 py-2 text-sm"
+              style={{ background: "var(--surface-secondary)", border: "1px solid var(--border)", color: "var(--text-primary)" }}
             />
 
             <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
+              <button type="button" onClick={() => setOpen(false)} className="text-sm" style={{ color: "var(--text-secondary)" }}>
                 Abbrechen
               </button>
               <button
                 type="submit"
                 disabled={submitting || done}
-                className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="text-sm text-white px-3 py-1.5 rounded-lg disabled:opacity-50 transition-colors"
+                style={{ background: "var(--color-brand-600)" }}
               >
                 {done ? "✓ Gesendet" : submitting ? "…" : "Senden"}
               </button>

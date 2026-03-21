@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "OpenLex",
   description: "Open-Access-Plattform für juristische Fachliteratur",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default async function RootLayout({
@@ -31,7 +32,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
-      <body className="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+      <body className="antialiased">
         <Providers>
           <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </Providers>

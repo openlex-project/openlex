@@ -33,16 +33,18 @@ export default async function LawPage({ params }: Props) {
   const prevNr = provisions[provisions.indexOf(provisionNr) - 1];
   const nextNr = provisions[provisions.indexOf(provisionNr) + 1];
 
+  const navLink = (href: string, label: string, align?: "right") => (
+    <a href={href} className={`hover:underline shrink-0 ${align === "right" ? "text-right" : ""}`} style={{ color: "var(--active-text)" }}>{label}</a>
+  );
+
   return (
     <div className="flex">
       <LawSidebar gesetz={gesetz} title={meta.title_short ?? meta.title} unitLabel={unitLabel} provisions={provisions} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
-        <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b border-gray-200 dark:border-gray-700">
-          {prevNr !== undefined ? (
-            <a href={`/law/${gesetz}/${prevNr}`} className="text-blue-600 hover:underline dark:text-blue-400">← {unitLabel} {prevNr}</a>
-          ) : <span />}
+        <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
+          {prevNr !== undefined ? navLink(`/law/${gesetz}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {commentaryLinks.length > 0 && (
-            <span className="text-gray-500 dark:text-gray-400 mx-4 truncate">
+            <span className="mx-4 truncate" style={{ color: "var(--text-secondary)" }}>
               {commentaryLinks.map((c, i) => (
                 <span key={`${c.slug}-${c.fileSlug}`}>
                   {i > 0 && ", "}
@@ -51,19 +53,13 @@ export default async function LawPage({ params }: Props) {
               ))}
             </span>
           )}
-          {nextNr !== undefined ? (
-            <a href={`/law/${gesetz}/${nextNr}`} className="text-blue-600 hover:underline dark:text-blue-400 text-right">{unitLabel} {nextNr} →</a>
-          ) : <span />}
+          {nextNr !== undefined ? navLink(`/law/${gesetz}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
         <h1 className="text-2xl font-bold mb-6">{unitLabel} {nr} {meta.title_short ?? meta.title}</h1>
         <div className="prose prose-gray dark:prose-invert max-w-none whitespace-pre-line">{text}</div>
-        <nav className="flex justify-between text-sm mt-12 pt-6 border-t border-gray-200 dark:border-gray-700">
-          {prevNr !== undefined ? (
-            <a href={`/law/${gesetz}/${prevNr}`} className="text-blue-600 hover:underline dark:text-blue-400">← {unitLabel} {prevNr}</a>
-          ) : <span />}
-          {nextNr !== undefined ? (
-            <a href={`/law/${gesetz}/${nextNr}`} className="text-blue-600 hover:underline dark:text-blue-400 text-right">{unitLabel} {nextNr} →</a>
-          ) : <span />}
+        <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
+          {prevNr !== undefined ? navLink(`/law/${gesetz}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
+          {nextNr !== undefined ? navLink(`/law/${gesetz}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
       </article>
     </div>

@@ -1,19 +1,111 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ─── Brand Color System ─── */
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand palette */
+  --color-brand-50: oklch(0.97 0.02 265);
+  --color-brand-100: oklch(0.93 0.04 265);
+  --color-brand-200: oklch(0.87 0.08 265);
+  --color-brand-300: oklch(0.76 0.12 265);
+  --color-brand-400: oklch(0.65 0.17 265);
+  --color-brand-500: oklch(0.55 0.20 265);
+  --color-brand-600: oklch(0.48 0.21 265);
+  --color-brand-700: oklch(0.42 0.19 265);
+  --color-brand-800: oklch(0.35 0.16 265);
+  --color-brand-900: oklch(0.28 0.12 265);
+  --color-brand-950: oklch(0.20 0.08 265);
+
+  /* Accent (warm gold) */
+  --color-accent-400: oklch(0.82 0.14 80);
+  --color-accent-500: oklch(0.75 0.16 75);
+  --color-accent-600: oklch(0.65 0.17 65);
 }
 
-/* Randnummern: am linken Rand positioniert */
+/* ─── Semantic tokens (light) ─── */
+:root {
+  --surface: white;
+  --surface-secondary: oklch(0.985 0.002 265);
+  --surface-elevated: white;
+  --text-primary: oklch(0.20 0.02 265);
+  --text-secondary: oklch(0.45 0.02 265);
+  --text-tertiary: oklch(0.58 0.015 265);
+  --border: oklch(0.90 0.01 265);
+  --border-subtle: oklch(0.94 0.005 265);
+  --ring: var(--color-brand-500);
+  --active-bg: oklch(0.96 0.03 265);
+  --active-text: var(--color-brand-600);
+  --hover-bg: oklch(0.97 0.005 265);
+}
+
+/* ─── Semantic tokens (dark) ─── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: oklch(0.16 0.02 265);
+    --surface-secondary: oklch(0.14 0.02 265);
+    --surface-elevated: oklch(0.20 0.025 265);
+    --text-primary: oklch(0.93 0.01 265);
+    --text-secondary: oklch(0.68 0.015 265);
+    --text-tertiary: oklch(0.52 0.015 265);
+    --border: oklch(0.28 0.02 265);
+    --border-subtle: oklch(0.23 0.015 265);
+    --ring: var(--color-brand-400);
+    --active-bg: oklch(0.22 0.04 265);
+    --active-text: var(--color-brand-300);
+    --hover-bg: oklch(0.20 0.02 265);
+  }
+}
+
+/* ─── Base ─── */
+body {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+/* ─── Focus rings (accessibility) ─── */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Skip to content ─── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--color-brand-600);
+  color: white;
+  border-radius: 0 0 0.5rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: top 0.15s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ─── Randnummern ─── */
 .prose .rn {
   float: left;
   width: 3rem;
   margin-left: -4rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-gray-400);
+  color: var(--text-tertiary);
   text-align: right;
   padding-right: 0.75rem;
   padding-top: 0.25rem;
@@ -24,55 +116,63 @@
   padding-left: 4rem;
 }
 
-/* Directive Asides */
+/* ─── Directives ─── */
 .directive-note {
-  border-left: 3px solid var(--color-blue-500);
-  background-color: var(--color-blue-50);
+  border-left: 3px solid var(--color-brand-400);
+  background: var(--active-bg);
   padding: 0.75rem 1rem;
   margin: 1rem 0;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
 }
 
 .directive-law {
-  border-left: 3px solid var(--color-amber-500);
-  background-color: var(--color-amber-50);
+  border-left: 3px solid var(--color-accent-500);
+  background: oklch(0.97 0.03 80);
   padding: 0.75rem 1rem;
   margin: 1rem 0;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
 }
 
 .directive-review {
-  border-left: 3px solid var(--color-green-500);
-  background-color: var(--color-green-50);
+  border-left: 3px solid oklch(0.65 0.17 155);
+  background: oklch(0.97 0.03 155);
   padding: 0.75rem 1rem;
   margin: 1rem 0;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
 }
 
 .directive-warning {
-  border-left: 3px solid var(--color-red-500);
-  background-color: var(--color-red-50);
+  border-left: 3px solid oklch(0.60 0.20 25);
+  background: oklch(0.97 0.03 25);
   padding: 0.75rem 1rem;
   margin: 1rem 0;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
 }
 
 .directive-example {
-  border-left: 3px solid var(--color-purple-500);
-  background-color: var(--color-purple-50);
+  border-left: 3px solid oklch(0.60 0.18 300);
+  background: oklch(0.97 0.03 300);
   padding: 0.75rem 1rem;
   margin: 1rem 0;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .directive-note { background: oklch(0.22 0.04 265); }
+  .directive-law { background: oklch(0.22 0.04 80); }
+  .directive-review { background: oklch(0.22 0.04 155); }
+  .directive-warning { background: oklch(0.22 0.04 25); }
+  .directive-example { background: oklch(0.22 0.04 300); }
 }
 
 .directive-author {
   font-size: 0.875rem;
-  color: var(--color-gray-500);
+  color: var(--text-secondary);
   margin-bottom: 1.5rem;
 }
 
 .directive-author .author-link {
-  color: var(--color-gray-600);
+  color: var(--text-primary);
   text-decoration: none;
 }
 
@@ -80,11 +180,11 @@
   text-decoration: underline;
 }
 
-/* Bibliography */
+/* ─── Bibliography ─── */
 .bibliography {
   margin-top: 3rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--color-gray-200);
+  border-top: 1px solid var(--border);
 }
 
 .bibliography h2 {
@@ -100,11 +200,15 @@
   font-size: 0.875rem;
 }
 
-/* Footnotes */
+/* ─── Footnotes ─── */
 .fn-ref a {
-  color: var(--color-blue-600);
+  color: var(--color-brand-600);
   text-decoration: none;
   font-size: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .fn-ref a { color: var(--color-brand-300); }
 }
 
 .fn-back {
@@ -114,29 +218,10 @@
 
 .footnotes {
   font-size: 0.875rem;
-  color: var(--color-gray-600);
+  color: var(--text-secondary);
 }
 
-/* Dark mode overrides */
-@media (prefers-color-scheme: dark) {
-  .directive-note {
-    background-color: color-mix(in srgb, var(--color-blue-900) 30%, transparent);
-  }
-  .directive-law {
-    background-color: color-mix(in srgb, var(--color-amber-900) 30%, transparent);
-  }
-  .directive-review {
-    background-color: color-mix(in srgb, var(--color-green-900) 30%, transparent);
-  }
-  .directive-warning {
-    background-color: color-mix(in srgb, var(--color-red-900) 30%, transparent);
-  }
-  .directive-example {
-    background-color: color-mix(in srgb, var(--color-purple-900) 30%, transparent);
-  }
-}
-
-/* Footnote hover tooltip */
+/* ─── Footnote tooltip ─── */
 .fn-tooltip {
   display: none;
   position: absolute;
@@ -145,18 +230,48 @@
   padding: 0.75rem 1rem;
   font-size: 0.8125rem;
   line-height: 1.5;
-  color: #1f2937;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.08), 0 2px 8px rgb(0 0 0 / 0.04);
   pointer-events: auto;
-}
-.dark .fn-tooltip {
-  color: #d1d5db;
-  background: #1f2937;
-  border-color: #374151;
 }
 .fn-tooltip p { margin: 0.25em 0; }
 .fn-tooltip p:first-child { margin-top: 0; }
 .fn-tooltip p:last-child { margin-bottom: 0; }
+
+/* ─── Glass header ─── */
+.glass-header {
+  background: oklch(1 0 0 / 0.8);
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-header {
+    background: oklch(0.16 0.02 265 / 0.85);
+  }
+}
+
+/* ─── Cards ─── */
+.card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.card:hover {
+  border-color: var(--color-brand-300);
+  box-shadow: 0 4px 16px oklch(0.55 0.20 265 / 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .card:hover {
+    border-color: var(--color-brand-600);
+    box-shadow: 0 4px 16px oklch(0.55 0.20 265 / 0.12);
+  }
+}

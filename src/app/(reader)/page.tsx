@@ -2,61 +2,97 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { buildRegistry } from "@/lib/registry";
 import { t, type Locale } from "@/lib/i18n";
+import { Logo } from "@/components/logo";
 
 export default async function Home() {
-  const { books, laws } = await buildRegistry();
+  const { books, laws, journals } = await buildRegistry();
   const h = await headers();
   const locale = (h.get("x-locale") ?? "de") as Locale;
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold">{t(locale, "site.title")}</h1>
-      <p className="mt-2 text-gray-600 mb-8">
-        {t(locale, "site.tagline")}
-      </p>
+    <div className="px-6 py-12 max-w-5xl mx-auto">
+      {/* Hero */}
+      <section className="text-center mb-16">
+        <Logo size={56} className="mx-auto mb-4 text-[var(--color-brand-600)] dark:text-[var(--color-brand-300)]" />
+        <h1 className="text-4xl font-bold tracking-tight mb-3" style={{ color: "var(--text-primary)" }}>
+          {t(locale, "site.title")}
+        </h1>
+        <p className="text-lg max-w-xl mx-auto" style={{ color: "var(--text-secondary)" }}>
+          {t(locale, "site.tagline")}
+        </p>
+      </section>
 
+      {/* Kommentare & Bücher */}
       {books.size > 0 && (
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-3">{t(locale, "section.books")}</h2>
-          <ul className="space-y-2">
+        <section className="mb-12">
+          <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-tertiary)" }}>
+            {t(locale, "section.books")}
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
             {[...books.values()].map((b) => {
               const firstSlug = b.toc[0]?.file.replace(/\.md$/, "") ?? "";
               return (
-                <li key={b.slug}>
-                  <Link
-                    href={`/book/${b.slug}/${firstSlug}`}
-                    className="text-blue-600 hover:underline"
-                  >
+                <Link key={b.slug} href={`/book/${b.slug}/${firstSlug}`} className="card group block">
+                  <div className="font-semibold group-hover:text-[var(--active-text)] transition-colors">
                     {b.title_short ?? b.title}
-                  </Link>
+                  </div>
                   {b.title_short && (
-                    <span className="text-gray-500 ml-2 text-sm">{b.title}</span>
+                    <div className="text-sm mt-0.5" style={{ color: "var(--text-secondary)" }}>{b.title}</div>
                   )}
-                </li>
+                  <div className="text-xs mt-2" style={{ color: "var(--text-tertiary)" }}>
+                    {b.editors.map((e) => e.name).join(", ")}
+                    {b.comments_on && <span className="ml-2">· Kommentar zu {b.comments_on.toUpperCase()}</span>}
+                  </div>
+                </Link>
               );
             })}
-          </ul>
+          </div>
         </section>
       )}
 
-      {laws.size > 0 && (
-        <section>
-          <h2 className="text-xl font-semibold mb-3">{t(locale, "section.laws")}</h2>
-          <ul className="space-y-2">
-            {[...laws.values()].map((l) => (
-              <li key={l.slug}>
-                <Link
-                  href={`/law/${l.slug}/5`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {l.title_short ?? l.title}
-                </Link>
-                {l.title_short && (
-                  <span className="text-gray-500 ml-2 text-sm">{l.title}</span>
+      {/* Zeitschriften */}
+      {journals.size > 0 && (
+        <section className="mb-12">
+          <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-tertiary)" }}>
+            Zeitschriften
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[...journals.values()].map((j) => (
+              <Link key={j.slug} href={`/journal/${j.slug}`} className="card group block">
+                <div className="font-semibold group-hover:text-[var(--active-text)] transition-colors">
+                  {j.title_short ?? j.title}
+                </div>
+                {j.title_short && (
+                  <div className="text-sm mt-0.5" style={{ color: "var(--text-secondary)" }}>{j.title}</div>
                 )}
-              </li>
+                <div className="text-xs mt-2" style={{ color: "var(--text-tertiary)" }}>
+                  {j.issn && `ISSN ${j.issn}`}
+                  {j.issues.length > 0 && ` · ${j.issues.length} Hefte`}
+                </div>
+              </Link>
             ))}
-          </ul>
+          </div>
+        </section>
+      )}
+
+      {/* Gesetze */}
+      {laws.size > 0 && (
+        <section className="mb-12">
+          <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-tertiary)" }}>
+            {t(locale, "section.laws")}
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[...laws.values()].map((l) => (
+              <Link key={l.slug} href={`/law/${l.slug}/1`} className="card group block">
+                <div className="font-semibold group-hover:text-[var(--active-text)] transition-colors">
+                  {l.title_short ?? l.title}
+                </div>
+                {l.title_short && (
+                  <div className="text-sm mt-0.5" style={{ color: "var(--text-secondary)" }}>{l.title}</div>
+                )}
+              </Link>
+            ))}
+          </div>
         </section>
       )}
     </div>

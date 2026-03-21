@@ -162,14 +162,14 @@ export default async function BookPage({ params }: Props) {
   const authorLast = authorName?.split(" ").pop();
 
   const navBar = (pos: "top" | "bottom") => (
-    <nav className={`flex items-center justify-between text-sm ${
+    <nav aria-label={pos === "top" ? "Kapitelnavigation" : "Kapitelnavigation unten"} className={`flex items-center justify-between text-sm ${
       pos === "top" ? "mb-6 pb-3 border-b" : "mt-12 pt-6 border-t"
-    } border-gray-200 dark:border-gray-700`}>
+    }`} style={{ borderColor: "var(--border)" }}>
       {prev ? (
-        <a href={prevHref!} className="text-blue-600 hover:underline dark:text-blue-400 shrink-0">← {prev.title}</a>
+        <a href={prevHref!} className="hover:underline shrink-0" style={{ color: "var(--active-text)" }}>← {prev.title}</a>
       ) : <span />}
       {pos === "top" && authorName && (
-        <span className="text-gray-500 dark:text-gray-400 mx-4">
+        <span className="mx-4" style={{ color: "var(--text-secondary)" }}>
           {authorOrcid ? (
             <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">
               <span className="hidden sm:inline">{authorName}</span>
@@ -184,7 +184,7 @@ export default async function BookPage({ params }: Props) {
         </span>
       )}
       {next ? (
-        <a href={nextHref!} className="text-blue-600 hover:underline dark:text-blue-400 text-right shrink-0">{next.title} →</a>
+        <a href={nextHref!} className="hover:underline text-right shrink-0" style={{ color: "var(--active-text)" }}>{next.title} →</a>
       ) : <span />}
     </nav>
   );
@@ -194,11 +194,11 @@ export default async function BookPage({ params }: Props) {
       <BookSidebar werk={werk} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
         {navBar("top")}
-        <div className="mb-6 text-sm text-gray-500">
+        <div className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
           {displayName} – {tocEntry?.title ?? fileSlug}
-          {edition && <span className="ml-2 text-amber-600 dark:text-amber-400">({edition})</span>}
+          {edition && <span className="ml-2" style={{ color: "var(--color-accent-600)" }}>({edition})</span>}
           {meta.comments_on && tocEntry?.provisions?.[0] && (
-            <> · <a href={`/law/${meta.comments_on}/${tocEntry.provisions[0]}`} className="text-blue-600 hover:underline">Gesetzestext →</a></>
+            <> · <a href={`/law/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>Gesetzestext →</a></>
           )}
         </div>
         <div

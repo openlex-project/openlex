@@ -8,7 +8,11 @@ export default function UserButton() {
 
   if (!session) {
     return (
-      <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
+      <Link
+        href="/login"
+        className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+        style={{ color: "var(--text-secondary)" }}
+      >
         Anmelden
       </Link>
     );
@@ -16,10 +20,11 @@ export default function UserButton() {
 
   return (
     <div className="flex items-center gap-3 text-sm">
-      <span className="text-gray-600">{session.user?.name}</span>
+      <span style={{ color: "var(--text-secondary)" }}>{session.user?.name}</span>
       <button
         onClick={() => signOut()}
-        className="text-gray-500 hover:text-gray-700"
+        className="text-sm transition-colors"
+        style={{ color: "var(--text-tertiary)" }}
       >
         Abmelden
       </button>

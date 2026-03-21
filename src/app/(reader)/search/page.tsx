@@ -25,46 +25,29 @@ function SearchResults() {
       // @ts-expect-error pagefind loaded from static files
       const pagefind = await import(/* webpackIgnore: true */ "/pagefind/pagefind.js");
       await pagefind.init();
-
       const f = filterOverride ?? activeFilter;
       const filterArg: Record<string, string> = {};
-      for (const [k, v] of Object.entries(f)) {
-        if (v) filterArg[k] = v;
-      }
-
-      const search = await pagefind.search(q, {
-        filters: Object.keys(filterArg).length > 0 ? filterArg : undefined,
-      });
-
+      for (const [k, v] of Object.entries(f)) { if (v) filterArg[k] = v; }
+      const search = await pagefind.search(q, { filters: Object.keys(filterArg).length > 0 ? filterArg : undefined });
       const loaded: SearchResult[] = await Promise.all(
         search.results.slice(0, 20).map(async (r: { data: () => Promise<SearchResult> }) => r.data()),
       );
       setResults(loaded);
-
-      // Load available filters
-      const allFilters = await pagefind.filters();
-      setFilters(allFilters as Record<string, Record<string, number>>);
-    } catch {
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
+      setFilters(await pagefind.filters() as Record<string, Record<string, number>>);
+    } catch { setResults([]); }
+    finally { setLoading(false); }
   }, [activeFilter]);
 
-  useEffect(() => {
-    doSearch(query);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  useEffect(() => { doSearch(query); }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleFilter = (key: string, value: string) => {
     const next = { ...activeFilter };
-    if (next[key] === value) delete next[key];
-    else next[key] = value;
+    if (next[key] === value) delete next[key]; else next[key] = value;
     setActiveFilter(next);
     doSearch(query, next);
   };
 
-  if (!query) return <p className="text-gray-500">Suchbegriff eingeben.</p>;
+  if (!query) return <p style={{ color: "var(--text-secondary)" }}>Suchbegriff eingeben.</p>;
 
   return (
     <>
@@ -75,11 +58,12 @@ function SearchResults() {
               <button
                 key={`${key}-${val}`}
                 onClick={() => toggleFilter(key, val)}
-                className={`text-xs px-2 py-1 rounded-full border ${
-                  activeFilter[key] === val
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400"
-                }`}
+                className="text-xs px-2 py-1 rounded-full border transition-colors"
+                style={{
+                  background: activeFilter[key] === val ? "var(--color-brand-600)" : "transparent",
+                  color: activeFilter[key] === val ? "white" : "var(--text-secondary)",
+                  borderColor: activeFilter[key] === val ? "var(--color-brand-600)" : "var(--border)",
+                }}
               >
                 {val} ({count})
               </button>
@@ -89,20 +73,17 @@ function SearchResults() {
       )}
 
       {loading ? (
-        <p className="text-gray-500">Suche…</p>
+        <p style={{ color: "var(--text-secondary)" }}>Suche…</p>
       ) : results.length === 0 ? (
-        <p className="text-gray-500">Keine Ergebnisse für „{query}".</p>
+        <p style={{ color: "var(--text-secondary)" }}>Keine Ergebnisse für „{query}".</p>
       ) : (
         <ul className="space-y-4">
           {results.map((r) => (
             <li key={r.url}>
-              <Link href={r.url} className="text-blue-600 hover:underline font-medium">
+              <Link href={r.url} className="hover:underline font-medium" style={{ color: "var(--active-text)" }}>
                 {r.meta.title ?? r.url}
               </Link>
-              <p
-                className="text-sm text-gray-600 dark:text-gray-400 mt-1"
-                dangerouslySetInnerHTML={{ __html: r.excerpt }}
-              />
+              <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }} dangerouslySetInnerHTML={{ __html: r.excerpt }} />
             </li>
           ))}
         </ul>
@@ -115,7 +96,7 @@ export default function SearchPage() {
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
       <h1 className="text-2xl font-bold mb-6">Suchergebnisse</h1>
-      <Suspense fallback={<p className="text-gray-500">Laden…</p>}>
+      <Suspense fallback={<p style={{ color: "var(--text-secondary)" }}>Laden…</p>}>
         <SearchResults />
       </Suspense>
     </div>
