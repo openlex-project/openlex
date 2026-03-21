@@ -57,6 +57,7 @@ export default async function BookPage({ params }: Props) {
     ? typeof tocEntry.author === "string" ? tocEntry.author : tocEntry.author.name
     : null;
   const authorOrcid = tocEntry?.author && typeof tocEntry.author === "object" ? tocEntry.author.orcid : null;
+  const authorLast = authorName?.split(" ").pop();
 
   const navBar = (pos: "top" | "bottom") => (
     <nav className={`flex items-center justify-between text-sm ${
@@ -66,10 +67,18 @@ export default async function BookPage({ params }: Props) {
         <a href={prevHref!} className="text-blue-600 hover:underline dark:text-blue-400 shrink-0">← {prev.title}</a>
       ) : <span />}
       {pos === "top" && authorName && (
-        <span className="text-gray-500 dark:text-gray-400 truncate mx-4">
+        <span className="text-gray-500 dark:text-gray-400 mx-4">
           {authorOrcid ? (
-            <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">{authorName}</a>
-          ) : authorName}
+            <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">
+              <span className="hidden sm:inline">{authorName}</span>
+              <span className="sm:hidden">{authorLast}</span>
+            </a>
+          ) : (
+            <>
+              <span className="hidden sm:inline">{authorName}</span>
+              <span className="sm:hidden">{authorLast}</span>
+            </>
+          )}
         </span>
       )}
       {next ? (
