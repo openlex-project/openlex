@@ -184,3 +184,13 @@ export async function getLawContent(
 ): Promise<string | null> {
   return fetchFile(repo, `${slug}/${nr}.md`);
 }
+
+/** List all provision numbers for a law */
+export async function getLawProvisions(repo: string, slug: string): Promise<number[]> {
+  const files = await listFiles(repo, slug);
+  return files
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => parseInt(f.replace(".md", ""), 10))
+    .filter((n) => !isNaN(n))
+    .sort((a, b) => a - b);
+}
