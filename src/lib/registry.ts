@@ -53,13 +53,15 @@ export interface BookEntry extends BookMeta {
   toc: TocEntry[];
 }
 
-/** Article frontmatter in a journal */
+/** Article metadata from per-issue meta.yaml */
 export interface JournalArticle {
   slug: string;
   title: string;
-  author: string;
+  authors: { name: string; orcid?: string }[];
   rubrik: string;
   pages?: string;
+  numbering?: string;
+  doi?: string;
 }
 
 export interface JournalIssue {
@@ -70,6 +72,7 @@ export interface JournalIssue {
 
 export interface JournalEntry extends BookMeta {
   repo: string;
+  doi_prefix?: string;
   issues: JournalIssue[];
 }
 
@@ -86,35 +89,30 @@ function getContentRepos(): string[] {
     .filter(Boolean);
 }
 
-/** Parse YAML frontmatter from markdown */
-function parseFrontmatter(md: string): Record<string, string> {
-  const m = md.match(/^---\n([\s\S]*?)\n---/);
-  if (!m) return {};
-  return parse(m[1]!) as Record<string, string>;
-}
-
-/** Discover journal issues and articles from filesystem */
-async function discoverJournal(repo: string): Promise<JournalIssue[]> {
+/** Discover journal issues from per-issue meta.yaml */
+async function discoverJournal(repo: string, doiPrefix?: string): Promise<JournalIssue[]> {
   const years = (await listDirs(repo, ".")).filter((d) => /^\d{4}$/.test(d)).sort().reverse();
   const issues: JournalIssue[] = [];
   for (const year of years) {
     const nums = (await listDirs(repo, year)).sort().reverse();
-    for (const issue of nums) {
-      const files = await listFiles(repo, `${year}/${issue}`);
-      const articles: JournalArticle[] = [];
-      for (const f of files.filter((f) => f.endsWith(".md"))) {
-        const raw = await fetchFile(repo, `${year}/${issue}/${f}`);
-        if (!raw) continue;
-        const fm = parseFrontmatter(raw);
-        articles.push({
-          slug: f.replace(/\.md$/, ""),
-          title: fm.title ?? f,
-          author: fm.author ?? "",
-          rubrik: fm.rubrik ?? "Sonstiges",
-          pages: fm.pages,
-        });
-      }
-      if (articles.length) issues.push({ year, issue, articles });
+    for (const issueNr of nums) {
+      const raw = await fetchFile(repo, `${year}/${issueNr}/meta.yaml`);
+      if (!raw) continue;
+      const issueMeta = parse(raw) as { articles: { file: string; title: string; authors: { name: string; orcid?: string }[]; rubrik: string; pages?: string; numbering?: string; doi?: string }[] };
+      if (!issueMeta.articles?.length) continue;
+      const articles: JournalArticle[] = issueMeta.articles.map((a) => {
+        const firstPage = a.pages?.split("-")[0];
+        return {
+          slug: a.file.replace(/\.md$/, ""),
+          title: a.title,
+          authors: a.authors,
+          rubrik: a.rubrik ?? "Sonstiges",
+          pages: a.pages,
+          numbering: a.numbering,
+          doi: a.doi ?? (doiPrefix && firstPage ? `${doiPrefix}.${year}.${firstPage}` : undefined),
+        };
+      });
+      issues.push({ year, issue: issueNr, articles });
     }
   }
   return issues;
@@ -131,8 +129,9 @@ export async function buildRegistry(): Promise<ContentRegistry> {
       const meta = parse(metaRaw) as BookMeta;
 
       if (meta.type === "journal") {
-        const issues = await discoverJournal(repo);
-        journals.set(meta.slug, { ...meta, repo, issues });
+        const jmeta = meta as BookMeta & { doi_prefix?: string };
+        const issues = await discoverJournal(repo, jmeta.doi_prefix);
+        journals.set(meta.slug, { ...meta, repo, doi_prefix: jmeta.doi_prefix, issues });
         continue;
       }
 
@@ -264,8 +263,5 @@ export async function getJournalArticleContent(
   issue: string,
   slug: string,
 ): Promise<string | null> {
-  const raw = await fetchFile(repo, `${year}/${issue}/${slug}.md`);
-  if (!raw) return null;
-  // Strip frontmatter
-  return raw.replace(/^---\n[\s\S]*?\n---\n*/, "");
+  return fetchFile(repo, `${year}/${issue}/${slug}.md`);
 }

@@ -361,32 +361,34 @@ openlex-laws/
 
 ```
 zfkir/
-  meta.yaml              # type: "journal", slug, title, issn, editors
+  meta.yaml              # type: "journal", doi_prefix, issn
   jura.csl               # Optional: Zitationsstil
   references.yaml        # Optional: Bibliographie
   2026/
     01/                  # Heft 1
-      mustermann-ki-haftung.md   # Einzelbeitrag
+      meta.yaml          # Artikelliste mit Metadaten
+      mustermann-ki-haftung.md   # Pures Markdown, kein Frontmatter
       schmidt-algorithmen.md
 ```
 
-**Kein `toc.yaml`** — Struktur wird aus dem Dateisystem abgeleitet:
-- Verzeichnisse mit 4 Ziffern = Jahrgänge
-- Unterverzeichnisse = Hefte
-- `.md`-Dateien = Beiträge
-
-**Artikel-Frontmatter** (statt separater Metadaten):
+**Kein `toc.yaml`, kein Frontmatter** — Metadaten in per-issue `meta.yaml`:
 ```yaml
----
-title: "Haftung für KI-generierte Inhalte"
-author: "Prof. Dr. Max Mustermann"
-rubrik: "Aufsätze"
-pages: "1-12"
----
+articles:
+  - file: mustermann-ki-haftung.md
+    title: "Haftung für KI-generierte Inhalte"
+    authors:
+      - name: "Prof. Dr. Max Mustermann"
+        orcid: "0000-0001-2345-6789"
+    rubrik: "Aufsätze"
+    pages: "1-12"
+    numbering: "commentary"
 ```
 
-- `rubrik` gruppiert Beiträge im Heft-Inhaltsverzeichnis (Aufsätze, Rechtsprechung, Buchbesprechungen)
-- `pages` ermöglicht Zitier-Redirect: `/journal/zfkir/2026/42` → löst auf den Beitrag auf, der Seite 42 enthält
+- `authors`: Array mit Name + optionalem ORCID
+- `rubrik` gruppiert Beiträge im Heft-Inhaltsverzeichnis
+- `pages` ermöglicht Zitier-Redirect: `/journal/zfkir/2026/42` → Beitrag mit Seite 42
+- `numbering` pro Artikel (commentary, textbook, decimal, none)
+- `doi_prefix` im Journal-meta.yaml → Artikel-DOI: `{prefix}.{year}.{firstPage}`
 
 ## Domänen-Glossar
 

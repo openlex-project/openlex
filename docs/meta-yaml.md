@@ -82,32 +82,60 @@ No configuration needed — sections appear in both online sidebar and print PDF
 
 ## Journal-Specific
 
-Journals use `type: "journal"` and do **not** use `toc.yaml`. Structure is derived from the filesystem:
+Journals use `type: "journal"` and do **not** use `toc.yaml`. Structure is defined by per-issue `meta.yaml` files:
 
 ```
 zfkir/
-  meta.yaml              # type: "journal"
+  meta.yaml              # type: "journal", doi_prefix
   2026/
-    01/                  # Issue (Heft)
-      mustermann-ki.md   # Article with frontmatter
+    01/
+      meta.yaml          # Article list with metadata
+      mustermann-ki.md   # Pure markdown, no frontmatter
 ```
 
-Each article has YAML frontmatter:
+### Journal `meta.yaml`
 
 ```yaml
----
-title: "Haftung für KI-generierte Inhalte"
-author: "Prof. Dr. Max Mustermann"
-rubrik: "Aufsätze"
-pages: "1-12"
----
+slug: "zfkir"
+type: "journal"
+title: "Zeitschrift für KI-Recht"
+title_short: "ZfKIR"
+lang: "de"
+license: "CC-BY-SA-4.0"
+issn: "0800-0001"
+doi_prefix: "10.12345/zfkir"
+editors:
+  - name: "Prof. Dr. Anna Beispiel"
 ```
 
-| Field | Required | Description |
-|---|---|---|
-| `title` | ✓ | Article title |
-| `author` | ✓ | Author name |
-| `rubrik` | ✓ | Section grouping (Aufsätze, Rechtsprechung, etc.) |
-| `pages` | | Page range, enables citation redirect (`/journal/zfkir/2026/5` → article containing page 5) |
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `doi_prefix` | string | | DOI prefix — article DOIs derived as `{prefix}.{year}.{firstPage}` |
+| `issn` | string | | ISSN |
 
-Discovery: directories matching `YYYY/` are years, subdirectories are issues, `.md` files are articles.
+### Issue `meta.yaml`
+
+```yaml
+articles:
+  - file: mustermann-ki-haftung.md
+    title: "Haftung für KI-generierte Inhalte"
+    authors:
+      - name: "Prof. Dr. Max Mustermann"
+        orcid: "0000-0001-2345-6789"
+      - name: "Dr. Anna Beispiel"
+    rubrik: "Aufsätze"
+    pages: "1-12"
+    numbering: "commentary"
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `file` | string | ✓ | Markdown filename |
+| `title` | string | ✓ | Article title |
+| `authors` | array | ✓ | Authors with optional `orcid` |
+| `rubrik` | string | ✓ | Section grouping (Aufsätze, Rechtsprechung, etc.) |
+| `pages` | string | | Page range — enables citation redirect (`/journal/zfkir/2026/5` → article) |
+| `numbering` | string | | Heading numbering schema (commentary, textbook, decimal, none) |
+| `doi` | string | | Explicit DOI override (otherwise derived from `doi_prefix`) |
+
+Discovery: directories matching `YYYY/` are years, subdirectories are issues, each must contain a `meta.yaml`.

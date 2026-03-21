@@ -83,7 +83,7 @@ async function main() {
           url: `/journal/${slug}/${issue.year}/${issue.issue}/${article.slug}`,
           content,
           language: "de",
-          meta: { title: `${article.author}, ${article.title} – ${displayName} ${issue.issue}/${issue.year}` },
+          meta: { title: `${article.authors.map((a) => a.name).join(" / ")}, ${article.title} – ${displayName} ${issue.issue}/${issue.year}` },
           filters: { type: ["Zeitschrift"], werk: [displayName] },
         });
         count++;

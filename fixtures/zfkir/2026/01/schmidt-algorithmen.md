@@ -1,10 +1,3 @@
----
-title: "Algorithmische Entscheidungssysteme und Art. 22 DSGVO"
-author: "Dr. Lisa Schmidt"
-rubrik: "Aufsätze"
-pages: "13-25"
----
-
 ## A. Problemstellung
 
 Art. 22 DSGVO gewährt betroffenen Personen das Recht, nicht einer ausschließlich auf automatisierter Verarbeitung beruhenden Entscheidung unterworfen zu werden. Die Norm wirft in der Praxis erhebliche Auslegungsfragen auf.

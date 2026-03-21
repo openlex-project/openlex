@@ -1,11 +1,35 @@
 import { notFound, redirect } from "next/navigation";
-import { buildRegistry, getJournalArticleContent } from "@/lib/registry";
+import { buildRegistry, getJournalArticleContent, type JournalArticle } from "@/lib/registry";
 import { renderMarkdown } from "@/lib/markdown";
 import { JournalSidebar } from "@/components/journal-sidebar";
 import Link from "next/link";
 
 interface Props {
   params: Promise<{ zeitschrift: string; slug?: string[] }>;
+}
+
+/** Format authors: "Mustermann/Beispiel" or linked with ORCID */
+function authorNames(a: JournalArticle) {
+  return a.authors.map((au) => au.name).join(" / ");
+}
+
+function authorLastNames(a: JournalArticle) {
+  return a.authors.map((au) => au.name.split(" ").pop()).join("/");
+}
+
+function AuthorLine({ article }: { article: JournalArticle }) {
+  return (
+    <span>
+      {article.authors.map((au, i) => (
+        <span key={au.name}>
+          {i > 0 && " / "}
+          {au.orcid ? (
+            <a href={`https://orcid.org/${au.orcid}`} target="_blank" rel="noopener" className="hover:underline">{au.name}</a>
+          ) : au.name}
+        </span>
+      ))}
+    </span>
+  );
 }
 
 export default async function JournalPage({ params }: Props) {
@@ -33,7 +57,7 @@ export default async function JournalPage({ params }: Props) {
                 <ul className="text-sm space-y-1" style={{ color: "var(--text-secondary)" }}>
                   {iss.articles.map((a) => (
                     <li key={a.slug}>
-                      <Link href={`${base}/${iss.year}/${iss.issue}/${a.slug}`} className="hover:underline">{a.author}, {a.title}</Link>
+                      <Link href={`${base}/${iss.year}/${iss.issue}/${a.slug}`} className="hover:underline">{authorNames(a)}, {a.title}</Link>
                       {a.pages && <span className="ml-1" style={{ color: "var(--text-tertiary)" }}>S. {a.pages}</span>}
                     </li>
                   ))}
@@ -86,7 +110,7 @@ export default async function JournalPage({ params }: Props) {
                       <Link href={`${base}/${year}/${issueNr}/${a.slug}`} className="group block">
                         <span className="font-medium group-hover:underline">{a.title}</span>
                         <br />
-                        <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{a.author}{a.pages && `, S. ${a.pages}`}</span>
+                        <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{authorNames(a)}{a.pages && `, S. ${a.pages}`}</span>
                       </Link>
                     </li>
                   ))}
@@ -109,7 +133,7 @@ export default async function JournalPage({ params }: Props) {
 
     const md = await getJournalArticleContent(journal.repo, year!, issueNr!, articleSlug!);
     if (!md) notFound();
-    const html = await renderMarkdown(md);
+    const html = await renderMarkdown(md, article.numbering ? { numbering: { schema: article.numbering } } : undefined);
 
     const idx = issue.articles.indexOf(article);
     const prev = issue.articles[idx - 1];
@@ -121,12 +145,19 @@ export default async function JournalPage({ params }: Props) {
         <JournalSidebar zeitschrift={zeitschrift} title={journal.title_short ?? journal.title} issues={journal.issues} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
-            {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {prev.author.split(" ").pop()}</Link> : <span />}
-            <span className="truncate mx-4" style={{ color: "var(--text-secondary)" }}>{article.author}</span>
-            {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right" style={{ color: "var(--active-text)" }}>{next.author.split(" ").pop()} →</Link> : <span />}
+            {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {authorLastNames(prev)}</Link> : <span />}
+            <span className="truncate mx-4" style={{ color: "var(--text-secondary)" }}><AuthorLine article={article} /></span>
+            {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right" style={{ color: "var(--active-text)" }}>{authorLastNames(next)} →</Link> : <span />}
           </nav>
           <h1 className="text-2xl font-bold mb-1">{article.title}</h1>
-          <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>{article.author}{article.pages && ` · S. ${article.pages}`} · {journal.title_short ?? journal.title} {issueNr}/{year}</p>
+          <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
+            <AuthorLine article={article} />
+            {article.pages && ` · S. ${article.pages}`}
+            {` · ${journal.title_short ?? journal.title} ${issueNr}/${year}`}
+            {article.doi && (
+              <> · <a href={`https://doi.org/${article.doi}`} target="_blank" rel="noopener" className="hover:underline" style={{ color: "var(--active-text)" }}>DOI: {article.doi}</a></>
+            )}
+          </p>
           <div className="prose prose-gray dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
           <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
             {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {prev.title}</Link> : <span />}

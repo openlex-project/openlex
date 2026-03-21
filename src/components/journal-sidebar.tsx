@@ -77,7 +77,7 @@ export function JournalSidebar({ zeitschrift, title, issues, activeYear, activeI
                               className={`block px-3 py-1 text-xs leading-snug transition-colors ${active ? "font-semibold" : ""}`}
                               style={{ color: active ? "var(--active-text)" : "var(--text-tertiary)", background: active ? "var(--active-bg)" : undefined }}
                             >
-                              <span className="font-medium">{a.author.split(" ").pop()}</span>
+                              <span className="font-medium">{a.authors[0]?.name.split(" ").pop()}</span>
                               {" – "}
                               <span>{a.title.length > 40 ? a.title.slice(0, 40) + "…" : a.title}</span>
                             </a>

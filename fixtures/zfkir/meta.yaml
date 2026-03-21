@@ -5,5 +5,6 @@ title_short: "ZfKIR"
 lang: "de"
 license: "CC-BY-SA-4.0"
 issn: "0800-0001"
+doi_prefix: "10.12345/zfkir"
 editors:
   - name: "Prof. Dr. Anna Beispiel"

@@ -1,10 +1,3 @@
----
-title: "Haftung für KI-generierte Inhalte"
-author: "Prof. Dr. Max Mustermann"
-rubrik: "Aufsätze"
-pages: "1-12"
----
-
 ## A. Einleitung
 
 Die rasante Entwicklung generativer KI-Systeme wirft grundlegende Fragen der zivilrechtlichen Haftung auf. Wer haftet, wenn ein KI-System fehlerhafte Inhalte erzeugt, die Dritte schädigen?
