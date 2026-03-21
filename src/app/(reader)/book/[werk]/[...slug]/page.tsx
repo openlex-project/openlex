@@ -47,12 +47,27 @@ export default async function BookPage({ params }: Props) {
   const edition = ref === "main" ? null : ref.replace("ed", ". Auflage");
 
   const slugPrefix = ref === "main" ? `/book/${werk}` : `/book/${werk}/${ref}`;
-  const toHref = (entry: typeof prev) => entry ? `${slugPrefix}/${entry.file.replace(/\.md$/, "")}` : null;
+  const prevHref = prev ? `${slugPrefix}/${prev.file.replace(/\.md$/, "")}` : null;
+  const nextHref = next ? `${slugPrefix}/${next.file.replace(/\.md$/, "")}` : null;
+
+  const navBar = (pos: "top" | "bottom") => (
+    <nav className={`flex justify-between text-sm ${
+      pos === "top" ? "mb-6 pb-3 border-b" : "mt-12 pt-6 border-t"
+    } border-gray-200 dark:border-gray-700`}>
+      {prev ? (
+        <a href={prevHref!} className="text-blue-600 hover:underline dark:text-blue-400">← {prev.title}</a>
+      ) : <span />}
+      {next ? (
+        <a href={nextHref!} className="text-blue-600 hover:underline dark:text-blue-400 text-right">{next.title} →</a>
+      ) : <span />}
+    </nav>
+  );
 
   return (
     <div className="flex">
       <BookSidebar werk={werk} toc={meta.toc} edition={ref} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8 max-w-4xl">
+        {navBar("top")}
         <div className="mb-6 text-sm text-gray-500">
           {displayName} – {tocEntry?.title ?? fileSlug}
           {edition && <span className="ml-2 text-amber-600 dark:text-amber-400">({edition})</span>}
@@ -64,18 +79,7 @@ export default async function BookPage({ params }: Props) {
           className="prose prose-gray prose-rn dark:prose-invert max-w-none"
           dangerouslySetInnerHTML={{ __html: html }}
         />
-        <nav className="mt-12 flex justify-between border-t border-gray-200 dark:border-gray-700 pt-6 text-sm">
-          {prev ? (
-            <a href={toHref(prev)!} className="text-blue-600 hover:underline dark:text-blue-400">
-              ← {prev.title}
-            </a>
-          ) : <span />}
-          {next ? (
-            <a href={toHref(next)!} className="text-blue-600 hover:underline dark:text-blue-400 text-right">
-              {next.title} →
-            </a>
-          ) : <span />}
-        </nav>
+        {navBar("bottom")}
         <FeedbackButton repo={meta.repo} />
       </article>
     </div>
