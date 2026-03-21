@@ -114,7 +114,11 @@ export function findTocEntry(toc: TocEntry[], slug: string): TocEntry | undefine
     if (e.file.replace(/\.md$/, "") === slug) return e;
     if (e.children) {
       const found = findTocEntry(e.children, slug);
-      if (found) return found;
+      if (found) {
+        // Inherit parent author if child has none
+        if (!found.author && e.author) found.author = e.author;
+        return found;
+      }
     }
   }
   return undefined;
