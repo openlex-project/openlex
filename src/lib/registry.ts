@@ -144,7 +144,10 @@ function flattenToc(toc: TocEntry[]): TocEntry[] {
 /** Determine which backmatter sections exist for a book */
 export function getBackmatterSections(meta: BookEntry): { id: string; title: string }[] {
   const sections: { id: string; title: string }[] = [];
-  if (meta.bibliography) sections.push({ id: "literaturverzeichnis", title: "Literaturverzeichnis" });
+  if (meta.bibliography) {
+    sections.push({ id: "literaturverzeichnis", title: "Literaturverzeichnis" });
+    sections.push({ id: "rechtsprechungsverzeichnis", title: "Rechtsprechungsverzeichnis" });
+  }
   const hasAuthors = meta.toc.some(function check(e: TocEntry): boolean {
     return !!e.author || (e.children?.some(check) ?? false);
   });

@@ -65,8 +65,7 @@ export default async function BackmatterPage({ params, searchParams }: Props) {
   let title = "";
   let html = "";
 
-  if (section === "literaturverzeichnis" && meta.csl && meta.bibliography) {
-    title = "Literaturverzeichnis";
+  if ((section === "literaturverzeichnis" || section === "rechtsprechungsverzeichnis") && meta.csl && meta.bibliography) {
     const [cslXml, refsYaml] = await Promise.all([
       fetchFile(meta.repo, meta.csl),
       fetchFile(meta.repo, meta.bibliography),
@@ -74,11 +73,14 @@ export default async function BackmatterPage({ params, searchParams }: Props) {
     if (cslXml && refsYaml) {
       const refs = parseReferencesYaml(refsYaml);
       const cited = await collectCitations(meta.repo, meta.toc);
-      const engine = createCitationEngine(cslXml, refs);
-      // Register all cited keys
-      for (const key of cited) engine.cite(key);
-      const bib = engine.bibliography();
-      html = bib || "<p>Keine Einträge.</p>";
+      const isCase = section === "rechtsprechungsverzeichnis";
+      // Filter refs by type: legal_case → Rspr, rest → Lit
+      const filtered = refs.filter((r) => cited.has(r.id) && (isCase ? r.type === "legal_case" : r.type !== "legal_case"));
+      if (filtered.length === 0) notFound();
+      const engine = createCitationEngine(cslXml, filtered);
+      for (const r of filtered) engine.cite(r.id);
+      title = isCase ? "Rechtsprechungsverzeichnis" : "Literaturverzeichnis";
+      html = engine.bibliography() || "<p>Keine Einträge.</p>";
     }
   } else if (section === "autorenverzeichnis") {
     title = "Autorenverzeichnis";
