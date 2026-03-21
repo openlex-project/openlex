@@ -21,9 +21,12 @@ export function FootnoteTooltips() {
         if (!id) return;
         const fn = document.getElementById(id);
         if (!fn) return;
-        const clone = fn.cloneNode(true) as HTMLElement;
-        clone.querySelectorAll("a.fn-back, a.footnote-back, a[role='doc-backlink']").forEach((a) => a.remove());
-        tooltip.innerHTML = clone.innerHTML;
+        // Get inner HTML, strip back-link
+        let content = fn.innerHTML;
+        content = content.replace(/<a[^>]*class="fn-back"[^>]*>.*?<\/a>/g, "");
+        content = content.replace(/<a[^>]*role="doc-backlink"[^>]*>.*?<\/a>/g, "");
+        if (!content.trim()) return;
+        tooltip.innerHTML = content;
         tooltip.style.display = "block";
 
         const rect = ref.getBoundingClientRect();
