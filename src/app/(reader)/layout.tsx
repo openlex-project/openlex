@@ -31,7 +31,7 @@ export default async function ReaderLayout({
       <main id="main-content" className="flex-1">{children}</main>
       <footer className="border-t px-6 py-4 text-sm flex items-center justify-between" style={{ borderColor: "var(--border-subtle)", color: "var(--text-tertiary)" }}>
         <span>{t(locale, "footer.copy")}</span>
-        <span className="text-xs">Open Access · CC-BY-SA-4.0</span>
+        <span className="text-xs">Open Access</span>
       </footer>
     </div>
   );

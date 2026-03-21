@@ -61,6 +61,7 @@ export default async function LawPage({ params }: Props) {
           {prevNr !== undefined ? navLink(`/law/${gesetz}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {nextNr !== undefined ? navLink(`/law/${gesetz}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
+        <p className="text-xs mt-4" style={{ color: "var(--text-tertiary)" }}>Gemeinfrei — amtliches Werk (§ 5 UrhG)</p>
       </article>
     </div>
   );

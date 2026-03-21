@@ -206,6 +206,7 @@ export default async function BookPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: html }}
         />
         {navBar("bottom")}
+        <p className="text-xs mt-4" style={{ color: "var(--text-tertiary)" }}>{meta.license}</p>
         <FeedbackButton repo={meta.repo} />
         <FootnoteTooltips />
       </article>
