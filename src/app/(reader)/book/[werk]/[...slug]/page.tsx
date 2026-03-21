@@ -53,15 +53,27 @@ export default async function BookPage({ params }: Props) {
   const prevHref = prev ? `${slugPrefix}/${prev.file.replace(/\.md$/, "")}` : null;
   const nextHref = next ? `${slugPrefix}/${next.file.replace(/\.md$/, "")}` : null;
 
+  const authorName = tocEntry?.author
+    ? typeof tocEntry.author === "string" ? tocEntry.author : tocEntry.author.name
+    : null;
+  const authorOrcid = tocEntry?.author && typeof tocEntry.author === "object" ? tocEntry.author.orcid : null;
+
   const navBar = (pos: "top" | "bottom") => (
-    <nav className={`flex justify-between text-sm ${
+    <nav className={`flex items-center justify-between text-sm ${
       pos === "top" ? "mb-6 pb-3 border-b" : "mt-12 pt-6 border-t"
     } border-gray-200 dark:border-gray-700`}>
       {prev ? (
-        <a href={prevHref!} className="text-blue-600 hover:underline dark:text-blue-400">← {prev.title}</a>
+        <a href={prevHref!} className="text-blue-600 hover:underline dark:text-blue-400 shrink-0">← {prev.title}</a>
       ) : <span />}
+      {pos === "top" && authorName && (
+        <span className="text-gray-500 dark:text-gray-400 truncate mx-4">
+          {authorOrcid ? (
+            <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">{authorName}</a>
+          ) : authorName}
+        </span>
+      )}
       {next ? (
-        <a href={nextHref!} className="text-blue-600 hover:underline dark:text-blue-400 text-right">{next.title} →</a>
+        <a href={nextHref!} className="text-blue-600 hover:underline dark:text-blue-400 text-right shrink-0">{next.title} →</a>
       ) : <span />}
     </nav>
   );
