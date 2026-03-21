@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { buildRegistry, getJournalArticleContent } from "@/lib/registry";
 import { renderMarkdown } from "@/lib/markdown";
 import { JournalSidebar } from "@/components/journal-sidebar";
@@ -54,7 +54,22 @@ export default async function JournalPage({ params }: Props) {
   if (slug.length === 2) {
     const [year, issueNr] = slug;
     const issue = journal.issues.find((i) => i.year === year && i.issue === issueNr);
-    if (!issue) notFound();
+
+    // No matching issue → try citation redirect: /journal/zfkir/2025/42 (year + page)
+    if (!issue) {
+      const page = parseInt(issueNr!, 10);
+      if (isNaN(page)) notFound();
+      for (const iss of journal.issues.filter((i) => i.year === year)) {
+        for (const a of iss.articles) {
+          if (!a.pages) continue;
+          const [start, end] = a.pages.split("-").map(Number);
+          if (page >= start! && page <= (end ?? start!)) {
+            redirect(`${base}/${iss.year}/${iss.issue}/${a.slug}`);
+          }
+        }
+      }
+      notFound();
+    }
 
     const rubriken = new Map<string, typeof issue.articles>();
     for (const a of issue.articles) {
