@@ -24,7 +24,7 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     "section.books": "Kommentare & Bücher",
     "section.laws": "Gesetze",
     "law.link": "Gesetzestext →",
-    "footer.copy": "© OpenLex – CC-BY-SA-4.0",
+    "footer.copy": "© OpenLex",
   },
   en: {
     "site.title": "OpenLex",
@@ -47,7 +47,7 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     "section.books": "Commentaries & Books",
     "section.laws": "Laws",
     "law.link": "Legal text →",
-    "footer.copy": "© OpenLex – CC-BY-SA-4.0",
+    "footer.copy": "© OpenLex",
   },
 };
 
