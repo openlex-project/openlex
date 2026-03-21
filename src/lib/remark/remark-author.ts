@@ -75,27 +75,11 @@ const remarkAuthor: Plugin<[AuthorOptions?], Root> = (opts) => {
       if (orcid) orcidRegistry.set(name, orcid);
       else orcid = orcidRegistry.get(name);
 
-      const nameHtml = orcid
-        ? `<a href="https://orcid.org/${orcid}" target="_blank" rel="noopener" class="author-link">${name}</a>`
-        : name;
-
-      n.children = [{ type: "html" as const, value: nameHtml }] as DirectiveNode["children"];
+      // Remove the directive from output — author shown in top nav only
+      n.children = [] as DirectiveNode["children"];
     });
 
-    // If no ::: author but toc.yaml has author, inject it after first heading
-    if (!hasInlineAuthor && tocName) {
-      const orcid = orcidRegistry.get(tocName);
-      const nameHtml = orcid
-        ? `<aside class="directive-author"><a href="https://orcid.org/${orcid}" target="_blank" rel="noopener" class="author-link">${tocName}</a></aside>`
-        : `<aside class="directive-author">${tocName}</aside>`;
-
-      visit(tree, "heading", (_node, index, parent) => {
-        if (index !== undefined && parent) {
-          parent.children.splice(index + 1, 0, { type: "html", value: nameHtml } as never);
-          return false; // stop after first heading
-        }
-      });
-    }
+    // Author display is handled by the top navigation bar, not inline
   };
 };
 
