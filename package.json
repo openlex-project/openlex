@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "postbuild": "tsx scripts/build-search-index.ts",
+    "build": "tsx scripts/build-search-index.ts && next build",
     "start": "next start",
     "lint": "eslint"
   },
