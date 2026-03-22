@@ -63,14 +63,14 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 
 ## URL-Schema
 
-- URL-Schema für Kommentare/Bücher: `/book/{werk}/{slug}` (aktuell), `/book/{werk}/{n}ed/{slug}` (explizite Auflage)
+- URL-Schema für Kommentare/Bücher: `/book/{work}/{slug}` (aktuell), `/book/{work}/{n}ed/{slug}` (explizite Auflage)
 - Slug = Dateiname ohne `.md` aus `toc.yaml` (z.B. `art-5`, `vorbem-1-4`, `einleitung`)
 - Editionen mappen auf Git-Branches: `main` = aktuelle Auflage, `{n}ed` = archivierte Auflage.
 - Edition von `main` wird abgeleitet: Anzahl `*ed`-Branches + 1. Kein `edition`-Feld in `meta.yaml`.
 - Workflow: Neue Auflage → aktuellen `main` als `{n}ed` branchen (einfrieren), `main` weiterarbeiten.
 - Zugriff auf `/{n}ed/` ohne existierenden Branch → Redirect auf aktuelle Auflage.
-- URL-Schema für Gesetze: `/law/{gesetz}/{nr}` (aktuell), `/law/{gesetz}/@{datum}/{nr}` (historische Fassung)
-- URL-Schema für Zeitschriften: `/journal/{zeitschrift}/{jahr}/{heft}/{slug}` (Beitrag), `/journal/{zeitschrift}/{jahr}/{seite}` (Zitier-Redirect)
+- URL-Schema für Gesetze: `/law/{law}/{nr}` (aktuell), `/law/{law}/@{datum}/{nr}` (historische Fassung)
+- URL-Schema für Zeitschriften: `/journal/{journal}/{year}/{issue}/{slug}` (Beitrag), `/journal/{journal}/{year}/{page}` (Zitier-Redirect)
 - Journal-Struktur wird aus dem Dateisystem abgeleitet (kein `toc.yaml`): Jahrgänge → Hefte → Artikel mit Frontmatter (title, author, rubrik, pages)
 - `unit_type` nur bei Gesetzen (in `sync.yaml`): `article` (Art.) oder `section` (§)
 - Fragmente für Untergliederung: `#rn-1` (Kommentare), `#abs-1`, `#abs-1-s-1`, `#abs-1-lit-a` (Gesetze)
@@ -81,8 +81,8 @@ Beispiele:
 /book/oc-dsgvo/art-5#rn-3
 /book/oc-urhg/art-15#rn-7
 /book/schmieder-urheberrecht/kap-3
-/journal/zfkir/2025/01/mustermann-ki       # Beitrag (kanonisch)
-/journal/zfkir/2025/42                      # Zitier-Redirect → Beitrag
+/journal/zfkir/2025/01/mustermann-ki       # Article (canonical)
+/journal/zfkir/2025/42                      # Citation redirect → article
 ```
 
 ## Gesetze

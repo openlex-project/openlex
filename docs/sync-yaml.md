@@ -11,16 +11,19 @@ laws:
     title_short: "DSGVO"
     unit_type: "article"
     lang: "de"
-    source: "gii"
-    gii_slug: "dsgvo"
+    license: "Gemeinfrei"
+    category: "eu-law"
+    source: "eurlex"
+    celex: "32016R0679"
 
-  urhg:
-    title: "Gesetz über Urheberrecht und verwandte Schutzrechte"
-    title_short: "UrhG"
+  bgb:
+    title: "Bürgerliches Gesetzbuch"
+    title_short: "BGB"
     unit_type: "section"
     lang: "de"
+    license: "Gemeinfrei"
     source: "gii"
-    gii_slug: "urhg"
+    gii_slug: "bgb"
 ```
 
 ## Fields per Law
@@ -32,8 +35,30 @@ laws:
 | `title_short` | string | | Short title / abbreviation (e.g., "DSGVO") |
 | `unit_type` | `article` \| `section` | ✓ | Unit type: `article` → "Art.", `section` → "§" |
 | `lang` | string | ✓ | Language (ISO 639-1) |
-| `source` | string | | Source for sync (e.g., `gii` for gesetze-im-internet.de) |
-| `gii_slug` | string | | Slug on gesetze-im-internet.de |
+| `license` | string | | License identifier (e.g., "Gemeinfrei", "CC-BY-SA-4.0") |
+| `category` | string | | Category key for homepage grouping (defaults to `law`) |
+| `source` | `gii` \| `eurlex` | | Source for sync |
+| `gii_slug` | string | | Slug on gesetze-im-internet.de (when `source: gii`) |
+| `celex` | string | | CELEX number (when `source: eurlex`) |
+
+## Sync Scripts
+
+The repo includes two sync scripts in `scripts/`:
+
+- `sync_gii.py` — Fetches German federal laws from gesetze-im-internet.de (XML zip → Markdown)
+- `sync_eurlex.py` — Fetches EU regulations from EUR-Lex (HTML → Markdown)
+
+Both read `sync.yaml` and only process laws matching their source type.
+
+### GitHub Actions
+
+`.github/workflows/sync.yml` runs both scripts weekly (Monday 4am UTC) and on manual dispatch. Changes are committed and tagged with the date (`sync-YYYY-MM-DD`).
+
+### Dependencies
+
+```
+pip install -r requirements.txt  # pyyaml, beautifulsoup4
+```
 
 ## Directory Structure
 
@@ -42,14 +67,19 @@ Each law has its own directory in the repo, named after the slug:
 ```
 openlex-laws/
   sync.yaml
+  requirements.txt
+  scripts/
+    sync_gii.py
+    sync_eurlex.py
+  .github/workflows/
+    sync.yml
   dsgvo/
     1.md
     2.md
-    5.md
     ...
-  urhg/
+  bgb/
     1.md
-    15.md
+    2.md
     ...
 ```
 
@@ -59,4 +89,6 @@ Markdown files contain plain legal text without frontmatter.
 
 - `title_short` is preferred in navigation and cross-links.
 - `unit_type` determines the prefix on the law page: "Art. 5 DSGVO" vs. "§ 15 UrhG".
+- `license` is shown in the page footer. Laws are typically public domain ("Gemeinfrei").
+- `category` groups laws on the homepage. If omitted, defaults to `law`.
 - A law repo can contain multiple laws (mono-repo).

@@ -1,33 +1,60 @@
 # OpenLex
 
-Open-Access-Plattform für juristische Fachliteratur – Kommentare, Lehrbücher, Zeitschriften, Gesetze.
+Configurable open-access publishing platform for legal literature — commentaries, textbooks, journals, laws.
 
-Inhalte werden in Pandoc-Flavor Markdown verfasst, in privaten GitHub-Repos verwaltet und über ein Next.js-Frontend auf Vercel gerendert.
+Content is authored in Pandoc-flavor Markdown, managed in private GitHub repos, and rendered via a Next.js frontend on Vercel.
 
 **Live:** [openlex.vercel.app](https://openlex.vercel.app)
 
 ## Features
 
-- Markdown-basierte Inhalte mit Randnummern, Fußnoten, CSL-Zitationen
-- Automatisches Literaturverzeichnis (citeproc-js)
-- Konfigurierbares Nummerierungssystem
-- Cross-Links zwischen Gesetzen und Kommentaren
-- Volltextsuche (Pagefind, client-seitig)
-- Dark Mode (System-Präferenz)
-- GitHub/Google OAuth Login
-- Feedback-System (GitHub Issues)
-- Branch-basierte Editionen
+- Markdown-based content with margin numbers, footnotes, CSL citations
+- Automatic bibliography (citeproc-js)
+- Configurable numbering system
+- Cross-links between laws and commentaries
+- Full-text search (Pagefind, client-side)
+- Dark mode (system preference)
+- GitHub/Google OAuth login
+- Feedback system (GitHub Issues)
+- Branch-based editions
 - i18n (de/en)
+- Configurable site identity, branding, and content categories via `site.yaml`
+- Law sync from gesetze-im-internet.de (GII) and EUR-Lex
 
-## Dokumentation
+## Configuration
 
-- [Content-Guide](docs/content-guide.md) – Markdown-Syntax für Autoren
-- [meta.yaml](docs/meta-yaml.md) – Metadaten für Bücher/Kommentare
-- [toc.yaml](docs/toc-yaml.md) – Inhaltsverzeichnis
-- [sync.yaml](docs/sync-yaml.md) – Gesetze-Konfiguration
-- [references.yaml](docs/references-yaml.md) – CSL-Referenzen
-- [Print-Pipeline](docs/print-pipeline.md) – Pandoc/LaTeX PDF-Generierung
-- [Deployment](docs/deployment.md) – Vercel, Env-Vars, Setup
+Edit `site.yaml` in the project root to rebrand the platform:
+
+```yaml
+name: "OpenLex"
+tagline:
+  de: "Open-Access-Plattform für juristische Fachliteratur"
+  en: "Open-access platform for legal literature"
+copyright: "OpenLex"
+default_locale: "de"
+brand_hue: 265
+
+categories:
+  - key: book
+    label: { de: "Kommentare & Bücher", en: "Commentaries & Books" }
+  - key: journal
+    label: { de: "Zeitschriften", en: "Journals" }
+  - key: law
+    label: { de: "Gesetze", en: "Laws" }
+```
+
+See [site-yaml.md](docs/site-yaml.md) for full reference.
+
+## Documentation
+
+- [site.yaml](docs/site-yaml.md) – Site identity, branding, categories
+- [meta.yaml](docs/meta-yaml.md) – Metadata for books/journals
+- [toc.yaml](docs/toc-yaml.md) – Table of contents (books)
+- [sync.yaml](docs/sync-yaml.md) – Law configuration and sync
+- [Content Guide](docs/content-guide.md) – Markdown syntax for authors
+- [references.yaml](docs/references-yaml.md) – CSL references
+- [Print Pipeline](docs/print-pipeline.md) – Pandoc/LaTeX PDF generation
+- [Deployment](docs/deployment.md) – Vercel, env vars, setup
 
 ## Quickstart
 
@@ -36,8 +63,8 @@ pnpm install
 pnpm dev
 ```
 
-Für den Zugriff auf Content-Repos: `.env.local` mit `GITHUB_PAT` und `CONTENT_REPOS` anlegen. Details siehe [Deployment](docs/deployment.md).
+For content repo access: create `.env.local` with `GITHUB_PAT` and `CONTENT_REPOS`. See [Deployment](docs/deployment.md).
 
-## Lizenz
+## License
 
 MIT
