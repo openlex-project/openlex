@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
-import { useT } from "@/lib/i18n/useT";
+import { SidebarShell } from "./sidebar-shell";
 import type { LawTocNode } from "@/lib/registry";
 
 interface Props {
@@ -26,8 +26,8 @@ function findExpandedKeys(toc: LawTocNode[], nr: string, path: string[] = []): s
   return [];
 }
 
-function TocNode({ node, law, unitLabel, activeNr, depth, expanded, onToggle }: {
-  node: LawTocNode; law: string; unitLabel: string; activeNr?: string;
+function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
+  node: LawTocNode; law: string; unitLabel: string;
   depth: number; expanded: Set<string>; onToggle: (key: string) => void;
 }) {
   const pathname = usePathname();
@@ -59,7 +59,7 @@ function TocNode({ node, law, unitLabel, activeNr, depth, expanded, onToggle }: 
       </button>
       {isExpanded && node.children && (
         <ul>{node.children.map((child, i) => (
-          <TocNode key={child.nr ?? `${i}-${child.label}`} node={child} law={law} unitLabel={unitLabel} activeNr={activeNr} depth={depth + 1} expanded={expanded} onToggle={onToggle} />
+          <TocNode key={child.nr ?? `${i}-${child.label}`} node={child} law={law} unitLabel={unitLabel} depth={depth + 1} expanded={expanded} onToggle={onToggle} />
         ))}</ul>
       )}
     </li>
@@ -68,8 +68,6 @@ function TocNode({ node, law, unitLabel, activeNr, depth, expanded, onToggle }: 
 
 export function LawSidebar({ law, title, unitLabel, toc, provisions, activeNr }: Props) {
   const pathname = usePathname();
-  const t = useT();
-  const [open, setOpen] = useState(true);
 
   const initialExpanded = useMemo(() => {
     if (!activeNr) return new Set<string>();
@@ -77,11 +75,6 @@ export function LawSidebar({ law, title, unitLabel, toc, provisions, activeNr }:
   }, [toc, activeNr]);
 
   const [expanded, setExpanded] = useState(initialExpanded);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("sidebar-open");
-    if (stored !== null) setOpen(stored === "1");
-  }, []);
 
   useEffect(() => {
     if (activeNr) {
@@ -95,51 +88,24 @@ export function LawSidebar({ law, title, unitLabel, toc, provisions, activeNr }:
     }
   }, [activeNr, toc]);
 
-  const toggle = () => setOpen((v) => { localStorage.setItem("sidebar-open", v ? "0" : "1"); return !v; });
   const onToggle = (key: string) => setExpanded((s) => { const n = new Set(s); n.has(key) ? n.delete(key) : n.add(key); return n; });
 
-  const hasToc = toc.length > 0;
-
   return (
-    <>
-      {open && <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={toggle} />}
-      <aside
-        className={`sticky top-[57px] h-[calc(100vh-57px)] shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out flex flex-col ${
-          open ? "w-72" : "w-0 lg:w-10"
-        }`}
-        style={{ background: "var(--surface)", borderRight: open ? "1px solid var(--border-subtle)" : undefined }}
-      >
-        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full" style={{ color: "var(--text-tertiary)" }} aria-label={open ? t("sidebar.close") : t("sidebar.open")} aria-expanded={open}>
-          {open ? (
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M13 8l-4 4 4 4" /></svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M11 8l4 4-4 4" /></svg>
-          )}
-        </button>
-        {open && (
-          <nav className="overflow-y-auto flex-1">
-            <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</div>
-            {hasToc ? (
-              <ul className="py-1">{toc.map((node, i) => (
-                <TocNode key={node.nr ?? `${i}-${node.label}`} node={node} law={law} unitLabel={unitLabel} activeNr={activeNr} depth={0} expanded={expanded} onToggle={onToggle} />
-              ))}</ul>
-            ) : (
-              <ul className="py-1 text-sm">{provisions.map((nr) => {
-                const href = `/law/${law}/${nr}`;
-                const active = pathname === href;
-                return (
-                  <li key={nr}><a href={href} className={`block px-4 py-1.5 ${active ? "font-semibold" : ""}`} style={{ color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>{unitLabel} {nr}</a></li>
-                );
-              })}</ul>
-            )}
-          </nav>
-        )}
-      </aside>
-      {!open && (
-        <button onClick={toggle} className="fixed bottom-4 left-4 z-30 lg:hidden rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-white" style={{ background: "var(--color-brand-600)" }} aria-label={t("nav.open")}>
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-        </button>
+    <SidebarShell>
+      <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</div>
+      {toc.length > 0 ? (
+        <ul className="py-1">{toc.map((node, i) => (
+          <TocNode key={node.nr ?? `${i}-${node.label}`} node={node} law={law} unitLabel={unitLabel} depth={0} expanded={expanded} onToggle={onToggle} />
+        ))}</ul>
+      ) : (
+        <ul className="py-1 text-sm">{provisions.map((nr) => {
+          const href = `/law/${law}/${nr}`;
+          const active = pathname === href;
+          return (
+            <li key={nr}><a href={href} className={`block px-4 py-1.5 ${active ? "font-semibold" : ""}`} style={{ color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>{unitLabel} {nr}</a></li>
+          );
+        })}</ul>
       )}
-    </>
+    </SidebarShell>
   );
 }
