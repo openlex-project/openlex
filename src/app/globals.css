@@ -263,6 +263,9 @@ body {
 .fn-tooltip p:first-child { margin-top: 0; }
 .fn-tooltip p:last-child { margin-bottom: 0; }
 
+/* ─── Scroll offset for sticky header ─── */
+[id] { scroll-margin-top: 4rem; }
+
 /* ─── Glass header ─── */
 .glass-header {
   background: oklch(1 0 0 / 0.8);

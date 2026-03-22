@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
-import { getBookContent, findTocEntry, findTocNeighbors, extractHeadings, getBackmatterSections, type TocEntry, type BookEntry, type ContentRegistry } from "@/lib/registry";
+import { getBookContent, findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterSections, type TocEntry, type BookEntry, type ContentRegistry } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
 import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
@@ -117,13 +117,13 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   ]);
   if (!markdown) notFound();
 
-  const headings = extractHeadings(markdown);
   const html = await renderMarkdown(markdown, {
     numbering: { schema: meta.numbering },
     ...(cslXml && referencesYaml ? { cslXml, referencesYaml } : {}),
     tocAuthor: tocEntry?.author,
     editors: meta.editors,
   });
+  const headings = extractHeadingsFromHtml(html);
 
   const displayName = meta.title_short ?? meta.title;
   const edition = ref === "main" ? null : t(locale, "edition.label", { ref: ref.replace("ed", "") });

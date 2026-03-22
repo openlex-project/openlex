@@ -267,6 +267,16 @@ export function extractHeadings(markdown: string): Heading[] {
   return headings;
 }
 
+export function extractHeadingsFromHtml(html: string): Heading[] {
+  const headings: Heading[] = [];
+  const re = /<h([23])\s+id="([^"]*)"[^>]*>(.*?)<\/h\1>/gi;
+  for (const m of html.matchAll(re)) {
+    const text = m[3]!.replace(/<[^>]*>/g, "").trim();
+    headings.push({ level: Number(m[1]), text, id: m[2]! });
+  }
+  return headings;
+}
+
 /** Find toc entries that cover a given provision number */
 export function findByProvision(toc: TocEntry[], provision: number): TocEntry[] {
   return toc.filter((e) => e.provisions?.includes(provision));
