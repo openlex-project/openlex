@@ -66,7 +66,7 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
   );
 }
 
-export function LawSidebar({ law, title, unitLabel, toc, provisions, activeNr }: Props) {
+export function SidebarLaw({ law, title, unitLabel, toc, provisions, activeNr }: Props) {
   const pathname = usePathname();
 
   const initialExpanded = useMemo(() => {

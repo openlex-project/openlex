@@ -18,7 +18,7 @@ interface Props {
   backmatter?: BackmatterSection[];
 }
 
-export function BookSidebar({ work, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
+export function SidebarBook({ work, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
   const pathname = usePathname();
   const prefix = edition === "main" ? `/book/${work}` : `/book/${work}/${edition}`;
 

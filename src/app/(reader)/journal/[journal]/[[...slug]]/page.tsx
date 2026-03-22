@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { buildRegistry, getJournalArticleContent, type JournalArticle } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
 import { renderMarkdown } from "@/lib/markdown";
-import { JournalSidebar } from "@/components/journal-sidebar";
+import { SidebarJournal } from "@/components/sidebar-journal";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
 
@@ -50,7 +50,7 @@ export default async function JournalPage({ params }: Props) {
   if (slug.length === 0) {
     return (
       <div className="flex">
-        <JournalSidebar journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} />
+        <SidebarJournal journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title}</h1>
           {journal.issn && <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>ISSN {journal.issn}</p>}
@@ -103,7 +103,7 @@ export default async function JournalPage({ params }: Props) {
 
     return (
       <div className="flex">
-        <JournalSidebar journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
+        <SidebarJournal journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title_short ?? journal.title} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
           <div className="space-y-6 mt-6">
@@ -148,7 +148,7 @@ export default async function JournalPage({ params }: Props) {
 
     return (
       <div className="flex">
-        <JournalSidebar journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
+        <SidebarJournal journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
             {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {authorLastNames(prev)}</Link> : <span />}

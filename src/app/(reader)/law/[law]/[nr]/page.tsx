@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { buildRegistry, getLawContent, getLawProvisions, findByProvision, findLawBreadcrumb } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
-import { LawSidebar } from "@/components/law-sidebar";
+import { SidebarLaw } from "@/components/sidebar-law";
 
 interface Props {
   params: Promise<{ law: string; nr: string }>;
@@ -42,7 +42,7 @@ export default async function LawPage({ params }: Props) {
 
   return (
     <div className="flex">
-      <LawSidebar law={law} title={meta.title_short ?? meta.title} unitLabel={unitLabel} toc={meta.toc} provisions={provisions} activeNr={nr} />
+      <SidebarLaw law={law} title={meta.title_short ?? meta.title} unitLabel={unitLabel} toc={meta.toc} provisions={provisions} activeNr={nr} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
         {breadcrumb.length > 1 && (
           <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">

@@ -15,7 +15,7 @@ interface Props {
   activeArticle?: string;
 }
 
-export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle }: Props) {
+export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle }: Props) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState<Set<string>>(() => {
     const s = new Set<string>();

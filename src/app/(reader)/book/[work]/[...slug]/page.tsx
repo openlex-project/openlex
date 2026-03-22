@@ -7,7 +7,7 @@ import { renderMarkdown } from "@/lib/markdown";
 import { createCitationEngine, parseReferencesYaml } from "@/lib/citeproc";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { FeedbackButton } from "@/components/feedback-button";
-import { BookSidebar } from "@/components/book-sidebar";
+import { SidebarBook } from "@/components/sidebar-book";
 import { FootnoteTooltips } from "@/components/footnote-tooltips";
 
 interface Props {
@@ -124,7 +124,7 @@ export default async function BookPage({ params }: Props) {
     if (!bm) notFound();
     return (
       <div className="flex">
-        <BookSidebar work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
+        <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-8">{bm.title}</h1>
           <div className="prose prose-gray dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: bm.html }} />
@@ -196,7 +196,7 @@ export default async function BookPage({ params }: Props) {
 
   return (
     <div className="flex">
-      <BookSidebar work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
+      <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
         {navBar("top")}
         <div className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
