@@ -10,15 +10,15 @@
 - [x] Footnote tooltips: keyboard accessible (focusable, Esc to dismiss)
 - [x] Margin numbers (`<span class="rn">`): `aria-hidden="true"` (decorative)
 - [x] Directives: add `role="note"` on containers
-- [ ] Search input: visible label or `aria-label` in current locale (currently hardcoded German)
+- [x] Search input: visible label or `aria-label` in current locale
 
 ## i18n — Hardcoded German Strings
 
-- [ ] SearchBox: "Suche… ⌘K", "Volltextsuche", "Suche…", "Keine Ergebnisse für"
-- [ ] UserButton: "Anmelden", "Abmelden"
-- [ ] FeedbackButton: "Feedback geben", "Fehler", "Ergänzung", "Frage", "Ihr Kommentar…", "Abbrechen", "Senden", "Gesendet"
-- [ ] JournalSidebar: "Sidebar schließen", "Sidebar öffnen", "Navigation öffnen"
-- [ ] Journal article page: "S." (page abbreviation)
+- [x] SearchBox: "Suche… ⌘K", "Volltextsuche", "Suche…", "Keine Ergebnisse für"
+- [x] UserButton: "Anmelden", "Abmelden"
+- [x] FeedbackButton: "Feedback geben", "Fehler", "Ergänzung", "Frage", "Ihr Kommentar…", "Abbrechen", "Senden", "Gesendet"
+- [x] JournalSidebar: "Sidebar schließen", "Sidebar öffnen", "Navigation öffnen"
+- [x] Journal article page: "S." (page abbreviation)
 
 ## Features
 
