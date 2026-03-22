@@ -41,7 +41,7 @@ async function main() {
         .replace(/\{[^}]*\}/g, "");
 
       await index.addCustomRecord({
-        url: `/book/${slug}/${fileSlug}`,
+        url: `/${slug}/${fileSlug}`,
         content: plain,
         language: "de",
         meta: { title: `${displayName} – ${entry.title}` },
@@ -63,7 +63,7 @@ async function main() {
       if (!content) continue;
 
       await index.addCustomRecord({
-        url: `/law/${slug}/${nr}`,
+        url: `/${slug}/${nr}`,
         content,
         language: "de",
         meta: { title: `${unitLabel} ${nr} ${displayName}` },
@@ -80,7 +80,7 @@ async function main() {
         const content = await getJournalArticleContent(journal.repo, issue.year, issue.issue, article.slug);
         if (!content) continue;
         await index.addCustomRecord({
-          url: `/journal/${slug}/${issue.year}/${issue.issue}/${article.slug}`,
+          url: `/${slug}/${issue.year}/${issue.issue}/${article.slug}`,
           content,
           language: "de",
           meta: { title: `${article.authors.map((a) => a.name).join(" / ")}, ${article.title} – ${displayName} ${issue.issue}/${issue.year}` },
