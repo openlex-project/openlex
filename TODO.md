@@ -3,13 +3,13 @@
 ## Accessibility (WCAG 2.1 AA)
 
 - [ ] Color contrast audit (tertiary text on light/dark surfaces)
-- [ ] Search results: keyboard navigation (arrow keys, Enter to select, Esc to close)
-- [ ] Search results: `role="listbox"` / `role="option"`, `aria-activedescendant`
-- [ ] Feedback modal: `role="dialog"`, `aria-modal`, focus trap, return focus on close
-- [ ] Sidebar: `aria-expanded` on toggle buttons, `aria-controls`
-- [ ] Footnote tooltips: keyboard accessible (focusable, Esc to dismiss)
-- [ ] Margin numbers (`<span class="rn">`): `aria-hidden="true"` (decorative)
-- [ ] Directives: add `role="note"` or appropriate landmark
+- [x] Search results: keyboard navigation (arrow keys, Enter to select, Esc to close)
+- [x] Search results: `role="listbox"` / `role="option"`, `aria-activedescendant`
+- [x] Feedback modal: `role="dialog"`, `aria-modal`, focus trap, return focus on close
+- [x] Sidebar: `aria-expanded` on toggle buttons
+- [x] Footnote tooltips: keyboard accessible (focusable, Esc to dismiss)
+- [x] Margin numbers (`<span class="rn">`): `aria-hidden="true"` (decorative)
+- [x] Directives: add `role="note"` on containers
 - [ ] Search input: visible label or `aria-label` in current locale (currently hardcoded German)
 
 ## i18n — Hardcoded German Strings
