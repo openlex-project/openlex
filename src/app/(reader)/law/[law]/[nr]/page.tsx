@@ -4,18 +4,18 @@ import { SetLicense } from "@/components/license-context";
 import { LawSidebar } from "@/components/law-sidebar";
 
 interface Props {
-  params: Promise<{ gesetz: string; nr: string }>;
+  params: Promise<{ law: string; nr: string }>;
 }
 
 export default async function LawPage({ params }: Props) {
-  const { gesetz, nr } = await params;
+  const { law, nr } = await params;
   const registry = await buildRegistry();
-  const meta = registry.laws.get(gesetz);
+  const meta = registry.laws.get(law);
   if (!meta) notFound();
 
   const [text, provisions] = await Promise.all([
-    getLawContent(meta.repo, gesetz, nr),
-    getLawProvisions(meta.repo, gesetz),
+    getLawContent(meta.repo, law, nr),
+    getLawProvisions(meta.repo, law),
   ]);
   if (!text) notFound();
 
@@ -24,7 +24,7 @@ export default async function LawPage({ params }: Props) {
 
   const commentaryLinks: { slug: string; name: string; fileSlug: string }[] = [];
   for (const book of registry.books.values()) {
-    if (book.comments_on !== gesetz) continue;
+    if (book.comments_on !== law) continue;
     const entries = findByProvision(book.toc, provisionNr);
     for (const entry of entries) {
       commentaryLinks.push({ slug: book.slug, name: book.title_short ?? book.title, fileSlug: entry.file.replace(/\.md$/, "") });
@@ -40,10 +40,10 @@ export default async function LawPage({ params }: Props) {
 
   return (
     <div className="flex">
-      <LawSidebar gesetz={gesetz} title={meta.title_short ?? meta.title} unitLabel={unitLabel} provisions={provisions} />
+      <LawSidebar law={law} title={meta.title_short ?? meta.title} unitLabel={unitLabel} provisions={provisions} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
         <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
-          {prevNr !== undefined ? navLink(`/law/${gesetz}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
+          {prevNr !== undefined ? navLink(`/law/${law}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {commentaryLinks.length > 0 && (
             <span className="mx-4 truncate" style={{ color: "var(--text-secondary)" }}>
               {commentaryLinks.map((c, i) => (
@@ -54,13 +54,13 @@ export default async function LawPage({ params }: Props) {
               ))}
             </span>
           )}
-          {nextNr !== undefined ? navLink(`/law/${gesetz}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
+          {nextNr !== undefined ? navLink(`/law/${law}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
         <h1 className="text-2xl font-bold mb-6">{unitLabel} {nr} {meta.title_short ?? meta.title}</h1>
         <div className="prose prose-gray dark:prose-invert max-w-none whitespace-pre-line">{text}</div>
         <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
-          {prevNr !== undefined ? navLink(`/law/${gesetz}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
-          {nextNr !== undefined ? navLink(`/law/${gesetz}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
+          {prevNr !== undefined ? navLink(`/law/${law}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
+          {nextNr !== undefined ? navLink(`/law/${law}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
         {meta.license && <SetLicense value={meta.license} />}
       </article>

@@ -2,13 +2,13 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { buildRegistry } from "@/lib/registry";
 import { loadSiteConfig } from "@/lib/site";
-import { t, type Locale } from "@/lib/i18n";
+import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { Logo } from "@/components/logo";
 
 export default async function Home() {
   const { books, laws, journals } = await buildRegistry();
   const h = await headers();
-  const locale = (h.get("x-locale") ?? "de") as Locale;
+  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
   const site = loadSiteConfig();
 
   return (

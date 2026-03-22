@@ -10,7 +10,7 @@ export interface BackmatterSection {
 }
 
 interface Props {
-  werk: string;
+  work: string;
   toc: TocEntry[];
   edition: string;
   activeSlug?: string;
@@ -18,9 +18,9 @@ interface Props {
   backmatter?: BackmatterSection[];
 }
 
-export function BookSidebar({ werk, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
+export function BookSidebar({ work, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
   const pathname = usePathname();
-  const prefix = edition === "main" ? `/book/${werk}` : `/book/${werk}/${edition}`;
+  const prefix = edition === "main" ? `/book/${work}` : `/book/${work}/${edition}`;
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export function BookSidebar({ werk, toc, edition, activeSlug, headings = [], bac
           {backmatter.length > 0 && (
             <ul className="py-2 text-sm mt-2" style={{ borderTop: "1px solid var(--border-subtle)" }}>
               {backmatter.map((s) => {
-                const href = `/book/${werk}/${s.id}`;
+                const href = `/book/${work}/${s.id}`;
                 const active = pathname === href;
                 return (
                   <li key={s.id}>

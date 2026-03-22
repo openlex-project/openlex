@@ -5,13 +5,13 @@ import { SetLicense } from "@/components/license-context";
 import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
 import { createCitationEngine, parseReferencesYaml } from "@/lib/citeproc";
-import { t, type Locale } from "@/lib/i18n";
+import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { FeedbackButton } from "@/components/feedback-button";
 import { BookSidebar } from "@/components/book-sidebar";
 import { FootnoteTooltips } from "@/components/footnote-tooltips";
 
 interface Props {
-  params: Promise<{ werk: string; slug: string[] }>;
+  params: Promise<{ work: string; slug: string[] }>;
 }
 
 const BACKMATTER_SLUGS = new Set(["literaturverzeichnis", "rechtsprechungsverzeichnis", "autorenverzeichnis"]);
@@ -105,15 +105,15 @@ async function renderBackmatter(section: string, meta: BookEntry): Promise<{ tit
 // --- Main page ---
 
 export default async function BookPage({ params }: Props) {
-  const { werk, slug } = await params;
+  const { work, slug } = await params;
   const parsed = parseSlug(slug);
   if (!parsed) notFound();
   const { fileSlug, ref } = parsed;
   const h = await headers();
-  const locale = (h.get("x-locale") ?? "de") as Locale;
+  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
 
   const registry = await buildRegistry();
-  const meta = registry.books.get(werk);
+  const meta = registry.books.get(work);
   if (!meta) notFound();
 
   const backmatter = getBackmatterSections(meta);
@@ -124,7 +124,7 @@ export default async function BookPage({ params }: Props) {
     if (!bm) notFound();
     return (
       <div className="flex">
-        <BookSidebar werk={werk} toc={meta.toc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
+        <BookSidebar work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-8">{bm.title}</h1>
           <div className="prose prose-gray dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: bm.html }} />
@@ -156,7 +156,7 @@ export default async function BookPage({ params }: Props) {
   const displayName = meta.title_short ?? meta.title;
   const edition = ref === "main" ? null : t(locale, "edition.label", { ref: ref.replace("ed", "") });
 
-  const slugPrefix = ref === "main" ? `/book/${werk}` : `/book/${werk}/${ref}`;
+  const slugPrefix = ref === "main" ? `/book/${work}` : `/book/${work}/${ref}`;
   const prevHref = prev ? `${slugPrefix}/${prev.file.replace(/\.md$/, "")}` : null;
   const nextHref = next ? `${slugPrefix}/${next.file.replace(/\.md$/, "")}` : null;
 
@@ -196,7 +196,7 @@ export default async function BookPage({ params }: Props) {
 
   return (
     <div className="flex">
-      <BookSidebar werk={werk} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
+      <BookSidebar work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
         {navBar("top")}
         <div className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>

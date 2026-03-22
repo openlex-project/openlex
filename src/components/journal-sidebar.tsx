@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import type { JournalIssue } from "@/lib/registry";
 
 interface Props {
-  zeitschrift: string;
+  journal: string;
   title: string;
   issues: JournalIssue[];
   issueLabel?: string;
@@ -14,7 +14,7 @@ interface Props {
   activeArticle?: string;
 }
 
-export function JournalSidebar({ zeitschrift, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle }: Props) {
+export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(true);
   const [expanded, setExpanded] = useState<Set<string>>(() => {
@@ -31,7 +31,7 @@ export function JournalSidebar({ zeitschrift, title, issues, issueLabel = "Heft"
   const toggle = () => setOpen((v) => { localStorage.setItem("sidebar-open", v ? "0" : "1"); return !v; });
   const toggleIssue = (key: string) => setExpanded((s) => { const n = new Set(s); n.has(key) ? n.delete(key) : n.add(key); return n; });
 
-  const base = `/journal/${zeitschrift}`;
+  const base = `/journal/${journal}`;
 
   return (
     <>

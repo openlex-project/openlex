@@ -4,11 +4,11 @@ import { buildRegistry, getJournalArticleContent, type JournalArticle } from "@/
 import { SetLicense } from "@/components/license-context";
 import { renderMarkdown } from "@/lib/markdown";
 import { JournalSidebar } from "@/components/journal-sidebar";
-import { t, type Locale } from "@/lib/i18n";
+import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
 
 interface Props {
-  params: Promise<{ zeitschrift: string; slug?: string[] }>;
+  params: Promise<{ journal: string; slug?: string[] }>;
 }
 
 /** Format authors: "Mustermann/Beispiel" or linked with ORCID */
@@ -36,21 +36,21 @@ function AuthorLine({ article }: { article: JournalArticle }) {
 }
 
 export default async function JournalPage({ params }: Props) {
-  const { zeitschrift, slug = [] } = await params;
+  const { journal: journalSlug, slug = [] } = await params;
   const h = await headers();
-  const locale = (h.get("x-locale") ?? "de") as Locale;
+  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
   const registry = await buildRegistry();
-  const journal = registry.journals.get(zeitschrift);
+  const journal = registry.journals.get(journalSlug);
   if (!journal) notFound();
 
-  const base = `/journal/${zeitschrift}`;
+  const base = `/journal/${journalSlug}`;
   const issueWord = t(locale, "issue.word");
 
-  // /journal/{zeitschrift} — overview
+  // /journal/{journal} — overview
   if (slug.length === 0) {
     return (
       <div className="flex">
-        <JournalSidebar zeitschrift={zeitschrift} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} />
+        <JournalSidebar journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title}</h1>
           {journal.issn && <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>ISSN {journal.issn}</p>}
@@ -76,7 +76,7 @@ export default async function JournalPage({ params }: Props) {
     );
   }
 
-  // /journal/{zeitschrift}/{year}/{issue}
+  // /journal/{journal}/{year}/{issue}
   if (slug.length === 2) {
     const [year, issueNr] = slug;
     const issue = journal.issues.find((i) => i.year === year && i.issue === issueNr);
@@ -103,7 +103,7 @@ export default async function JournalPage({ params }: Props) {
 
     return (
       <div className="flex">
-        <JournalSidebar zeitschrift={zeitschrift} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
+        <JournalSidebar journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title_short ?? journal.title} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
           <div className="space-y-6 mt-6">
@@ -129,7 +129,7 @@ export default async function JournalPage({ params }: Props) {
     );
   }
 
-  // /journal/{zeitschrift}/{year}/{issue}/{article}
+  // /journal/{journal}/{year}/{issue}/{article}
   if (slug.length === 3) {
     const [year, issueNr, articleSlug] = slug;
     const issue = journal.issues.find((i) => i.year === year && i.issue === issueNr);
@@ -148,7 +148,7 @@ export default async function JournalPage({ params }: Props) {
 
     return (
       <div className="flex">
-        <JournalSidebar zeitschrift={zeitschrift} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
+        <JournalSidebar journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
             {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {authorLastNames(prev)}</Link> : <span />}

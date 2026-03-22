@@ -4,7 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "@/components/providers";
 import { LocaleProvider } from "@/components/locale-provider";
 import { loadSiteConfig } from "@/lib/site";
-import type { Locale } from "@/lib/i18n";
+import { defaultLocale, type Locale } from "@/lib/i18n";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,7 +31,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const h = await headers();
-  const locale = (h.get("x-locale") ?? "de") as Locale;
+  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
 
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.brand_hue } as React.CSSProperties} suppressHydrationWarning>

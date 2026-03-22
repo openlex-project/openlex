@@ -4,7 +4,7 @@ import { SearchBox } from "@/components/search-box";
 import { LogoFull } from "@/components/logo";
 import { LicenseProvider, LicenseDisplay } from "@/components/license-context";
 import { loadSiteConfig } from "@/lib/site";
-import { t, type Locale } from "@/lib/i18n";
+import { t, defaultLocale, type Locale } from "@/lib/i18n";
 
 export default async function ReaderLayout({
   children,
@@ -12,7 +12,7 @@ export default async function ReaderLayout({
   children: React.ReactNode;
 }>) {
   const h = await headers();
-  const locale = (h.get("x-locale") ?? "de") as Locale;
+  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
   const site = loadSiteConfig();
 
   return (

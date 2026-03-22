@@ -4,13 +4,13 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 interface Props {
-  gesetz: string;
+  law: string;
   title: string;
   unitLabel: string;
   provisions: number[];
 }
 
-export function LawSidebar({ gesetz, title, unitLabel, provisions }: Props) {
+export function LawSidebar({ law, title, unitLabel, provisions }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(true);
 
@@ -41,7 +41,7 @@ export function LawSidebar({ gesetz, title, unitLabel, provisions }: Props) {
           <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</div>
           <ul className="py-1 text-sm">
             {provisions.map((nr) => {
-              const href = `/law/${gesetz}/${nr}`;
+              const href = `/law/${law}/${nr}`;
               const active = pathname === href;
               return (
                 <li key={nr}>
