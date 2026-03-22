@@ -1,81 +1,86 @@
 # Steering – OpenLex
 
-## Projektkontext
+## Project Context
 
-OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentare, Zeitschriften, Gesetze). Inhalte werden in Markdown verfasst, in privaten GitHub-Repos versioniert und über ein Next.js-Frontend ausgeliefert. Zielgruppe: Jurist:innen, Studierende, Wissenschaft.
+OpenLex is an open-access platform for legal literature (commentaries, journals, laws). Content is authored in Markdown, versioned in private GitHub repos, and served via a Next.js frontend. Target audience: legal professionals, students, academics.
 
-- **GitHub-Organisation:** [openlex-project](https://github.com/openlex-project)
-- **Portal-Name:** OpenLex
+- **GitHub Organization:** [openlex-project](https://github.com/openlex-project)
+- **Portal Name:** OpenLex (configurable via `site.yaml`)
 
-## Tech-Stack (verbindlich)
+## Tech Stack (Binding)
 
-- **Framework:** Next.js 16 (App Router) mit TypeScript
-- **Hosting:** Vercel (Hobby-Tarif, Serverless Functions, Edge)
-- **Styling:** Tailwind CSS v4 (CSS-first Config, kein `tailwind.config.js`)
-- **Auth:** NextAuth.js – ausschließlich Social Login (GitHub, Google, Apple)
-- **Datenbank:** Upstash Redis (via Vercel Marketplace) – nur für Nutzerpräferenzen, Lesezeichen, Verlauf
-- **Content-Source:** Private GitHub-Repos via PAT (serverseitig, niemals Client-seitig)
-- **Content-Format:** Markdown (Pandoc-Flavor) + YAML-Frontmatter
+- **Framework:** Next.js 16 (App Router) with TypeScript
+- **Hosting:** Vercel (Hobby tier, Serverless Functions, Edge)
+- **Styling:** Tailwind CSS v4 (CSS-first config, no `tailwind.config.js`)
+- **Auth:** NextAuth.js — social login only (GitHub, Google, Apple)
+- **Database:** Upstash Redis (via Vercel Marketplace) — user preferences, bookmarks, history only
+- **Content Source:** Private GitHub repos via PAT (server-side only, never client-side)
+- **Content Format:** Markdown (Pandoc flavor) + YAML metadata
 - **Testing:** Vitest
-- **Paketmanager:** pnpm
-- **Linting:** ESLint 10 (Flat Config), kein Prettier
-- **Suche:** Pagefind (statisch, Build-Time-Index, zero Infrastruktur)
-- **Monorepo:** Nein – Single Next.js Repo. Content-Repos sind separat auf GitHub.
+- **Package Manager:** pnpm
+- **Linting:** ESLint 10 (Flat Config), no Prettier
+- **Search:** Pagefind (static, build-time index, zero infrastructure)
+- **Monorepo:** No — single Next.js repo. Content repos are separate on GitHub.
 
-## Architektur-Regeln
+## Architecture Rules
 
-- App Router verwenden (kein Pages Router).
-- Server Components als Default; Client Components nur wo interaktiv nötig (Zitier-Bar, Fußnoten-Drawer, Feedback-Markierung).
-- Route Groups: `(auth)` für Login/Callback, `(reader)` für Lese-UI – eigene Layouts pro Gruppe.
-- GitHub PAT darf ausschließlich in Server-Side-Logik (API Routes, Server Actions) verwendet werden.
-- Alle externen Daten-Fetches serverseitig; kein Leaken von Tokens an den Client.
-- Caching-Strategie: ISR / On-Demand Revalidation bei Content-Updates (GitHub Webhook → Vercel).
+- Use App Router (no Pages Router).
+- Server Components by default; Client Components only where interactivity is needed (citation bar, footnote drawer, feedback).
+- Route Groups: `(auth)` for login/callback, `(reader)` for reading UI — separate layouts per group.
+- GitHub PAT must only be used in server-side logic (API Routes, Server Actions).
+- All external data fetches are server-side; no token leakage to the client.
+- Caching strategy: ISR / On-Demand Revalidation on content updates (GitHub Webhook → Vercel).
 
-## Code-Konventionen
+## Code Conventions
 
-- Sprache im Code: **Englisch** (Variablen, Funktionen, Kommentare).
-- Sprache in UI-Texten: **Deutsch** (default), Englisch via i18n.
-- Sprache in Dokumentation (`/docs/`): **Englisch**.
-- Dateinamen: kebab-case (`citation-bar.tsx`, `footnote-drawer.tsx`).
-- Komponenten: PascalCase (`CitationBar`, `FootnoteDrawer`).
-- Keine `any`-Types; strikte TypeScript-Konfiguration.
-- Imports: Pfad-Aliase mit `@/` für `src/`.
+- Language in code: **English** (variables, functions, comments).
+- Language in UI text: configurable via `site.yaml` `default_locale` (default: `de`), English via i18n.
+- Language in documentation (`/docs/`): **English**.
+- File names: kebab-case (`citation-bar.tsx`, `footnote-drawer.tsx`).
+- Components: PascalCase (`CitationBar`, `FootnoteDrawer`).
+- No `any` types; strict TypeScript configuration.
+- Imports: path aliases with `@/` for `src/`.
 
-## Deployment-Konventionen
+## Deployment Conventions
 
-- `main` = Production (auto-deploy auf Vercel)
-- `develop` = Preview-Deployments
-- Feature Branches: `feat/beschreibung`, Bugfixes: `fix/beschreibung`
-- Commit-Messages: Conventional Commits (`feat:`, `fix:`, `docs:`)
-- Env-Vars: `GITHUB_PAT`, `CONTENT_REPOS` (kommaseparierte Repo-Pfade), `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `OAUTH_GITHUB_ID`, `OAUTH_GITHUB_SECRET`, `OAUTH_GOOGLE_ID`, `OAUTH_GOOGLE_SECRET`, `OAUTH_APPLE_ID`, `OAUTH_APPLE_SECRET`
+- `main` = Production (auto-deploy on Vercel)
+- `develop` = Preview deployments
+- Feature branches: `feat/description`, bugfixes: `fix/description`
+- Commit messages: Conventional Commits (`feat:`, `fix:`, `docs:`)
+- Env vars: `GITHUB_PAT`, `CONTENT_REPOS` (comma-separated repo paths), `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `OAUTH_GITHUB_ID`, `OAUTH_GITHUB_SECRET`, `OAUTH_GOOGLE_ID`, `OAUTH_GOOGLE_SECRET`, `OAUTH_APPLE_ID`, `OAUTH_APPLE_SECRET`
 
-## Content-Repo-Discovery
+## Site Configuration
 
-- Portal ist open source; die Konfiguration erfolgt vollständig über Env Vars auf Vercel.
-- `CONTENT_REPOS` enthält nur die GitHub-Repo-Pfade (z.B. `"openlex-project/oc-dsgvo,openlex-project/oc-urhg,openlex-project/openlex-laws"`).
-- Jedes Content-Repo beschreibt sich selbst über eine `meta.yaml` (Slug, Typ, Titel, Abkürzung, `unit_type`, etc.).
-- Bei `next build` fetcht die App die `meta.yaml` aus jedem Repo und baut eine interne Registry. Repos sind Single Source of Truth.
+- `site.yaml` in the project root configures site identity, branding, default locale, and content categories.
+- See `docs/site-yaml.md` for full reference.
 
-## Markdown-Pipeline (Web-Rendering)
+## Content Repo Discovery
 
-- **Libraries:** unified / remark / rehype (Industriestandard für JS-basierte Markdown→HTML-Verarbeitung)
-- Pandoc wird NICHT für Web-Rendering verwendet – nur für PDF-Export.
+- The portal is open source; configuration is done entirely via env vars on Vercel + `site.yaml` in the repo.
+- `CONTENT_REPOS` contains GitHub repo paths (e.g., `"openlex-project/oc-dsgvo,openlex-project/openlex-laws"`).
+- Each content repo describes itself via a `meta.yaml` (slug, type, title, abbreviation, etc.).
+- At `next build`, the app fetches `meta.yaml` from each repo and builds an internal registry. Repos are the single source of truth.
 
-## URL-Schema
+## Markdown Pipeline (Web Rendering)
 
-- URL-Schema für Kommentare/Bücher: `/book/{work}/{slug}` (aktuell), `/book/{work}/{n}ed/{slug}` (explizite Auflage)
-- Slug = Dateiname ohne `.md` aus `toc.yaml` (z.B. `art-5`, `vorbem-1-4`, `einleitung`)
-- Editionen mappen auf Git-Branches: `main` = aktuelle Auflage, `{n}ed` = archivierte Auflage.
-- Edition von `main` wird abgeleitet: Anzahl `*ed`-Branches + 1. Kein `edition`-Feld in `meta.yaml`.
-- Workflow: Neue Auflage → aktuellen `main` als `{n}ed` branchen (einfrieren), `main` weiterarbeiten.
-- Zugriff auf `/{n}ed/` ohne existierenden Branch → Redirect auf aktuelle Auflage.
-- URL-Schema für Gesetze: `/law/{law}/{nr}` (aktuell), `/law/{law}/@{datum}/{nr}` (historische Fassung)
-- URL-Schema für Zeitschriften: `/journal/{journal}/{year}/{issue}/{slug}` (Beitrag), `/journal/{journal}/{year}/{page}` (Zitier-Redirect)
-- Journal-Struktur wird aus dem Dateisystem abgeleitet (kein `toc.yaml`): Jahrgänge → Hefte → Artikel mit Frontmatter (title, author, section, pages)
-- `unit_type` nur bei Gesetzen (in `sync.yaml`): `article` (Art.) oder `section` (§)
-- Fragmente für Untergliederung: `#rn-1` (Kommentare), `#abs-1`, `#abs-1-s-1`, `#abs-1-lit-a` (Gesetze)
+- **Libraries:** unified / remark / rehype (industry standard for JS-based Markdown → HTML processing)
+- Pandoc is NOT used for web rendering — only for PDF export.
 
-Beispiele:
+## URL Schema
+
+- Books/commentaries: `/book/{work}/{slug}` (current), `/book/{work}/{n}ed/{slug}` (explicit edition)
+- Slug = filename without `.md` from `toc.yaml` (e.g., `art-5`, `vorbem-1-4`, `einleitung`)
+- Editions map to Git branches: `main` = current edition, `{n}ed` = archived edition.
+- Edition of `main` is derived: count of `*ed` branches + 1. No `edition` field in `meta.yaml`.
+- Workflow: New edition → branch current `main` as `{n}ed` (freeze), continue on `main`.
+- Access to `/{n}ed/` without existing branch → redirect to current edition.
+- Laws: `/law/{law}/{nr}` (current), `/law/{law}/@{date}/{nr}` (historical version)
+- Journals: `/journal/{journal}/{year}/{issue}/{slug}` (article), `/journal/{journal}/{year}/{page}` (citation redirect)
+- Journal structure is derived from the filesystem (no `toc.yaml`): years → issues → articles with metadata in `issue.yaml`
+- `unit_type` only for laws (in `sync.yaml`): `article` (Art.) or `section` (§)
+- Fragments for sub-structure: `#rn-1` (commentaries), `#abs-1`, `#abs-1-s-1`, `#abs-1-lit-a` (laws)
+
+Examples:
 ```
 /law/dsgvo/5#abs-1
 /book/oc-dsgvo/art-5#rn-3
@@ -85,91 +90,91 @@ Beispiele:
 /journal/zfkir/2025/42                      # Citation redirect → article
 ```
 
-## Gesetze
+## Laws
 
-- Alle Gesetze in einem einzigen Repo (`openlex-laws`), Kommentare bleiben je ein eigenes Repo.
-- Kuratierte Auswahl: Welche Gesetze synchronisiert werden, wird in `sync.yaml` festgelegt.
-- Quellen: GII (XML) für deutsches Bundesrecht, eur-lex (API) für EU-Recht.
-- Automatischer Sync-Job committet Änderungen ins Repo.
-- Versionierung über Git-Tags: Bei Gesetzesänderung wird getaggt (`law/urhg/2024-11-15`). Die Web-App löst `@{datum}` auf den jüngsten Tag vor dem angefragten Datum auf und fetcht die Datei an diesem Ref via GitHub API.
+- All laws in a single repo (`openlex-laws`); commentaries remain in separate repos.
+- Curated selection: which laws are synced is defined in `sync.yaml`.
+- Sources: GII (XML) for German federal law, EUR-Lex (API) for EU law.
+- Automatic sync job commits changes to the repo.
+- Versioning via Git tags: on law amendment, tag as `law/urhg/2024-11-15`. The web app resolves `@{date}` to the most recent tag before the requested date and fetches the file at that ref via GitHub API.
 
-### Sync-Job (GitHub Actions)
+### Sync Job (GitHub Actions)
 
-- Wöchentlicher Cron via GitHub Actions im `openlex-laws` Repo.
-- `sync.yaml` steuert, welche Gesetze aus welcher Quelle synchronisiert werden.
-- **GII (deutsches Bundesrecht):** XML von `gesetze-im-internet.de/{slug}/xml.zip` fetchen. Änderungsdatum aus `<standangabe>` → `<standkommentar>` parsen (Format: `"Zuletzt geändert durch Art. X G v. DD.MM.YYYY"`).
-- **eur-lex (EU-Recht):** API-Call mit CELEX-Nummer, konsolidierte Fassung abrufen.
-- XML → Markdown-Konvertierung via Python-Script (bessere XML-Libraries).
-- Diff gegen bestehende Dateien. Bei Änderungen: Commit + Git-Tag (`law/{gesetz}/{YYYY-MM-DD}`, Datum aus `standkommentar`).
-- Fehlerbehandlung: Bei Nicht-Erreichbarkeit stiller Retry beim nächsten Lauf.
+- Weekly cron via GitHub Actions in the `openlex-laws` repo.
+- `sync.yaml` controls which laws are synced from which source.
+- **GII (German federal law):** Fetch XML from `gesetze-im-internet.de/{slug}/xml.zip`. Parse amendment date from `<standangabe>` → `<standkommentar>`.
+- **EUR-Lex (EU law):** API call with CELEX number, fetch consolidated version.
+- XML/HTML → Markdown conversion via Python scripts (`scripts/sync_gii.py`, `scripts/sync_eurlex.py`).
+- Diff against existing files. On changes: commit + Git tag (`sync-YYYY-MM-DD`).
+- Error handling: on unreachability, silent retry on next run.
 
-### Repo-Struktur
+### Repo Structure
 
 ```
 openlex-laws/
-  sync.yaml              # Zentrale Config: welche Gesetze, Quelle, Metadaten
+  sync.yaml              # Central config: laws, sources, metadata
+  requirements.txt       # Python dependencies
+  scripts/
+    sync_gii.py          # German federal law sync
+    sync_eurlex.py       # EU law sync
+  .github/workflows/
+    sync.yml             # Weekly cron + manual dispatch
   dsgvo/
-    5.md
-    ...
-  urhg/
-    15.md
-    ...
+    1.md ... 99.md
+  bgb/
+    1.md ... 2493.md
+  stgb/
+    1.md ... 518.md
 ```
 
-`sync.yaml` enthält alle Metadaten pro Gesetz (slug, source, title, title_short, unit_type). Keine separate `meta.yaml` pro Gesetz – der Sync-Job generiert die Ordnerstruktur aus `sync.yaml`.
+`sync.yaml` contains all metadata per law (slug, source, title, title_short, unit_type, license, category). No separate `meta.yaml` per law — the sync job generates the directory structure from `sync.yaml`.
 
-### Gesetzesdateien
-- Pures Markdown ohne Frontmatter – nur der nackte Gesetzestext.
-- Alle Metadaten sind abgeleitet: Nummer aus Dateiname, Titel aus `toc.yaml`, Präfix (§/Art.) aus `unit_type` in `sync.yaml`.
+### Law Files
+- Pure Markdown without frontmatter — just the legal text.
+- All metadata is derived: number from filename, title from `sync.yaml`, prefix (§/Art.) from `unit_type`.
 
-### Gliederung (toc.yaml)
-- Pro Gesetz generiert der Sync-Job eine `toc.yaml` aus der XML-Struktur (`<gliederungseinheit>`).
-- Bildet die Hierarchie ab: Teil → Abschnitt → Unterabschnitt → §§/Artikel.
-- Wird für Sidebar-Navigation, Breadcrumbs und Inhaltsverzeichnis genutzt.
-- URLs bleiben flach (`/law/urhg/15`), keine Gliederungsebenen in der URL.
+## Content Format (Pandoc Markdown)
 
-## Content-Format (Pandoc-Markdown)
+Content is authored in Pandoc-flavor Markdown. The parser must support the following constructs.
 
-Inhalte werden in Pandoc-Flavor Markdown verfasst. Der Parser muss folgende Konstrukte unterstützen.
+## File Structure (Content Repos)
 
-## Dateistruktur (Content-Repos)
+- Each file starts with a `#` heading (top level). Files are assembled in filename order.
+- `#` = file level, `##`–`#####` = structure within (auto-numbered).
 
-- Jede Datei beginnt mit einem `#`-Heading (oberste Ebene). Dateien werden in Dateinamen-Reihenfolge zusammengesetzt.
-- `#` = Datei-Ebene, `##`–`#####` = Gliederung innerhalb (auto-nummeriert).
+### Filename Schemas
 
-### Dateinamen-Schemata
-
-| Typ | Schema | Beispiele |
+| Type | Schema | Examples |
 |---|---|---|
-| Commentary | `{nr}.md` oder `{nr}-XX.md` | `5.md`, `312d.md`, `312d-01.md`, `312d-02.md` |
+| Commentary | `{nr}.md` or `{nr}-XX.md` | `5.md`, `312d.md`, `312d-01.md` |
 | Textbook | `XX-YY.md` | `10-01.md`, `30-05.md` |
-| Kapitel-Titel | `XX-00.md` | `10-00.md` |
-| Wiederholungsfragen | `XX-wiederholungsfragen.md` | `10-wiederholungsfragen.md` |
-| Vorwort, Hinweise | `00-vorwort.md`, `01-hinweise.md` | |
-| Verzeichnisse | `99-verzeichnisse.md` | |
-| Stichwortverzeichnis | `99-index.md` | |
-| Glossar | `99-glossar.md` | |
+| Chapter title | `XX-00.md` | `10-00.md` |
+| Review questions | `XX-review.md` | `10-review.md` |
+| Preface, notes | `00-preface.md`, `01-notes.md` | |
+| Indices | `99-indices.md` | |
+| Subject index | `99-index.md` | |
+| Glossary | `99-glossary.md` | |
 
 ### Unnumbered / Unlisted
 
-- `{.unnumbered}` – keine Auto-Nummerierung, aber im TOC sichtbar (z.B. Literaturverzeichnis, Stichwortverzeichnis, Abbildungsverzeichnis).
-- `{.unnumbered .unlisted}` – keine Nummer, nicht im TOC (nur für Sonderfälle).
+- `{.unnumbered}` — no auto-numbering, but visible in TOC (e.g., bibliography, subject index).
+- `{.unnumbered .unlisted}` — no number, not in TOC (special cases only).
 
-### Auto-generierte Verzeichnisse
+### Auto-Generated Indices
 
-- **Literaturverzeichnis** – aus citeproc/Bibliographie, im TOC.
-- **Rechtsprechungsverzeichnis** – aus Referenzen vom Typ `legal_case`, im TOC.
-- **Stichwortverzeichnis** – aus `[]{.idx}`-Einträgen, im TOC.
-- **Abbildungs-/Tabellenverzeichnis** – aus Captions, im TOC.
-- **Glossar** – Definition Lists in `::: glossary`-Div.
+- **Bibliography** — from citeproc, in TOC.
+- **Case law index** — from references of type `legal_case`, in TOC.
+- **Subject index** — from `[]{.idx}` entries, in TOC.
+- **List of figures/tables** — from captions, in TOC.
+- **Glossary** — definition lists in `::: glossary` div.
 
-### Heading-Anker & Querverweise
-- `## Überschrift {#anker-id}` – stabile IDs für Headings
-- `[Linktext](#anker-id){.xref}` – interne Querverweise
+### Heading Anchors & Cross-References
+- `## Heading {#anchor-id}` — stable IDs for headings
+- `[Link text](#anchor-id){.xref}` — internal cross-references
 
-### Autorenangabe
-- `::: author` / `:::` – Kennzeichnung des Autors eines Abschnitts mit Name und ORCID.
-- Gilt für alle darunter liegenden Headings, bis ein neuer `::: author`-Block einen anderen Autor setzt (Vererbungsprinzip).
+### Author Attribution
+- `::: author` / `:::` — marks the author of a section with name and ORCID.
+- Applies to all headings below until a new `::: author` block sets a different author (inheritance).
 ```markdown
 ::: author
 name: Fabian Schmieder
@@ -177,27 +182,27 @@ orcid: 0000-0000-0000-0000
 :::
 ```
 
-### Fußnoten & Literatur
-- `^[Fußnotentext]` – Inline-Fußnoten
-- `@citation_key` – Pandoc-citeproc-Referenzen (z.B. `@Hoeren_Pinelli_KIR_2026_5, 7.`)
-- Bibliographie in YAML-Format, CSL für Zitationsstil
+### Footnotes & Citations
+- `^[Footnote text]` — inline footnotes
+- `@citation_key` — Pandoc citeproc references (e.g., `@Hoeren_Pinelli_KIR_2026_5, 7.`)
+- Bibliography in YAML format, CSL for citation style
 
-### Indexeinträge
-- `[]{.idx entry="Begriff"}` – Indexeintrag
-- `[]{.idx entry="Oberbegriff!Unterbegriff"}` – verschachtelter Indexeintrag
+### Index Entries
+- `[]{.idx entry="Term"}` — index entry
+- `[]{.idx entry="Parent!Child"}` — nested index entry
 
 ### Custom Divs (Fenced Divs)
-- Pandoc Fenced Divs (`::: name` / `:::`) werden als generisches Feature unterstützt. LexOpen definiert keine festen Div-Typen.
-- **Web-Rendering:** Jedes Content-Repo liefert eine `divs.yaml`, die Div-Namen auf LexOpen-Basis-Komponenten + Variante mappt. Kein Custom CSS pro Repo – Styling liegt zentral in LexOpen.
-- **PDF-Export:** Repos liefern eigene Lua-Filter für die Pandoc-Pipeline.
+- Pandoc Fenced Divs (`::: name` / `:::`) are supported as a generic feature.
+- **Web rendering:** Each content repo provides a `divs.yaml` mapping div names to base components + variant. No custom CSS per repo — styling is centralized.
+- **PDF export:** Repos provide their own Lua filters for the Pandoc pipeline.
 
-#### Basis-Komponenten für Divs
+#### Base Components for Divs
 
-| Komponente | Varianten | Zweck |
+| Component | Variants | Purpose |
 |---|---|---|
-| `Callout` | `note`, `warning`, `review`, `law` | Hervorgehobene Inhaltsboxen |
+| `Callout` | `note`, `warning`, `review`, `law` | Highlighted content boxes |
 
-Beispiel `divs.yaml` im Content-Repo:
+Example `divs.yaml` in content repo:
 ```yaml
 note:
   component: "Callout"
@@ -210,120 +215,122 @@ review:
   variant: "review"
 ```
 
-Neue Varianten werden bei Bedarf zentral in LexOpen ergänzt.
+New variants are added centrally as needed.
 
-### Randnummern
-- Explizite Start-Marker mit Auto-Nummerierung.
-- `[]{.rn}` am Anfang eines Absatzes markiert den Beginn einer neuen Randnummer.
-- Alles bis zum nächsten `[]{.rn}`-Marker gehört zur selben Rn. (auch Folgeabsätze, Listen, Tabellen).
-- Nummerierung ist automatisch und sequentiell pro Artikel/Paragraph – keine manuellen Nummern.
-- Jede Rn. erhält eine stabile, deterministische ID als Anker-Link (`#rn-1`, `#rn-2`, ...).
+### Margin Numbers
+- Explicit start markers with auto-numbering.
+- `[]{.rn}` at the beginning of a paragraph marks the start of a new margin number.
+- Everything until the next `[]{.rn}` marker belongs to the same Rn. (including subsequent paragraphs, lists, tables).
+- Numbering is automatic and sequential per article/paragraph — no manual numbers.
+- Each Rn. gets a stable, deterministic ID as anchor link (`#rn-1`, `#rn-2`, ...).
 
-## Zitier-Bar
+## Citation Bar
 
-- CSL-basiert: Jedes Content-Repo liefert eine CSL-Datei (z.B. `jura.csl`) für den Zitationsstil.
-- Die Zitier-Bar generiert dynamisch das korrekte Zitat der aktuellen Stelle (Autor, Werk, Art., Rn.).
-- Dieselbe CSL-Logik wie in den Fußnoten, nur auf die aktuelle Position bezogen.
+- CSL-based: each content repo provides a CSL file (e.g., `jura.csl`) for the citation style.
+- The citation bar dynamically generates the correct citation for the current position (author, work, article, Rn.).
+- Same CSL logic as in footnotes, applied to the current position.
 
-## Barrierefreiheit
+## Accessibility
 
-- WCAG 2.1 AA als Mindeststandard.
-- Semantisches HTML, ARIA-Attribute, Tastaturnavigation, ausreichende Kontraste.
+- WCAG 2.1 AA as minimum standard.
+- Semantic HTML, ARIA attributes, keyboard navigation, sufficient contrast.
 
-## Internationalisierung (i18n)
+## Internationalization (i18n)
 
-- Mehrsprachig von Anfang an. Deutsch als Primärsprache.
-- Übersetzungen leben im selben Repo unter Sprachordnern (`content/de/`, `content/en/`).
-- `meta.yaml` listet verfügbare Sprachen: `lang: "de"`, `translations: ["en"]`.
-- URL-Prefix für Übersetzungen: `/en/book/oc-dsgvo/5#rn-3`, `/fr/law/dsgvo/5#abs-1`.
-- Kein Prefix = Deutsch (kanonische URL). `/de/...` → Redirect auf `/...`.
-- Übersetzung via KI – konkreter Mechanismus wird später definiert.
+- Multilingual from the start. Default locale configurable via `site.yaml`.
+- UI strings in `src/lib/i18n/` with one file per locale (`de.ts`, `en.ts`).
+- Code-level fallback locale: `en`.
+- Translations live in the same repo under language folders (`content/de/`, `content/en/`).
+- `meta.yaml` lists available languages: `lang: "de"`, `translations: ["en"]`.
+- URL prefix for translations: `/en/book/oc-dsgvo/5#rn-3`, `/fr/law/dsgvo/5#abs-1`.
+- No prefix = default locale (canonical URL). `/de/...` → redirect to `/...`.
 
-## KV-Datenmodell (Vercel KV)
+## KV Data Model (Vercel KV)
 
-| Key | Typ | Beschreibung |
+| Key | Type | Description |
 |---|---|---|
-| `user:settings:[ID]` | JSON | Privacy-Optionen (History-Dauer, Status) |
-| `user:bookmarks:[ID]` | List | Objekte mit URLs und Titeln |
-| `user:history:[ID]` | List | Besuchte URLs mit Zeitstempel (Pruning-Logik) |
+| `user:settings:[ID]` | JSON | Privacy options (history duration, status) |
+| `user:bookmarks:[ID]` | List | Objects with URLs and titles |
+| `user:history:[ID]` | List | Visited URLs with timestamps (pruning logic) |
 
-## Versionen
+## Versions
 
-- **Next.js:** 15
+- **Next.js:** 16
 - **Node.js:** 22 LTS
 
-## Content-Repo-Schema
+## Content Repo Schema
 
-### Book-Repo (Kommentare, Lehrbücher)
+### Book Repo (Commentaries, Textbooks)
 
 ```
 oc-dsgvo/
-  meta.yaml              # Pflicht: Selbstbeschreibung
-  toc.yaml               # Pflicht: Inhaltsverzeichnis (SSOT für Reihenfolge)
-  jura.csl               # Pflicht: Zitationsstil
-  references.yaml        # Pflicht: Bibliographie
-  pandoc.yaml            # Pandoc-Config (Template, Filter, Engine)
-  divs.yaml              # Optional: Custom-Div-Mapping
+  meta.yaml              # Required: self-description
+  toc.yaml               # Required: table of contents (SSOT for order)
+  jura.csl               # Required: citation style
+  references.yaml        # Required: bibliography
+  pandoc.yaml            # Pandoc config (template, filters, engine)
+  divs.yaml              # Optional: custom div mapping
   Makefile               # make pdf
   pandoc/
     templates/
-      openlex-book.tex   # LaTeX-Template
-      openlex.sty        # Style-Paket
+      openlex-book.tex
+      openlex.sty
     filters/
-      rn.lua             # Randnummern
+      rn.lua             # Margin numbers
       directives.lua     # Fenced Divs → LaTeX
-      xref.lua           # Querverweise
-      index.lua          # Stichwortverzeichnis
-      glossary.lua       # Glossar
-      split-bib.lua      # Literatur/Rechtsprechung
-      table.lua          # Tabellen
-      nbsp.lua           # Geschützte Leerzeichen
+      xref.lua           # Cross-references
+      index.lua          # Subject index
+      glossary.lua       # Glossary
+      split-bib.lua      # Bibliography / case law split
+      table.lua          # Tables
+      nbsp.lua           # Non-breaking spaces
     fonts/
       DeGruyterSans-*.otf
       DeGruyterSerif-*.otf
   content/
-    vorwort.md
+    preface.md
     art-5.md
     ...
   .github/workflows/
     build-pdf.yml
 ```
 
-Textbook-Variante:
+Textbook variant:
 ```
 schmieder-urheberrecht/
   meta.yaml
   jura.csl
   references.yaml
   content/
-    00-vorwort.md
-    10-00.md             # Kapitel-Titel
-    10-01.md             # Abschnitt
-    10-wiederholungsfragen.md
-    99-verzeichnisse.md
+    00-preface.md
+    10-00.md             # Chapter title
+    10-01.md             # Section
+    10-review.md
+    99-indices.md
     99-index.md
     ...
 ```
 
-`meta.yaml` (Pflichtfelder):
+`meta.yaml` (required fields):
 ```yaml
 slug: "oc-dsgvo"
 type: "book"                    # book | journal
 title: "OpenCommentary DSGVO"
-title_short: "OC-DSGVO"        # Optional: Kurztitel für Zitiervorschlag
-isbn: "978-3-11-123456-7"      # Optional: ISBN (Print + Metadaten)
-doi: "10.1515/9783111234567"    # Optional: DOI des Gesamtwerks
+title_short: "OC-DSGVO"        # Optional: short title for citations
+category: "commentaries"        # Optional: homepage category (defaults to type)
+isbn: "978-3-11-123456-7"      # Optional: ISBN
+doi: "10.1515/9783111234567"    # Optional: DOI
 lang: "de"
 license: "CC-BY-SA-4.0"
 numbering: "commentary"         # commentary | textbook | decimal | none
 csl: "jura.csl"
 bibliography: "references.yaml"
-comments_on: "dsgvo"            # Optional: Slug des kommentierten Gesetzes
-translations: ["en"]            # Optional: verfügbare Übersetzungen
+comments_on: "dsgvo"            # Optional: slug of the commented law
+translations: ["en"]            # Optional: available translations
 editors:
   - name: "Max Mustermann"
     orcid: "0000-0000-0000-0000"
-backmatter:                     # Optional: Auto-generierte Verzeichnisse
+backmatter:                     # Optional: auto-generated indices
   bibliography: split           # split | merged | false
   index: auto                   # true | false | auto
   glossary: auto
@@ -331,295 +338,305 @@ backmatter:                     # Optional: Auto-generierte Verzeichnisse
   list-of-figures: auto
 ```
 
-`toc.yaml` (Inhaltsverzeichnis):
+`toc.yaml` (table of contents):
 ```yaml
 contents:
-  - file: vorwort.md
-    title: Vorwort
+  - file: preface.md
+    title: Preface
   - file: vorbem-1-4.md
-    title: "Vorbemerkungen zu Art. 1–4"
+    title: "Preliminary remarks on Art. 1–4"
     provisions: [1, 2, 3, 4]
   - file: art-5.md
-    title: "Art. 5 – Grundsätze"
+    title: "Art. 5 – Principles"
     provisions: [5]
 ```
 
-### Law-Collection-Repo
+### Law Collection Repo
 
 ```
 openlex-laws/
-  sync.yaml              # Zentrale Config: Gesetze, Quellen, Metadaten
+  sync.yaml              # Central config: laws, sources, metadata
+  requirements.txt
+  scripts/
+    sync_gii.py
+    sync_eurlex.py
+  .github/workflows/
+    sync.yml
   dsgvo/
-    5.md
-    ...
-  urhg/
-    15.md
-    ...
+    1.md ... 99.md
+  bgb/
+    1.md ... 2493.md
 ```
 
-### Journal-Repo
+### Journal Repo
 
 ```
 zfkir/
   meta.yaml              # type: "journal", doi_prefix, issn
-  jura.csl               # Optional: Zitationsstil
-  references.yaml        # Optional: Bibliographie
+  jura.csl               # Optional: citation style
+  references.yaml        # Optional: bibliography
   2026/
-    01/                  # Heft 1
-      issue.yaml          # Artikelliste mit Metadaten
-      mustermann-ki-haftung.md   # Pures Markdown, kein Frontmatter
+    01/                  # Issue 1
+      issue.yaml          # Article list with metadata
+      mustermann-ki.md   # Pure Markdown, no frontmatter
       schmidt-algorithmen.md
 ```
 
-**Kein `toc.yaml`, kein Frontmatter** — Metadaten in per-issue `issue.yaml`:
+**No `toc.yaml`, no frontmatter** — metadata in per-issue `issue.yaml`:
 ```yaml
 articles:
   - file: mustermann-ki-haftung.md
-    title: "Haftung für KI-generierte Inhalte"
+    title: "Liability for AI-generated content"
     authors:
       - name: "Prof. Dr. Max Mustermann"
         orcid: "0000-0001-2345-6789"
-    section: "Aufsätze"
+    section: "Essays"
     pages: "1-12"
     numbering: "commentary"
 ```
 
-- `authors`: Array mit Name + optionalem ORCID
-- `section` gruppiert Beiträge im Heft-Inhaltsverzeichnis
-- `pages` ermöglicht Zitier-Redirect: `/journal/zfkir/2026/42` → Beitrag mit Seite 42
-- `numbering` pro Artikel (commentary, textbook, decimal, none)
-- `doi_prefix` im Journal-meta.yaml → Artikel-DOI: `{prefix}.{year}.{firstPage}`
+- `authors`: array with name + optional ORCID
+- `section`: groups articles in the issue table of contents
+- `pages`: enables citation redirect: `/journal/zfkir/2026/42` → article containing page 42
+- `numbering`: per article (commentary, textbook, decimal, none)
+- `doi_prefix` in journal meta.yaml → article DOI: `{prefix}.{year}.{firstPage}`
 
-## Domänen-Glossar
+## Domain Glossary
 
-| Begriff | Bedeutung | Englisch im Code |
+| German Term | Meaning | English in Code |
 |---|---|---|
-| Randnummer (Rn.) | Kleinste zitierfähige Einheit eines Kommentars | `marginNumber` / `mn` |
-| Fundstelle | Exakte Zitatangabe (Autor, Werk, §, Rn.) | `citation` |
-| Kommentar | Juristisches Erläuterungswerk zu einem Gesetz | `commentary` |
-| Auflage | Edition eines Werks | `edition` |
-| Gesetzesstand | Zeitliche Fassung eines Gesetzes | `legalVersion` |
+| Randnummer (Rn.) | Smallest citable unit of a commentary | `marginNumber` / `mn` |
+| Fundstelle | Exact citation reference (author, work, §, Rn.) | `citation` |
+| Kommentar | Legal commentary on a statute | `commentary` |
+| Auflage | Edition of a work | `edition` |
+| Gesetzesstand | Temporal version of a statute | `legalVersion` |
 
-## Verzeichnisstruktur (Ziel)
+## Directory Structure (Target)
 
 ```
 src/
   app/
-    (auth)/          # Login, Callback-Routes
-    (reader)/        # Lese-UI: Kommentare, Artikel
-    api/             # API-Routes (Feedback → GitHub Issues, KV-Zugriff)
-    dashboard/       # Lesezeichen, Verlauf
+    (auth)/          # Login, callback routes
+    (reader)/        # Reading UI: commentaries, articles, laws
+      category/      # Category listing pages
+    api/             # API routes (feedback → GitHub Issues, KV access)
+    dashboard/       # Bookmarks, history
   components/
     citation-bar.tsx
     footnote-drawer.tsx
     margin-number.tsx
+    license-context.tsx
   lib/
-    github.ts        # GitHub-API-Client (serverseitig)
-    markdown.ts      # Pandoc-Markdown → HTML-Pipeline
-    kv.ts            # Vercel KV Helpers
-    auth.ts          # NextAuth-Konfiguration
-  types/
-    content.ts       # Typen für Kommentar, Rn., Metadaten
+    github.ts        # GitHub API client (server-side)
+    markdown.ts      # Pandoc Markdown → HTML pipeline
+    registry.ts      # Content registry (books, journals, laws)
+    site.ts          # Site config loader (site.yaml)
+    i18n/            # Per-locale translation files
+      index.ts
+      de.ts
+      en.ts
+    kv.ts            # Vercel KV helpers
+    auth.ts          # NextAuth configuration
 ```
 
-## Schlüssel-Invarianten
+## Key Invariants
 
-1. **Stabile URLs:** Einmal vergebene Slugs für Paragraphen/Artikel ändern sich nie.
-2. **Stabile Randnummern-IDs:** Jede Rn. bekommt eine deterministische ID, die als Anker-Link dient.
-3. **Zitierfähigkeit:** Jede Rn. muss jederzeit ein maschinenlesbares, korrektes Zitat erzeugen können.
-4. **Privacy by Default:** Verlauf ist opt-in-konfigurierbar; Löschung sofort technisch wirksam.
-5. **DSGVO-Konformität:** Minimale Datenspeicherung; kein Tracking über KV-Daten hinaus.
+1. **Stable URLs:** Once assigned, slugs for paragraphs/articles never change.
+2. **Stable margin number IDs:** Each Rn. gets a deterministic ID serving as anchor link.
+3. **Citability:** Each Rn. must be able to produce a machine-readable, correct citation at any time.
+4. **Privacy by default:** History is opt-in configurable; deletion is immediately effective.
+5. **GDPR compliance:** Minimal data storage; no tracking beyond KV data.
 
-## Gliederung (Book-Repos)
+## Numbering (Book Repos)
 
-- `toc.yaml` wird bei `next build` automatisch aus den Markdown-Headings generiert.
-- Überschriften werden automatisch nummeriert. Der Autor schreibt keine Nummern – nur den Titel.
-- Default-Nummerierungsschema (juristisch):
+- `toc.yaml` is auto-generated from Markdown headings at `next build`.
+- Headings are auto-numbered. Authors write no numbers — only the title.
+- Default numbering schema (legal):
   - `##` → A., B., C., ...
   - `###` → I., II., III., ...
   - `####` → 1., 2., 3., ...
   - `#####` → a), b), c), ...
-- Schema kann per `meta.yaml` pro Werk überschrieben werden: `numbering: "commentary"`.
-- Manuelle Nummerierung möglich via Pandoc-Attribut: `## Besonderer Abschnitt {number="X."}` überschreibt die Auto-Nummerierung für dieses Heading.
-- Reset-Verhalten pro Ebene konfigurierbar in `meta.yaml`:
+- Schema can be overridden per work via `meta.yaml`: `numbering: "commentary"`.
+- Manual numbering via Pandoc attribute: `## Special Section {number="X."}` overrides auto-numbering for that heading.
+- Reset behavior per level configurable in `meta.yaml`:
 
 ```yaml
 numbering: "textbook"
 numbering_reset:
-  "##": false     # Kapitel werden NICHT bei neuem Teil (#) zurückgesetzt
-  "###": true     # Abschnitte werden bei neuem Kapitel (##) zurückgesetzt (default)
+  "##": false     # Chapters are NOT reset on new part (#)
+  "###": true     # Sections reset on new chapter (##) (default)
   "####": true
   "#####": true
 ```
 
-- Default: Jede Ebene wird bei neuem Parent zurückgesetzt (`true`). `false` = fortlaufend über Parents hinweg.
+- Default: each level resets on new parent (`true`). `false` = continuous across parents.
 
-### Nummerierungsformat
+### Numbering Format
 
-Jede Ebene wird über ein Format-String definiert, der Label, Zählertyp und Klammern/Punkte steuert:
+Each level is defined via a format string controlling label, counter type, and brackets/dots:
 
 ```yaml
 numbering_format:
-  "#":     "Teil {1}:"      # → Teil 1:, Teil 2:
-  "##":    "§ {1}"           # → § 1, § 2
-  "###":   "{A}."            # → A., B., C.
-  "####":  "{I}."            # → I., II., III.
-  "#####": "{1}."            # → 1., 2., 3.
+  "#":     "Part {1}:"     # → Part 1:, Part 2:
+  "##":    "§ {1}"          # → § 1, § 2
+  "###":   "{A}."           # → A., B., C.
+  "####":  "{I}."           # → I., II., III.
+  "#####": "{1}."           # → 1., 2., 3.
 ```
 
-Verfügbare Zählertypen:
-- `{1}` → 1, 2, 3, ... (arabisch)
-- `{A}` → A, B, C, ... (Großbuchstaben)
-- `{a}` → a, b, c, ... (Kleinbuchstaben)
-- `{I}` → I, II, III, ... (römisch groß)
-- `{i}` → i, ii, iii, ... (römisch klein)
+Available counter types:
+- `{1}` → 1, 2, 3, ... (arabic)
+- `{A}` → A, B, C, ... (uppercase)
+- `{a}` → a, b, c, ... (lowercase)
+- `{I}` → I, II, III, ... (roman uppercase)
+- `{i}` → i, ii, iii, ... (roman lowercase)
 
-Beliebiger Text und Klammern um den Zähler herum:
+Arbitrary text and brackets around the counter:
 - `"({a})"` → (a), (b), (c)
 - `"{A})"` → A), B), C)
-- `"Teil {1}:"` → Teil 1:, Teil 2:
+- `"Part {1}:"` → Part 1:, Part 2:
 - `"{1}."` → 1., 2., 3.
 
-- Vordefinierte Schemata:
+Predefined schemas:
 
 | Schema | `##` | `###` | `####` | `#####` |
 |---|---|---|---|---|
 | `commentary` (default) | A., B. | I., II. | 1., 2. | a), b) |
 | `textbook` | § 1, § 2 | A., B. | I., II. | 1., 2. |
 | `decimal` | 1., 2. | 1.1, 1.2 | 1.1.1 | 1.1.1.1 |
-| `none` | keine Nummerierung ||||
-- `#` ist reserviert für die oberste Gliederungsebene (Teil / Artikel-Kommentierung).
-- Wird für Sidebar-Navigation, Breadcrumbs und Inhaltsverzeichnis genutzt.
+| `none` | no numbering ||||
 
-## Suche
+- `#` is reserved for the top-level structure (part / article commentary).
+- Used for sidebar navigation, breadcrumbs, and table of contents.
 
-- Volltext-Suche über den gesamten Content (Gesetze, Kommentare, Bücher, Zeitschriften).
-- Facettierte Suche: Filtern nach Werk, Typ (Kommentar/Gesetz).
-- Technologie: Pagefind (statisch, Build-Time-Index, client-seitig, zero Infrastruktur).
-- Indexing-Script (`scripts/build-search-index.ts`) läuft als `postbuild`.
-- Suchindex wird bei jedem Build neu generiert.
-- Suche ist auch für nicht-eingeloggte User verfügbar.
+## Search
+
+- Full-text search across all content (laws, commentaries, books, journals).
+- Faceted search: filter by work, type (commentary/law).
+- Technology: Pagefind (static, build-time index, client-side, zero infrastructure).
+- Indexing script (`scripts/build-search-index.ts`) runs before `next build`.
+- Search index is regenerated on every build.
+- Search is available to non-logged-in users.
 
 ## Landing Page
 
-- Kein Login erforderlich zum Lesen – alle Inhalte sind öffentlich zugänglich.
-- Startseite zeigt:
-  - Prominente Suchleiste (Volltext über gesamten Bestand)
-  - Katalog aller Gesetze
-  - Katalog aller Kommentare / Bücher / Zeitschriften
+- No login required to read — all content is publicly accessible.
+- Homepage shows:
+  - Prominent search bar (full-text across entire catalog)
+  - Category cards (16:9) linking to `/category/[key]` listing pages
+  - Categories defined in `site.yaml`, items grouped by `category` field in metadata
 
-## Lizenz
+## License
 
-- Standard-Lizenz: CC-BY-SA-4.0 (konfigurierbar pro Werk via `meta.yaml` `license`-Feld).
-- HTML `<head>`: `<link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">` + Schema.org `license`-Property.
-- Footer: CC-Badge mit Lizenztext und Link.
-- Jede Seite trägt die Lizenz des jeweiligen Werks.
+- Default license: CC-BY-SA-4.0 (configurable per work via `meta.yaml` `license` field, per law via `sync.yaml`).
+- Footer shows the license of the currently viewed content (via React context).
+- Each page carries the license of its respective work.
 
-## Verlinkung Gesetz ↔ Kommentar
+## Law ↔ Commentary Cross-Links
 
-- Automatische Erkennung: Wenn ein Kommentar (z.B. `oc-dsgvo`) und ein Gesetz (z.B. `dsgvo`) denselben Slug-Bezug haben, werden sie verlinkt.
-- Auf Gesetzesseiten (`/law/dsgvo/5`): Link zu verfügbaren Kommentaren (`/book/oc-dsgvo/5`).
-- Auf Kommentarseiten (`/book/oc-dsgvo/5`): Link zum kommentierten Gesetzestext (`/law/dsgvo/5`).
-- Mapping über ein `comments_on`-Feld in der `meta.yaml` des Book-Repos:
+- Automatic detection: when a commentary (e.g., `oc-dsgvo`) and a law (e.g., `dsgvo`) share the same slug reference, they are linked.
+- On law pages (`/law/dsgvo/5`): link to available commentaries (`/book/oc-dsgvo/5`).
+- On commentary pages (`/book/oc-dsgvo/5`): link to the commented legal text (`/law/dsgvo/5`).
+- Mapping via `comments_on` field in the book repo's `meta.yaml`:
   ```yaml
-  comments_on: "dsgvo"    # Slug des kommentierten Gesetzes
+  comments_on: "dsgvo"    # Slug of the commented law
   ```
 
-## Feedback-System
+## Feedback System
 
-- Nutzer muss eingeloggt sein (kein anonymes Feedback).
-- Nutzer markiert Text → Feedback-Formular mit:
-  - Markierter Text (automatisch)
-  - Fundstelle: URL + Rn./Abs. (automatisch)
-  - Kategorie: Fehler, Ergänzung, Frage
-  - Freitext-Kommentar
-- API-Route erstellt GitHub Issue im privaten Content-Repo via PAT.
-- Automatische Labels: `feedback`, Artikel/Paragraph (`art-5`, `s-15`), Rn. (`rn-42`), Kategorie.
-- User-Zuordnung über versteckten Identifier im Issue-Body: `<!-- lexopen-user: {user-id} -->`.
-- **Dashboard-Integration:** Eigene Feedback-Issues im Profil anzeigen (Status: offen/geschlossen/kommentiert). Abfrage serverseitig per PAT, gefiltert auf eigene Issues.
-- **Feedback-Rückkanal:** Autor-Kommentare und Statusänderungen am Issue werden im Dashboard des Users sichtbar.
+- User must be logged in (no anonymous feedback).
+- User selects text → feedback form with:
+  - Selected text (automatic)
+  - Citation: URL + Rn./paragraph (automatic)
+  - Category: error, suggestion, question
+  - Free-text comment
+- API route creates GitHub Issue in the private content repo via PAT.
+- Automatic labels: `feedback`, article/paragraph (`art-5`, `s-15`), Rn. (`rn-42`), category.
+- User attribution via hidden identifier in issue body: `<!-- openlex-user: {user-id} -->`.
+- **Dashboard integration:** Own feedback issues shown in profile (status: open/closed/commented). Server-side query via PAT, filtered to own issues.
+- **Feedback channel:** Author comments and status changes on the issue are visible in the user's dashboard.
 
-## Workflow-Hinweise
+## Workflow Notes
 
-- Content-Updates: Autor pusht nach GitHub → Webhook triggert Revalidation auf Vercel.
-- Feedback: Nutzer markiert Text → API-Route erstellt GitHub Issue im Content-Repo.
-- History-Pruning: Bei Seitenaufruf werden abgelaufene Einträge aus `user:history` entfernt.
+- Content updates: author pushes to GitHub → webhook triggers revalidation on Vercel.
+- Feedback: user selects text → API route creates GitHub Issue in content repo.
+- History pruning: on page visit, expired entries are removed from `user:history`.
 
-## Was Kiro NICHT tun soll
+## What Kiro Must NOT Do
 
-- Keine Passwort-/E-Mail-basierte Auth implementieren.
-- Keine direkte Datenbankanbindung (SQL/Postgres) – nur Vercel KV.
-- Keinen Pages Router verwenden.
-- Keine Client-seitigen GitHub-API-Calls.
-- Kein `tailwind.config.js` erzeugen (Tailwind v4 nutzt CSS-first Config).
-- Kein Monorepo-Setup (Turborepo etc.).
+- No password/email-based auth.
+- No direct database connection (SQL/Postgres) — only Vercel KV.
+- No Pages Router.
+- No client-side GitHub API calls.
+- No `tailwind.config.js` (Tailwind v4 uses CSS-first config).
+- No monorepo setup (Turborepo etc.).
 
-## Phasenplan (ab Phase 7)
+## Phase Plan (from Phase 7)
 
-- **Phase 7:** Suche + Feedback (Pagefind, GitHub Issues)
-- **Phase 8:** Edition-Logik + i18n
-- **Phase 9:** Content-Modell-Refactor + Gesetze-Sync + Indizes
-  - `toc.yaml` für Kommentare (Vorbemerkungen, Exkurse, flexible Struktur)
-  - `provisions[]`-Mapping für Cross-Links Gesetz → Kommentar
-  - `meta.yaml` Cleanup: `abbreviation` raus, `title_short` rein, `unit_type` nur bei Law (`article` | `section`)
-  - URL-Umstellung: `/book/[werk]/[slug]` statt `/book/[werk]/[nr]`
-  - Gesetze-Sync via GitHub Actions (GII XML)
-  - Auto-generierte Indizes
-- **Phase 10:** Dokumentation (`/docs/`): content-guide, meta-yaml, toc-yaml, sync-yaml, references-yaml, deployment
-- **Phase 11:** PDF-Export + Polish
+- **Phase 7:** Search + Feedback (Pagefind, GitHub Issues) ✓
+- **Phase 8:** Edition logic + i18n
+- **Phase 9:** Content model refactor + law sync + indices ✓
+  - `toc.yaml` for commentaries (preliminary remarks, excursions, flexible structure)
+  - `provisions[]` mapping for cross-links law → commentary
+  - `meta.yaml` cleanup: `abbreviation` removed, `title_short` added, `unit_type` only for laws
+  - URL change: `/book/[work]/[slug]` instead of `/book/[work]/[nr]`
+  - Law sync via GitHub Actions (GII XML + EUR-Lex API)
+  - Auto-generated indices
+- **Phase 10:** Documentation (`/docs/`) ✓
+- **Phase 11:** PDF export + polish
 
-### Phase 11: Print-Pipeline + Polish
+### Phase 11: Print Pipeline + Polish
 
-#### 11a: Pandoc/LaTeX Print-Pipeline (Content-Repos)
+#### 11a: Pandoc/LaTeX Print Pipeline (Content Repos)
 
-Jedes Book-Repo generiert aus denselben `/content`-Dateien eine druckfertige PDF.
+Each book repo generates a print-ready PDF from the same `/content` files.
 
-**Architektur:**
-- `pandoc.yaml` im Repo-Root: Pandoc-Config (Template, Filter, Engine) – keine `input-files`
-- `pandoc/templates/`: `openlex-book.tex` + `openlex.sty` (basiert auf De Gruyter Template, rebranded)
-- `pandoc/filters/`: Lua-Filter für LaTeX-Rendering
-- `pandoc/fonts/`: De Gruyter Sans/Serif (OFL-lizenziert, direkt im Repo)
-- `Makefile`: `make pdf` liest `toc.yaml` (SSOT), übergibt Dateien an Pandoc
-- `.github/workflows/build-pdf.yml`: TeX Live + Pandoc + yq → `make pdf` → PDF-Artifact
+**Architecture:**
+- `pandoc.yaml` in repo root: Pandoc config (template, filters, engine) — no `input-files`
+- `pandoc/templates/`: `openlex-book.tex` + `openlex.sty`
+- `pandoc/filters/`: Lua filters for LaTeX rendering
+- `pandoc/fonts/`: De Gruyter Sans/Serif (OFL-licensed, in repo)
+- `Makefile`: `make pdf` reads `toc.yaml` (SSOT), passes files to Pandoc
+- `.github/workflows/build-pdf.yml`: TeX Live + Pandoc + yq → `make pdf` → PDF artifact
 
-**Lua-Filter-Inventar:**
+**Lua Filter Inventory:**
 
-| Filter | Basis | Anpassung |
+| Filter | Base | Adaptation |
 |---|---|---|
-| `rn.lua` | `randnummern.lua` | Erkennt `[]{.rn}` Spans statt jeden Absatz |
-| `directives.lua` | `latex-div.lua` | `::: note` → Gesetzestext-Box, `::: author` → Autorenblock |
-| `table.lua` | `dgruyter-table.lua` | Umbenannt, De-Gruyter-Referenzen entfernt |
-| `xref.lua` | 1:1 | Querverweise mit `\ref` + `\pageref` |
+| `rn.lua` | `randnummern.lua` | Detects `[]{.rn}` spans instead of every paragraph |
+| `directives.lua` | `latex-div.lua` | `::: note` → legal text box, `::: author` → author block |
+| `table.lua` | `dgruyter-table.lua` | Renamed, De Gruyter references removed |
+| `xref.lua` | 1:1 | Cross-references with `\ref` + `\pageref` |
 | `index.lua` | 1:1 | `[Text]{.idx}` → `\index{}` |
-| `glossary.lua` | 1:1 | Glossar-Einträge + `[Term]{.gls}` |
-| `split-bib.lua` | 1:1 | Literatur/Rechtsprechung trennen |
-| `nbsp.lua` | 1:1 | Geschützte Leerzeichen (§~2, Rn.~14) |
+| `glossary.lua` | 1:1 | Glossary entries + `[Term]{.gls}` |
+| `split-bib.lua` | 1:1 | Bibliography / case law split |
+| `nbsp.lua` | 1:1 | Non-breaking spaces (§~2, Rn.~14) |
 
-**SSOT-Prinzip:**
+**SSOT Principle:**
 
-| Daten | SSOT | Web nutzt | Print nutzt |
+| Data | SSOT | Web uses | Print uses |
 |---|---|---|---|
-| Dateireihenfolge | `toc.yaml` | Registry → Navigation | Makefile → Pandoc-Args |
-| Metadaten | `meta.yaml` | Registry → Rendering | Pandoc-Metadaten |
-| Bibliographie | `references.yaml` | citeproc.ts | citeproc (Pandoc) |
-| Zitierstil | `jura.csl` | citeproc.ts | citeproc (Pandoc) |
-| Content | `content/*.md` | GitHub API → Remark | Pandoc direkt |
+| File order | `toc.yaml` | Registry → Navigation | Makefile → Pandoc args |
+| Metadata | `meta.yaml` | Registry → Rendering | Pandoc metadata |
+| Bibliography | `references.yaml` | citeproc.ts | citeproc (Pandoc) |
+| Citation style | `jura.csl` | citeproc.ts | citeproc (Pandoc) |
+| Content | `content/*.md` | GitHub API → Remark | Pandoc directly |
 
-**Backmatter** (gesteuert über `meta.yaml` → `backmatter`):
-- Literatur-/Rechtsprechungsverzeichnis, Stichwortverzeichnis, Glossar, Tabellen-/Abbildungsverzeichnis
-- Auto-generiert in beiden Pipelines wenn Einträge vorhanden
-- `auto` = nur generieren wenn tatsächlich Einträge existieren
+**Backmatter** (controlled via `meta.yaml` → `backmatter`):
+- Bibliography / case law index, subject index, glossary, list of tables/figures
+- Auto-generated in both pipelines when entries exist
+- `auto` = only generate when entries actually exist
 
-#### 11b: Online-Pipeline erweitern
+#### 11b: Extend Online Pipeline
 
-Neue Remark-Plugins für Backmatter-Features:
-- `remark-index`: Sammelt `{.idx}` Spans → Stichwortverzeichnis-Sektion
-- `remark-glossary`: Sammelt `{.gls}` + `::: {.glossary-entries}` → Glossar-Sektion
-- `citeproc.ts` erweitern: Split Literatur/Rechtsprechung nach `type`
-- Tabellen-/Abbildungsverzeichnis aus Captions
+New Remark plugins for backmatter features:
+- `remark-index`: collects `{.idx}` spans → subject index section
+- `remark-glossary`: collects `{.gls}` + `::: {.glossary-entries}` → glossary section
+- `citeproc.ts` extension: split bibliography / case law by `type`
+- List of tables/figures from captions
 
 #### 11c: Polish
-- WCAG 2.1 AA Accessibility-Audit
-- Schema.org Metadaten
-- License-Badge
-- Performance-Optimierung
+- WCAG 2.1 AA accessibility audit
+- Schema.org metadata
+- License badge
+- Performance optimization
