@@ -1,8 +1,0 @@
-laws:
-  dsgvo:
-    title: "Datenschutz-Grundverordnung"
-    title_short: "DSGVO"
-    unit_type: "article"
-    lang: "de"
-    source: "gii"
-    gii_slug: "dsgvo"
