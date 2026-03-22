@@ -38,7 +38,7 @@ export default async function ReaderLayout({
           </div>
         </header>
         <main id="main-content" className="flex-1">{children}</main>
-        <footer className="border-t px-6 py-4 text-xs text-center" style={{ borderColor: "var(--border-subtle)", color: "var(--text-tertiary)" }}>
+        <footer className="border-t px-6 py-4 text-sm text-center" style={{ borderColor: "var(--border-subtle)", color: "var(--text-tertiary)" }}>
           {t(locale, "footer.copy")}<LicenseDisplay />
         </footer>
       </div>
