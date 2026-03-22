@@ -103,10 +103,7 @@ export interface ContentRegistry {
 }
 
 function getContentRepos(): string[] {
-  const site = loadSiteConfig();
-  if (site.content_repos?.length) return site.content_repos;
-  // Fallback to env var for backward compatibility
-  return (process.env.CONTENT_REPOS ?? "").split(",").map((r) => r.trim()).filter(Boolean);
+  return loadSiteConfig().content_repos ?? [];
 }
 
 /** Discover journal issues from per-issue meta.yaml */
