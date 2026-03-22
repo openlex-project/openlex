@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import type { TocEntry, Heading } from "@/lib/registry";
+import { useT } from "@/lib/i18n/useT";
 
 export interface BackmatterSection {
   id: string;
@@ -20,6 +21,7 @@ interface Props {
 
 export function BookSidebar({ work, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
   const pathname = usePathname();
+  const t = useT();
   const prefix = edition === "main" ? `/book/${work}` : `/book/${work}/${edition}`;
   const [open, setOpen] = useState(true);
 
@@ -79,12 +81,12 @@ export function BookSidebar({ work, toc, edition, activeSlug, headings = [], bac
     <>
       {open && <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={toggle} />}
       <aside
-        className={`fixed lg:sticky top-[57px] left-0 z-40 lg:z-auto h-[calc(100vh-57px)] transition-[width,transform] duration-200 ease-in-out flex flex-col shrink-0 ${
-          open ? "w-64 translate-x-0" : "w-0 -translate-x-full lg:w-10 lg:translate-x-0"
+        className={`max-lg:fixed lg:sticky top-[57px] left-0 z-40 lg:z-auto h-[calc(100vh-57px)] transition-[width,transform] duration-200 ease-in-out flex flex-col shrink-0 ${
+          open ? "w-64 max-lg:translate-x-0" : "w-0 max-lg:-translate-x-full lg:w-10"
         }`}
         style={{ background: "var(--surface)", borderRight: "1px solid var(--border-subtle)" }}
       >
-        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={open ? "Sidebar schließen" : "Sidebar öffnen"}>
+        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={open ? t("sidebar.close") : t("sidebar.open")} aria-expanded={open}>
           {open ? (
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M13 8l-4 4 4 4" /></svg>
           ) : (
@@ -115,7 +117,7 @@ export function BookSidebar({ work, toc, edition, activeSlug, headings = [], bac
         </nav>
       </aside>
       {!open && (
-        <button onClick={toggle} className="fixed bottom-4 left-4 z-30 lg:hidden rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-white" style={{ background: "var(--color-brand-600)" }} aria-label="Inhaltsverzeichnis öffnen">
+        <button onClick={toggle} className="fixed bottom-4 left-4 z-30 lg:hidden rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-white" style={{ background: "var(--color-brand-600)" }} aria-label={t("nav.open")}>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
         </button>
       )}

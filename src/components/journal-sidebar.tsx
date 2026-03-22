@@ -39,8 +39,8 @@ export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", ac
     <>
       {open && <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={toggle} />}
       <aside
-        className={`fixed lg:sticky top-[57px] left-0 z-40 lg:z-auto h-[calc(100vh-57px)] transition-[width,transform] duration-200 ease-in-out flex flex-col shrink-0 ${
-          open ? "w-72 translate-x-0" : "w-0 -translate-x-full lg:w-10 lg:translate-x-0"
+        className={`max-lg:fixed lg:sticky top-[57px] left-0 z-40 lg:z-auto h-[calc(100vh-57px)] transition-[width,transform] duration-200 ease-in-out flex flex-col shrink-0 ${
+          open ? "w-72 max-lg:translate-x-0" : "w-0 max-lg:-translate-x-full lg:w-10"
         }`}
         style={{ background: "var(--surface)", borderRight: "1px solid var(--border-subtle)" }}
       >
