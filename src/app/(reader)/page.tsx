@@ -5,6 +5,7 @@ import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate, type HomeSection } from "@/lib/template";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { Logo } from "@/components/logo";
+import { websiteJsonLd } from "@/lib/jsonld";
 
 export default async function Home() {
   const { books, laws, journals, slugMap } = await buildRegistry();
@@ -124,6 +125,7 @@ export default async function Home() {
 
   return (
     <div className="px-4 sm:px-6 py-8 sm:py-12 max-w-5xl mx-auto">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: websiteJsonLd(h.get("x-url") ?? "/") }} />
       {await Promise.all(sections.map(renderSection))}
     </div>
   );

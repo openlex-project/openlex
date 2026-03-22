@@ -8,6 +8,7 @@ import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
+import { articleJsonLd } from "@/lib/jsonld";
 
 interface Props {
   registry: ContentRegistry;
@@ -169,6 +170,7 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
           </nav>
           <SetLicense value={journal.license} />
           <HistoryTracker title={article.title} />
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: articleJsonLd(journal, article, year!, issueNr!, `${base}/${year}/${issueNr}/${articleSlug}`) }} />
         </article>
       </div>
     );

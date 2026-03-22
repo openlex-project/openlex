@@ -4,6 +4,7 @@ import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
+import { lawJsonLd } from "@/lib/jsonld";
 
 interface Props {
   registry: ContentRegistry;
@@ -75,6 +76,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         </nav>
         {meta.license && <SetLicense value={meta.license} />}
         <HistoryTracker title={`${unitLabel} ${nr} ${meta.title_short ?? meta.title}`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: lawJsonLd(meta, nr, `/${meta.slug}/${nr}`) }} />
       </article>
     </div>
   );

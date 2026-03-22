@@ -11,6 +11,7 @@ import { SidebarBook } from "@/components/sidebar-book";
 import { FootnoteTooltips } from "@/components/footnote-tooltips";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
+import { bookChapterJsonLd } from "@/lib/jsonld";
 
 interface Props {
   registry: ContentRegistry;
@@ -168,6 +169,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
         <FeedbackButton repo={meta.repo} />
         <FootnoteTooltips />
         <HistoryTracker title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: bookChapterJsonLd(meta, { title: tocEntry?.title ?? fileSlug, author: tocEntry?.author }, `${slugPrefix}/${fileSlug}`) }} />
       </article>
     </div>
   );
