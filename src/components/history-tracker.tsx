@@ -10,10 +10,13 @@ export function HistoryTracker({ title }: { title: string }) {
 
   useEffect(() => {
     if (!session) return;
-    fetch("/api/history", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: pathname, title }),
+    fetch("/api/profile").then((r) => r.json()).then((d) => {
+      if (d.settings?.history_enabled === "false") return;
+      fetch("/api/history", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: pathname, title }),
+      });
     }).catch(() => {});
   }, [session, pathname, title]);
 
