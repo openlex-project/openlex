@@ -47,7 +47,7 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
     return (
       <div className="flex">
         <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} />
-        <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
+        <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title}</h1>
           {journal.issn && <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>ISSN {journal.issn}</p>}
           <div className="space-y-6">
@@ -100,7 +100,7 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
     return (
       <div className="flex">
         <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
-        <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
+        <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title_short ?? journal.title} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
           <div className="space-y-6 mt-6">
             {[...sections.entries()].map(([section, articles]) => (
@@ -145,13 +145,13 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
     return (
       <div className="flex">
         <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
-        <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
-          <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
-            {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {authorLastNames(prev)}</Link> : <span />}
-            <span className="truncate mx-4" style={{ color: "var(--text-secondary)" }}><AuthorLine article={article} /></span>
-            {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right" style={{ color: "var(--active-text)" }}>{authorLastNames(next)} →</Link> : <span />}
+        <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+          <nav className="flex flex-wrap items-center justify-between gap-2 text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
+            {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>← {authorLastNames(prev)}</Link> : <span />}
+            <span className="hidden sm:block truncate mx-4" style={{ color: "var(--text-secondary)" }}><AuthorLine article={article} /></span>
+            {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{authorLastNames(next)} →</Link> : <span />}
           </nav>
-          <h1 className="text-2xl font-bold mb-1">{article.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold mb-1">{article.title}</h1>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
             <AuthorLine article={article} />
             {article.pages && ` · ${t(locale, "page.abbr")} ${article.pages}`}

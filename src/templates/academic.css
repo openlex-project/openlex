@@ -16,8 +16,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .prose {
   max-width: var(--content-max-width);
-  font-size: 1.05rem;
-  line-height: 1.85;
+}
+
+@media (min-width: 640px) {
+  .prose {
+    font-size: 1.05rem;
+    line-height: 1.85;
+  }
 }
 
 /* Flat cards */

@@ -42,7 +42,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   return (
     <div className="flex">
       <SidebarLaw law={meta.slug} title={meta.title_short ?? meta.title} unitLabel={unitLabel} toc={meta.toc} provisions={provisions} activeNr={nr} />
-      <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
+      <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
         {breadcrumb.length > 1 && (
           <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">
             <span>{meta.title_short ?? meta.title}</span>
@@ -51,10 +51,10 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
             ))}
           </nav>
         )}
-        <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
+        <nav className="flex flex-wrap items-center justify-between gap-2 text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/${meta.slug}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {commentaryLinks.length > 0 && (
-            <span className="mx-4 truncate" style={{ color: "var(--text-secondary)" }}>
+            <span className="hidden sm:block mx-4 truncate" style={{ color: "var(--text-secondary)" }}>
               {commentaryLinks.map((c, i) => (
                 <span key={`${c.slug}-${c.fileSlug}`}>
                   {i > 0 && ", "}
@@ -65,7 +65,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
           )}
           {nextNr !== undefined ? navLink(`/${meta.slug}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
-        <h1 className="text-2xl font-bold mb-6">{unitLabel} {nr} {meta.title_short ?? meta.title}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-6">{unitLabel} {nr} {meta.title_short ?? meta.title}</h1>
         <div className="prose prose-gray dark:prose-invert max-w-none whitespace-pre-line">{text}</div>
         <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/${meta.slug}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}

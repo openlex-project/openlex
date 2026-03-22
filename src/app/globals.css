@@ -101,20 +101,36 @@ body {
 
 /* ─── Randnummern ─── */
 .prose .rn {
-  float: left;
-  width: 3rem;
-  margin-left: -4rem;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-tertiary);
-  text-align: right;
-  padding-right: 0.75rem;
-  padding-top: 0.25rem;
   user-select: none;
 }
 
-.prose-rn {
-  padding-left: 4rem;
+/* Desktop: floated margin numbers */
+@media (min-width: 640px) {
+  .prose .rn {
+    float: left;
+    width: 3rem;
+    margin-left: -4rem;
+    text-align: right;
+    padding-right: 0.75rem;
+    padding-top: 0.25rem;
+  }
+  .prose-rn {
+    padding-left: 4rem;
+  }
+}
+
+/* Mobile: inline block above paragraph */
+@media (max-width: 639px) {
+  .prose .rn {
+    display: block;
+    margin-bottom: 0.125rem;
+  }
+  .prose-rn {
+    padding-left: 0;
+  }
 }
 
 /* ─── Directives ─── */
@@ -196,9 +212,14 @@ body {
 
 .bibliography .csl-entry {
   margin-bottom: 0.5rem;
-  padding-left: 2rem;
-  text-indent: -2rem;
   font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .bibliography .csl-entry {
+    padding-left: 2rem;
+    text-indent: -2rem;
+  }
 }
 
 /* ─── Footnotes ─── */
@@ -227,7 +248,7 @@ body {
   display: none;
   position: absolute;
   z-index: 50;
-  max-width: 360px;
+  max-width: min(360px, calc(100vw - 2rem));
   padding: 0.75rem 1rem;
   font-size: 0.8125rem;
   line-height: 1.5;
@@ -261,8 +282,12 @@ body {
   background: var(--surface-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: 0.75rem;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+@media (min-width: 640px) {
+  .card { padding: 1.25rem 1.5rem; }
 }
 
 .card:hover {

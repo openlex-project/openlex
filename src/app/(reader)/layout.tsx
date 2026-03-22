@@ -24,7 +24,7 @@ export default async function ReaderLayout({
         <a href="#main-content" className="skip-link">
           {t(locale, "skip")}
         </a>
-        <header className="glass-header sticky top-0 z-50 px-6 py-3 flex items-center justify-between gap-4">
+        <header className="glass-header sticky top-0 z-50 px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
           <a href="/" className="shrink-0" aria-label={t(locale, "home.aria")}>
             <LogoFull name={site.logo_text !== false ? site.name : undefined} className="text-[var(--color-brand-600)] dark:text-[var(--color-brand-300)]" />
           </a>

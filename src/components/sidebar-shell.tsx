@@ -60,7 +60,7 @@ export function SidebarShell({ children, width = "w-72" }: Props) {
         {open && <nav className="overflow-y-auto flex-1">{children}</nav>}
       </aside>
       {!open && (
-        <button onClick={toggle} className="fixed bottom-4 left-4 z-30 lg:hidden rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-white" style={{ background: "var(--color-brand-600)" }} aria-label={t("nav.open")}>
+        <button onClick={toggle} className="fixed bottom-4 left-4 z-30 lg:hidden rounded-full w-11 h-11 flex items-center justify-center shadow-lg text-white" style={{ background: "var(--color-brand-600)" }} aria-label={t("nav.open")}>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
         </button>
       )}

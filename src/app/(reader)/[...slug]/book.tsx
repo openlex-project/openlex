@@ -96,7 +96,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
     return (
       <div className="flex">
         <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
-        <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
+        <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <h1 className="text-2xl font-bold mb-8">{bm.title}</h1>
           <div className="prose prose-gray dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: bm.html }} />
         </article>
@@ -132,25 +132,23 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   const authorLast = authorName?.split(" ").pop();
 
   const navBar = (pos: "top" | "bottom") => (
-    <nav aria-label={pos === "top" ? "Kapitelnavigation" : "Kapitelnavigation unten"} className={`flex items-center justify-between text-sm ${pos === "top" ? "mb-6 pb-3 border-b" : "mt-12 pt-6 border-t"}`} style={{ borderColor: "var(--border)" }}>
-      {prev ? <a href={prevHref!} className="hover:underline shrink-0" style={{ color: "var(--active-text)" }}>← {prev.title}</a> : <span />}
+    <nav aria-label={pos === "top" ? "Kapitelnavigation" : "Kapitelnavigation unten"} className={`flex flex-wrap items-center justify-between gap-2 text-sm ${pos === "top" ? "mb-6 pb-3 border-b" : "mt-12 pt-6 border-t"}`} style={{ borderColor: "var(--border)" }}>
+      {prev ? <a href={prevHref!} className="hover:underline shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>← {prev.title}</a> : <span />}
       {pos === "top" && authorName && (
-        <span className="mx-4" style={{ color: "var(--text-secondary)" }}>
+        <span className="hidden sm:block mx-4 truncate" style={{ color: "var(--text-secondary)" }}>
           {authorOrcid ? (
-            <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">
-              <span className="hidden sm:inline">{authorName}</span><span className="sm:hidden">{authorLast}</span>
-            </a>
-          ) : (<><span className="hidden sm:inline">{authorName}</span><span className="sm:hidden">{authorLast}</span></>)}
+            <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">{authorName}</a>
+          ) : authorName}
         </span>
       )}
-      {next ? <a href={nextHref!} className="hover:underline text-right shrink-0" style={{ color: "var(--active-text)" }}>{next.title} →</a> : <span />}
+      {next ? <a href={nextHref!} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{next.title} →</a> : <span />}
     </nav>
   );
 
   return (
     <div className="flex">
       <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
-      <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
+      <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
         {navBar("top")}
         <div className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
           {displayName} – {tocEntry?.title ?? fileSlug}

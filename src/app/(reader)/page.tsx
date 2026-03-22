@@ -34,10 +34,10 @@ export default async function Home() {
     switch (section.type) {
       case "hero":
         return (
-          <section key={i} className="text-center mb-16">
+          <section key={i} className="text-center mb-12 sm:mb-16">
             <Logo size={56} className="mx-auto mb-4 text-[var(--color-brand-600)] dark:text-[var(--color-brand-300)]" />
-            <h1 className="text-4xl font-bold tracking-tight mb-3" style={{ color: "var(--text-primary)" }}>{t(locale, "site.title")}</h1>
-            <p className="text-lg max-w-xl mx-auto" style={{ color: "var(--text-secondary)" }}>{t(locale, "site.tagline")}</p>
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight mb-3" style={{ color: "var(--text-primary)" }}>{t(locale, "site.title")}</h1>
+            <p className="text-base sm:text-lg max-w-xl mx-auto" style={{ color: "var(--text-secondary)" }}>{t(locale, "site.tagline")}</p>
           </section>
         );
 
@@ -123,7 +123,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="px-6 py-12 max-w-5xl mx-auto">
+    <div className="px-4 sm:px-6 py-8 sm:py-12 max-w-5xl mx-auto">
       {await Promise.all(sections.map(renderSection))}
     </div>
   );
