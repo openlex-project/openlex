@@ -64,7 +64,7 @@ export default async function JournalPage({ params }: Props) {
                   {iss.articles.map((a) => (
                     <li key={a.slug}>
                       <Link href={`${base}/${iss.year}/${iss.issue}/${a.slug}`} className="hover:underline">{authorNames(a)}, {a.title}</Link>
-                      {a.pages && <span className="ml-1" style={{ color: "var(--text-tertiary)" }}>S. {a.pages}</span>}
+                      {a.pages && <span className="ml-1" style={{ color: "var(--text-tertiary)" }}>{t(locale, "page.abbr")} {a.pages}</span>}
                     </li>
                   ))}
                 </ul>
@@ -116,7 +116,7 @@ export default async function JournalPage({ params }: Props) {
                       <Link href={`${base}/${year}/${issueNr}/${a.slug}`} className="group block">
                         <span className="font-medium group-hover:underline">{a.title}</span>
                         <br />
-                        <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{authorNames(a)}{a.pages && `, S. ${a.pages}`}</span>
+                        <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{authorNames(a)}{a.pages && `, ${t(locale, "page.abbr")} ${a.pages}`}</span>
                       </Link>
                     </li>
                   ))}
@@ -158,7 +158,7 @@ export default async function JournalPage({ params }: Props) {
           <h1 className="text-2xl font-bold mb-1">{article.title}</h1>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
             <AuthorLine article={article} />
-            {article.pages && ` · S. ${article.pages}`}
+            {article.pages && ` · ${t(locale, "page.abbr")} ${article.pages}`}
             {` · ${journal.title_short ?? journal.title} ${issueNr}/${year}`}
             {article.doi && (
               <> · <a href={`https://doi.org/${article.doi}`} target="_blank" rel="noopener" className="hover:underline" style={{ color: "var(--active-text)" }}>DOI: {article.doi}</a></>

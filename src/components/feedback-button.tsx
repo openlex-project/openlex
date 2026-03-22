@@ -2,19 +2,21 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useT } from "@/lib/i18n/useT";
 
-const CATEGORIES = ["Fehler", "Ergänzung", "Frage"] as const;
+const CATEGORY_KEYS = ["feedback.error", "feedback.addition", "feedback.question"] as const;
 
 export function FeedbackButton({ repo }: { repo: string }) {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState<string>(CATEGORIES[0]);
+  const [category, setCategory] = useState<string>(CATEGORY_KEYS[0]);
   const [comment, setComment] = useState("");
   const [selectedText, setSelectedText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLFormElement>(null);
+  const t = useT();
 
   if (!session?.user) return null;
 
@@ -56,14 +58,14 @@ export function FeedbackButton({ repo }: { repo: string }) {
         onClick={handleOpen}
         className="fixed bottom-6 right-6 rounded-full w-12 h-12 flex items-center justify-center shadow-lg text-white text-xl transition-transform hover:scale-105"
         style={{ background: "var(--color-brand-600)" }}
-        aria-label="Feedback geben"
-        title="Feedback geben"
+        aria-label={t("feedback.aria")}
+        title={t("feedback.aria")}
       >
         ✎
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end justify-end p-6" role="dialog" aria-modal="true" aria-label="Feedback" onKeyDown={(e) => {
+        <div className="fixed inset-0 z-50 flex items-end justify-end p-6" role="dialog" aria-modal="true" aria-label={t("feedback.title")} onKeyDown={(e) => {
           if (e.key === "Escape") handleClose();
           if (e.key === "Tab") {
             const focusable = dialogRef.current?.querySelectorAll<HTMLElement>("button, textarea, input, [tabindex]:not([tabindex='-1'])");
@@ -81,7 +83,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
             className="relative rounded-xl shadow-xl p-5 w-80 space-y-3"
             style={{ background: "var(--surface-elevated)", border: "1px solid var(--border)" }}
           >
-            <h3 className="font-semibold">Feedback</h3>
+            <h3 className="font-semibold">{t("feedback.title")}</h3>
 
             {selectedText && (
               <blockquote className="text-sm pl-2 truncate" style={{ borderLeft: "2px solid var(--border)", color: "var(--text-secondary)" }}>
@@ -90,7 +92,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
             )}
 
             <div className="flex gap-2">
-              {CATEGORIES.map((c) => (
+              {CATEGORY_KEYS.map((c) => (
                 <button
                   key={c}
                   type="button"
@@ -102,7 +104,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
                     borderColor: category === c ? "var(--color-brand-600)" : "var(--border)",
                   }}
                 >
-                  {c}
+                  {t(c)}
                 </button>
               ))}
             </div>
@@ -110,7 +112,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Ihr Kommentar…"
+              placeholder={t("feedback.placeholder")}
               required
               rows={3}
               className="w-full rounded-lg px-3 py-2 text-sm"
@@ -119,7 +121,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
 
             <div className="flex justify-end gap-2">
               <button type="button" onClick={handleClose} className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                Abbrechen
+                {t("feedback.cancel")}
               </button>
               <button
                 type="submit"
@@ -127,7 +129,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
                 className="text-sm text-white px-3 py-1.5 rounded-lg disabled:opacity-50 transition-colors"
                 style={{ background: "var(--color-brand-600)" }}
               >
-                {done ? "✓ Gesendet" : submitting ? "…" : "Senden"}
+                {done ? t("feedback.sent") : submitting ? "…" : t("feedback.send")}
               </button>
             </div>
           </form>

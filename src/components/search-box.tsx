@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useT } from "@/lib/i18n/useT";
 
 interface SearchResult {
   url: string;
@@ -11,6 +12,7 @@ interface SearchResult {
 
 export function SearchBox() {
   const router = useRouter();
+  const t = useT();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -94,8 +96,8 @@ export function SearchBox() {
           onChange={(e) => handleChange(e.target.value)}
           onFocus={() => { if (query.trim()) setOpen(true); }}
           onKeyDown={handleKeyDown}
-          placeholder="Suche… ⌘K"
-          aria-label="Volltextsuche"
+          placeholder={t("search.shortcut")}
+          aria-label={t("search.aria")}
           role="combobox"
           aria-expanded={open && results.length > 0}
           aria-controls="search-listbox"
@@ -110,9 +112,9 @@ export function SearchBox() {
           className="absolute top-full mt-2 left-0 right-0 z-50 rounded-xl shadow-xl overflow-hidden"
           style={{ background: "var(--surface-elevated)", border: "1px solid var(--border)" }}
         >
-          {loading && <p className="px-4 py-3 text-sm" style={{ color: "var(--text-tertiary)" }}>Suche…</p>}
+          {loading && <p className="px-4 py-3 text-sm" style={{ color: "var(--text-tertiary)" }}>{t("search.loading")}</p>}
           {!loading && results.length === 0 && (
-            <p className="px-4 py-3 text-sm" style={{ color: "var(--text-tertiary)" }}>Keine Ergebnisse für „{query}"</p>
+            <p className="px-4 py-3 text-sm" style={{ color: "var(--text-tertiary)" }}>{t("search.empty", { q: query })}</p>
           )}
           {!loading && results.length > 0 && (
             <ul id="search-listbox" role="listbox" className="max-h-96 overflow-y-auto py-1">

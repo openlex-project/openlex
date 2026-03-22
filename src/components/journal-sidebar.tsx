@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useT } from "@/lib/i18n/useT";
 import type { JournalIssue } from "@/lib/registry";
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 
 export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle }: Props) {
   const pathname = usePathname();
+  const t = useT();
   const [open, setOpen] = useState(true);
   const [expanded, setExpanded] = useState<Set<string>>(() => {
     const s = new Set<string>();
@@ -42,7 +44,7 @@ export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", ac
         }`}
         style={{ background: "var(--surface)", borderRight: "1px solid var(--border-subtle)" }}
       >
-        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={open ? "Sidebar schließen" : "Sidebar öffnen"} aria-expanded={open}>
+        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={open ? t("sidebar.close") : t("sidebar.open")} aria-expanded={open}>
           {open ? (
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M13 8l-4 4 4 4" /></svg>
           ) : (
@@ -95,7 +97,7 @@ export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", ac
         </nav>
       </aside>
       {!open && (
-        <button onClick={toggle} className="fixed bottom-4 left-4 z-30 lg:hidden rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-white" style={{ background: "var(--color-brand-600)" }} aria-label="Navigation öffnen">
+        <button onClick={toggle} className="fixed bottom-4 left-4 z-30 lg:hidden rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-white" style={{ background: "var(--color-brand-600)" }} aria-label={t("nav.open")}>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
         </button>
       )}

@@ -2,9 +2,11 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import { useT } from "@/lib/i18n/useT";
 
 export default function UserButton() {
   const { data: session } = useSession();
+  const t = useT();
 
   if (!session) {
     return (
@@ -13,7 +15,7 @@ export default function UserButton() {
         className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
         style={{ color: "var(--text-secondary)" }}
       >
-        Anmelden
+        {t("nav.login")}
       </Link>
     );
   }
@@ -26,7 +28,7 @@ export default function UserButton() {
         className="text-sm transition-colors"
         style={{ color: "var(--text-tertiary)" }}
       >
-        Abmelden
+        {t("nav.logout")}
       </button>
     </div>
   );
