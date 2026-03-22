@@ -13,6 +13,7 @@ export interface SiteConfig {
   copyright: string;
   default_locale: string;
   brand_hue: number;
+  logo_text?: boolean;
   categories?: CategoryConfig[];
 }
 

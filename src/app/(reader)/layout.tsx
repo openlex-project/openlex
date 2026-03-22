@@ -23,7 +23,7 @@ export default async function ReaderLayout({
         </a>
         <header className="glass-header sticky top-0 z-50 px-6 py-3 flex items-center justify-between gap-4">
           <a href="/" className="shrink-0" aria-label={t(locale, "home.aria")}>
-            <LogoFull name={site.name} className="text-[var(--color-brand-600)] dark:text-[var(--color-brand-300)]" />
+            <LogoFull name={site.logo_text !== false ? site.name : undefined} className="text-[var(--color-brand-600)] dark:text-[var(--color-brand-300)]" />
           </a>
           <div className="flex-1 max-w-lg mx-auto">
             <SearchBox />

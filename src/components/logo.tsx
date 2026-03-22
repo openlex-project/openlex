@@ -36,11 +36,11 @@ export function Logo({ size = 32, className }: Props) {
   );
 }
 
-export function LogoFull({ className, name }: { className?: string; name: string }) {
+export function LogoFull({ className, name }: { className?: string; name?: string }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className ?? ""}`}>
       <Logo size={28} />
-      <span className="font-semibold text-lg tracking-tight">{name}</span>
+      {name && <span className="font-semibold text-lg tracking-tight">{name}</span>}
     </span>
   );
 }
