@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SidebarShell } from "./sidebar-shell";
 import type { TocEntry, Heading } from "@/lib/registry";
@@ -29,10 +30,10 @@ export function SidebarBook({ work, toc, edition, activeSlug, headings = [], bac
 
     return (
       <li key={slug}>
-        <a href={href} className={`block py-1.5 truncate ${active ? "font-semibold" : ""}`}
+        <Link href={href} className={`block py-1.5 truncate ${active ? "font-semibold" : ""}`}
           style={{ paddingLeft: `${1 + depth * 0.75}rem`, paddingRight: "1rem", color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>
           {entry.title}
-        </a>
+        </Link>
         {entry.children?.length ? <ul>{entry.children.map((c) => renderEntry(c, depth + 1))}</ul> : null}
         {active && headings.length > 0 && (
           <ul>{headings.map((h) => (
@@ -58,10 +59,10 @@ export function SidebarBook({ work, toc, edition, activeSlug, headings = [], bac
             const active = pathname === href;
             return (
               <li key={s.id}>
-                <a href={href} className={`block px-4 py-1.5 truncate ${active ? "font-semibold" : ""}`}
+                <Link href={href} className={`block px-4 py-1.5 truncate ${active ? "font-semibold" : ""}`}
                   style={{ color: active ? "var(--active-text)" : "var(--text-tertiary)", background: active ? "var(--active-bg)" : undefined }}>
                   {s.title}
-                </a>
+                </Link>
               </li>
             );
           })}

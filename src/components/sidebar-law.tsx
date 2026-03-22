@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import { SidebarShell } from "./sidebar-shell";
@@ -37,10 +38,10 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
     const active = pathname === href;
     return (
       <li>
-        <a href={href} className={`block px-4 py-1 text-sm truncate ${active ? "font-semibold" : ""}`}
+        <Link href={href} className={`block px-4 py-1 text-sm truncate ${active ? "font-semibold" : ""}`}
           style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>
           {unitLabel} {node.nr}{node.title ? ` ${node.title}` : ""}
-        </a>
+        </Link>
       </li>
     );
   }
@@ -102,7 +103,7 @@ export function SidebarLaw({ law, title, unitLabel, toc, provisions, activeNr }:
           const href = `/${law}/${nr}`;
           const active = pathname === href;
           return (
-            <li key={nr}><a href={href} className={`block px-4 py-1.5 ${active ? "font-semibold" : ""}`} style={{ color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>{unitLabel} {nr}</a></li>
+            <li key={nr}><Link href={href} className={`block px-4 py-1.5 ${active ? "font-semibold" : ""}`} style={{ color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>{unitLabel} {nr}</Link></li>
           );
         })}</ul>
       )}

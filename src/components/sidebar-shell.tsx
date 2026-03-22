@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useCallback, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { useT } from "@/lib/i18n/useT";
 
 interface Props {
@@ -10,14 +11,35 @@ interface Props {
 
 export function SidebarShell({ children, width = "w-72" }: Props) {
   const t = useT();
+  const pathname = usePathname();
   const [open, setOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("sidebar-open");
     if (stored !== null) setOpen(stored === "1");
   }, []);
 
-  const toggle = () => setOpen((v) => { localStorage.setItem("sidebar-open", v ? "0" : "1"); return !v; });
+  // Track mobile breakpoint
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  // Close sidebar on mobile when navigating
+  useEffect(() => {
+    if (isMobile) setOpen(false);
+  }, [pathname, isMobile]);
+
+  const toggle = useCallback(() => {
+    setOpen((v) => {
+      localStorage.setItem("sidebar-open", v ? "0" : "1");
+      return !v;
+    });
+  }, []);
 
   return (
     <>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { SidebarShell } from "./sidebar-shell";
@@ -28,7 +29,7 @@ export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", ac
 
   return (
     <SidebarShell>
-      <a href={base} className="block px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</a>
+      <Link href={base} className="block px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</Link>
       <ul className="py-1 text-sm">
         {issues.map((iss) => {
           const key = `${iss.year}-${iss.issue}`;
@@ -49,11 +50,11 @@ export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", ac
                     const active = pathname === href;
                     return (
                       <li key={a.slug}>
-                        <a href={href} className={`block px-3 py-1 text-xs leading-snug ${active ? "font-semibold" : ""}`}
+                        <Link href={href} className={`block px-3 py-1 text-xs leading-snug ${active ? "font-semibold" : ""}`}
                           style={{ color: active ? "var(--active-text)" : "var(--text-tertiary)", background: active ? "var(--active-bg)" : undefined }}>
                           <span className="font-medium">{a.authors[0]?.name.split(" ").pop()}</span>{" – "}
                           <span>{a.title.length > 40 ? a.title.slice(0, 40) + "…" : a.title}</span>
-                        </a>
+                        </Link>
                       </li>
                     );
                   })}
