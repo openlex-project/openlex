@@ -1,5 +1,6 @@
 import { parse } from "yaml";
 import { fetchFile, listFiles, listDirs } from "./github";
+import { loadSiteConfig } from "./site";
 
 export interface TocEntry {
   file: string;
@@ -102,10 +103,10 @@ export interface ContentRegistry {
 }
 
 function getContentRepos(): string[] {
-  return (process.env.CONTENT_REPOS ?? "")
-    .split(",")
-    .map((r) => r.trim())
-    .filter(Boolean);
+  const site = loadSiteConfig();
+  if (site.content_repos?.length) return site.content_repos;
+  // Fallback to env var for backward compatibility
+  return (process.env.CONTENT_REPOS ?? "").split(",").map((r) => r.trim()).filter(Boolean);
 }
 
 /** Discover journal issues from per-issue meta.yaml */

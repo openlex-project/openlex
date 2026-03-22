@@ -14,6 +14,7 @@ export interface SiteConfig {
   default_locale: string;
   brand_hue: number;
   logo_text?: boolean;
+  content_repos?: string[];
   categories?: CategoryConfig[];
   template?: string;
   home?: import("@/lib/template").HomeSection[];

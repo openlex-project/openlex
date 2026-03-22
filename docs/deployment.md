@@ -19,10 +19,11 @@ Edit `site.yaml` in the project root to configure name, tagline, branding, and c
 | Variable | Description | Example |
 |---|---|---|
 | `GITHUB_PAT` | GitHub PAT with access to content repos | `ghp_...` |
-| `CONTENT_REPOS` | Comma-separated list of content repos | `org/oc-dsgvo,org/openlex-laws` |
 | `NEXTAUTH_SECRET` | Secret for NextAuth.js session encryption | `openssl rand -base64 32` |
 | `KV_REST_API_URL` | Upstash Redis URL (bookmarks, history, users) | `https://...upstash.io` |
 | `KV_REST_API_TOKEN` | Upstash Redis token | |
+
+Content repos are configured in `site.yaml` under `content_repos` (not as env var). See [site-yaml.md](site-yaml.md).
 
 #### OAuth Providers
 
@@ -76,7 +77,7 @@ Providers that require `_ISSUER`: `keycloak`, `okta`, `auth0`, `cognito`, `oidc`
 4. Place Markdown files in `content/` (see [content-guide.md](content-guide.md))
 5. Optional: add `jura.csl` + `references.yaml` for citations (see [references-yaml.md](references-yaml.md))
 6. Optional: set `category` in `meta.yaml` for homepage grouping
-7. Add repo name to `CONTENT_REPOS` on Vercel
+7. Add repo name to `content_repos` in `site.yaml`
 
 ### Journal
 
@@ -84,14 +85,14 @@ Providers that require `_ISSUER`: `keycloak`, `okta`, `auth0`, `cognito`, `oidc`
 2. Add `meta.yaml` with `type: "journal"` (see [meta-yaml.md](meta-yaml.md))
 3. Create year/issue directories with `issue.yaml` and article markdown files
 4. Optional: set `category` in `meta.yaml` for homepage grouping
-5. Add repo name to `CONTENT_REPOS` on Vercel
+5. Add repo name to `content_repos` in `site.yaml`
 
 ### Laws
 
 1. Create a private GitHub repo (or use an existing mono-repo)
 2. Add `sync.yaml` in the root (see [sync-yaml.md](sync-yaml.md))
 3. Add sync scripts and GitHub Actions workflow (see [sync-yaml.md](sync-yaml.md))
-4. Add repo name to `CONTENT_REPOS` on Vercel
+4. Add repo name to `content_repos` in `site.yaml`
 
 ## Internationalization
 
@@ -108,7 +109,7 @@ Providers that require `_ISSUER`: `keycloak`, `okta`, `auth0`, `cognito`, `oidc`
 build-search-index → next build → deploy
 ```
 
-The Pagefind search index is generated *before* `next build` so the static files are available in `public/pagefind/`. `GITHUB_PAT` and `CONTENT_REPOS` must be available at build time.
+The Pagefind search index is generated *before* `next build` so the static files are available in `public/pagefind/`. `GITHUB_PAT` must be available at build time.
 
 ## OAuth Setup
 
