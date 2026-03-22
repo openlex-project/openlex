@@ -27,7 +27,7 @@ const remarkMarginNumbers: Plugin<[], Root> = () => {
         counter++;
         parts.push({
           type: "html",
-          value: `<span class="rn" id="rn-${counter}" data-rn="${counter}">${counter}</span>`,
+          value: `<span class="rn" id="rn-${counter}" data-rn="${counter}" aria-hidden="true">${counter}</span>`,
         });
         lastIndex = match.index + match[0].length;
       }

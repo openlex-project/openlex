@@ -42,7 +42,7 @@ export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", ac
         }`}
         style={{ background: "var(--surface)", borderRight: "1px solid var(--border-subtle)" }}
       >
-        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={open ? "Sidebar schließen" : "Sidebar öffnen"}>
+        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={open ? "Sidebar schließen" : "Sidebar öffnen"} aria-expanded={open}>
           {open ? (
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M13 8l-4 4 4 4" /></svg>
           ) : (
@@ -60,6 +60,7 @@ export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", ac
                 <li key={key}>
                   <button
                     onClick={() => toggleIssue(key)}
+                    aria-expanded={isExpanded}
                     className={`w-full flex items-center justify-between px-4 py-1.5 text-left transition-colors ${isActive && !activeArticle ? "font-semibold" : ""}`}
                     style={{ color: isActive && !activeArticle ? "var(--active-text)" : "var(--text-primary)" }}
                   >

@@ -24,6 +24,7 @@ const remarkDirectiveHandlers: Plugin<[], Root> = () => {
         hName: "aside",
         hProperties: {
           class: className,
+          role: n.name === "author" ? undefined : "note",
           "data-directive": n.name,
         },
       };
