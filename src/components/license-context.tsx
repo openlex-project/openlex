@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 const Ctx = createContext<{ license: string; set: (v: string) => void }>({ license: "", set: () => {} });
 
@@ -10,7 +10,7 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
 
 export function SetLicense({ value }: { value: string }) {
   const { set } = useContext(Ctx);
-  if (typeof window !== "undefined") set(value);
+  useEffect(() => { set(value); }, [value, set]);
   return null;
 }
 

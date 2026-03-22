@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { buildRegistry } from "@/lib/registry";
+import { buildRegistry, getLawProvisions } from "@/lib/registry";
 import { loadSiteConfig } from "@/lib/site";
 import { defaultLocale, type Locale } from "@/lib/i18n";
 
@@ -45,8 +45,10 @@ export default async function CategoryPage({ params }: Props) {
 
   for (const l of laws.values()) {
     if ((l.category ?? "law") !== key) continue;
+    const provisions = await getLawProvisions(l.repo, l.slug);
+    const first = provisions[0] ?? 1;
     items.push({
-      href: `/law/${l.slug}/1`,
+      href: `/law/${l.slug}/${first}`,
       title: l.title_short ?? l.title,
       subtitle: l.title_short ? l.title : undefined,
     });
