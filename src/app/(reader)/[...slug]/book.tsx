@@ -161,7 +161,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
               <> · <a href={`/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</a></>
             )}
           </span>
-          <BookmarkButton />
+          <BookmarkButton title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
         </div>
         <div className="prose prose-gray prose-rn dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
         {navBar("bottom")}

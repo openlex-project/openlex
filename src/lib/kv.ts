@@ -6,8 +6,9 @@ const redis = new Redis({
 });
 
 /** Get user bookmarks */
-export async function getBookmarks(userId: string): Promise<string[]> {
-  return (await redis.smembers(`bookmarks:${userId}`)) ?? [];
+export async function getBookmarks(userId: string): Promise<{ path: string; title: string }[]> {
+  const data = (await redis.hgetall(`bookmarks:${userId}`)) ?? {};
+  return Object.entries(data).map(([path, title]) => ({ path, title: title as string }));
 }
 
 /** Store user email + name on sign-in */
@@ -22,17 +23,14 @@ export async function getUserEmails(): Promise<string[]> {
 }
 
 /** Toggle a bookmark, returns new state */
-export async function toggleBookmark(
-  userId: string,
-  path: string,
-): Promise<boolean> {
+export async function toggleBookmark(userId: string, path: string, title?: string): Promise<boolean> {
   const key = `bookmarks:${userId}`;
-  const exists = await redis.sismember(key, path);
+  const exists = await redis.hexists(key, path);
   if (exists) {
-    await redis.srem(key, path);
+    await redis.hdel(key, path);
     return false;
   }
-  await redis.sadd(key, path);
+  await redis.hset(key, { [path]: title ?? path });
   return true;
 }
 

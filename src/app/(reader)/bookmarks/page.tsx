@@ -5,10 +5,12 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/useT";
 
+interface Bookmark { path: string; title: string; }
+
 export default function BookmarksPage() {
   const { data: session } = useSession();
   const t = useT();
-  const [bookmarks, setBookmarks] = useState<string[]>([]);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,10 +39,11 @@ export default function BookmarksPage() {
         <p style={{ color: "var(--text-secondary)" }}>{t("bookmarks.empty")}</p>
       ) : (
         <ul className="space-y-2">
-          {bookmarks.map((path) => (
-            <li key={path}>
-              <Link href={path} className="block card px-4 py-3 hover:border-[var(--color-brand-300)] transition-colors">
-                <span className="text-sm" style={{ color: "var(--active-text)" }}>{path}</span>
+          {bookmarks.map((b) => (
+            <li key={b.path}>
+              <Link href={b.path} className="block card px-4 py-3 hover:border-[var(--color-brand-300)] transition-colors">
+                <span className="text-sm font-medium" style={{ color: "var(--active-text)" }}>{b.title}</span>
+                <span className="block text-xs mt-0.5" style={{ color: "var(--text-tertiary)" }}>{b.path}</span>
               </Link>
             </li>
           ))}

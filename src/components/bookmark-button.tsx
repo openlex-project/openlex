@@ -4,7 +4,7 @@ import { useState, useEffect, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
-export function BookmarkButton() {
+export function BookmarkButton({ title }: { title?: string }) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [bookmarked, setBookmarked] = useState(false);
@@ -25,7 +25,7 @@ export function BookmarkButton() {
       const res = await fetch("/api/bookmarks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: pathname }),
+        body: JSON.stringify({ path: pathname, title }),
       });
       if (res.ok) {
         const { bookmarked: state } = await res.json();
