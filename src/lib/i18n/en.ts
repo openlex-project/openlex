@@ -2,6 +2,8 @@ const en: Record<string, string> = {
   "nav.search": "Search…",
   "nav.login": "Sign in",
   "nav.logout": "Sign out",
+  "nav.bookmarks": "Bookmarks",
+  "nav.history": "History",
   "search.title": "Search results",
   "search.placeholder": "Enter search term.",
   "search.aria": "Full-text search",
@@ -34,5 +36,11 @@ const en: Record<string, string> = {
   "issue.label": "Issue {issue}/{year}",
   "issue.word": "Issue",
   "edition.label": "{ref}th edition",
+  "bookmarks.title": "Bookmarks",
+  "bookmarks.login": "Please sign in to see your bookmarks.",
+  "bookmarks.empty": "No bookmarks yet.",
+  "history.title": "History",
+  "history.login": "Please sign in to see your history.",
+  "history.empty": "No pages visited yet.",
 };
 export default en;

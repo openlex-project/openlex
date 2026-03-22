@@ -6,6 +6,8 @@ import { renderMarkdown } from "@/lib/markdown";
 import { SidebarJournal } from "@/components/sidebar-journal";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
+import { BookmarkButton } from "@/components/bookmark-button";
+import { HistoryTracker } from "@/components/history-tracker";
 
 interface Props {
   registry: ContentRegistry;
@@ -151,7 +153,7 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
             <span className="hidden sm:block truncate mx-4" style={{ color: "var(--text-secondary)" }}><AuthorLine article={article} /></span>
             {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{authorLastNames(next)} →</Link> : <span />}
           </nav>
-          <h1 className="text-xl sm:text-2xl font-bold mb-1">{article.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title} <BookmarkButton /></h1>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
             <AuthorLine article={article} />
             {article.pages && ` · ${t(locale, "page.abbr")} ${article.pages}`}
@@ -166,6 +168,7 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
             {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right" style={{ color: "var(--active-text)" }}>{next.title} →</Link> : <span />}
           </nav>
           <SetLicense value={journal.license} />
+          <HistoryTracker title={article.title} />
         </article>
       </div>
     );

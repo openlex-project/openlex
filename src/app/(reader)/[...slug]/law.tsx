@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getLawContent, getLawProvisions, findByProvision, findLawBreadcrumb, type ContentRegistry, type LawMeta } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
+import { BookmarkButton } from "@/components/bookmark-button";
+import { HistoryTracker } from "@/components/history-tracker";
 
 interface Props {
   registry: ContentRegistry;
@@ -65,13 +67,14 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
           )}
           {nextNr !== undefined ? navLink(`/${meta.slug}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
-        <h1 className="text-xl sm:text-2xl font-bold mb-6">{unitLabel} {nr} {meta.title_short ?? meta.title}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-6 flex items-center gap-2">{unitLabel} {nr} {meta.title_short ?? meta.title} <BookmarkButton /></h1>
         <div className="prose prose-gray dark:prose-invert max-w-none whitespace-pre-line">{text}</div>
         <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/${meta.slug}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {nextNr !== undefined ? navLink(`/${meta.slug}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
         {meta.license && <SetLicense value={meta.license} />}
+        <HistoryTracker title={`${unitLabel} ${nr} ${meta.title_short ?? meta.title}`} />
       </article>
     </div>
   );

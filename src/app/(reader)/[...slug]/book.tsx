@@ -9,6 +9,8 @@ import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { FeedbackButton } from "@/components/feedback-button";
 import { SidebarBook } from "@/components/sidebar-book";
 import { FootnoteTooltips } from "@/components/footnote-tooltips";
+import { BookmarkButton } from "@/components/bookmark-button";
+import { HistoryTracker } from "@/components/history-tracker";
 
 interface Props {
   registry: ContentRegistry;
@@ -150,18 +152,22 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
       <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
       <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
         {navBar("top")}
-        <div className="mb-6 text-sm" style={{ color: "var(--text-secondary)" }}>
-          {displayName} – {tocEntry?.title ?? fileSlug}
-          {edition && <span className="ml-2" style={{ color: "var(--color-accent-600)" }}>({edition})</span>}
-          {meta.comments_on && tocEntry?.provisions?.[0] && (
-            <> · <a href={`/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</a></>
-          )}
+        <div className="mb-6 text-sm flex items-center gap-2" style={{ color: "var(--text-secondary)" }}>
+          <span>
+            {displayName} – {tocEntry?.title ?? fileSlug}
+            {edition && <span className="ml-2" style={{ color: "var(--color-accent-600)" }}>({edition})</span>}
+            {meta.comments_on && tocEntry?.provisions?.[0] && (
+              <> · <a href={`/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</a></>
+            )}
+          </span>
+          <BookmarkButton />
         </div>
         <div className="prose prose-gray prose-rn dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
         {navBar("bottom")}
         <SetLicense value={meta.license} />
         <FeedbackButton repo={meta.repo} />
         <FootnoteTooltips />
+        <HistoryTracker title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
       </article>
     </div>
   );
