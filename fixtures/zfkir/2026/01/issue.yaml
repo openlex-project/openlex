@@ -5,7 +5,7 @@ articles:
       - name: "Prof. Dr. Max Mustermann"
         orcid: "0000-0001-2345-6789"
       - name: "Dr. Anna Beispiel"
-    rubrik: "Aufsätze"
+    section: "Aufsätze"
     pages: "1-12"
     numbering: "commentary"
   - file: schmidt-algorithmen.md
@@ -13,5 +13,5 @@ articles:
     authors:
       - name: "Dr. Lisa Schmidt"
         orcid: "0000-0002-3456-7890"
-    rubrik: "Aufsätze"
+    section: "Aufsätze"
     pages: "13-25"

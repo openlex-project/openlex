@@ -94,11 +94,11 @@ export default async function JournalPage({ params }: Props) {
       notFound();
     }
 
-    const rubriken = new Map<string, typeof issue.articles>();
+    const sectionen = new Map<string, typeof issue.articles>();
     for (const a of issue.articles) {
-      const list = rubriken.get(a.rubrik) ?? [];
+      const list = sectionen.get(a.section) ?? [];
       list.push(a);
-      rubriken.set(a.rubrik, list);
+      sectionen.set(a.section, list);
     }
 
     return (
@@ -107,9 +107,9 @@ export default async function JournalPage({ params }: Props) {
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title_short ?? journal.title} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
           <div className="space-y-6 mt-6">
-            {[...rubriken.entries()].map(([rubrik, articles]) => (
-              <section key={rubrik}>
-                <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>{rubrik}</h2>
+            {[...sectionen.entries()].map(([section, articles]) => (
+              <section key={section}>
+                <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>{section}</h2>
                 <ul className="space-y-3">
                   {articles.map((a) => (
                     <li key={a.slug}>

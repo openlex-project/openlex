@@ -63,7 +63,7 @@ export interface JournalArticle {
   slug: string;
   title: string;
   authors: { name: string; orcid?: string }[];
-  rubrik: string;
+  section: string;
   pages?: string;
   numbering?: string;
   doi?: string;
@@ -103,7 +103,7 @@ async function discoverJournal(repo: string, doiPrefix?: string): Promise<Journa
     for (const issueNr of nums) {
       const raw = await fetchFile(repo, `${year}/${issueNr}/issue.yaml`);
       if (!raw) continue;
-      const issueMeta = parse(raw) as { articles: { file: string; title: string; authors: { name: string; orcid?: string }[]; rubrik: string; pages?: string; numbering?: string; doi?: string }[] };
+      const issueMeta = parse(raw) as { articles: { file: string; title: string; authors: { name: string; orcid?: string }[]; section: string; pages?: string; numbering?: string; doi?: string }[] };
       if (!issueMeta.articles?.length) continue;
       const articles: JournalArticle[] = issueMeta.articles.map((a) => {
         const firstPage = a.pages?.split("-")[0];
@@ -111,7 +111,7 @@ async function discoverJournal(repo: string, doiPrefix?: string): Promise<Journa
           slug: a.file.replace(/\.md$/, ""),
           title: a.title,
           authors: a.authors,
-          rubrik: a.rubrik ?? "Sonstiges",
+          section: a.section ?? "Other",
           pages: a.pages,
           numbering: a.numbering,
           doi: a.doi ?? (doiPrefix && firstPage ? `${doiPrefix}.${year}.${firstPage}` : undefined),

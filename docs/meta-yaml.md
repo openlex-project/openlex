@@ -95,7 +95,7 @@ articles:
     authors:
       - name: "Prof. Dr. Max Mustermann"
         orcid: "0000-0001-2345-6789"
-    rubrik: "Aufsätze"
+    section: "Aufsätze"
     pages: "1-12"
     numbering: "commentary"
 ```
@@ -105,7 +105,7 @@ articles:
 | `file` | string | ✓ | Markdown filename |
 | `title` | string | ✓ | Article title |
 | `authors` | array | ✓ | Authors with optional `orcid` |
-| `rubrik` | string | ✓ | Section grouping |
+| `section` | string | ✓ | Section/topic grouping (e.g., "Essays", "Case Law") |
 | `pages` | string | | Page range — enables citation redirect |
 | `numbering` | string | | Heading numbering schema |
 | `doi` | string | | Explicit DOI override |

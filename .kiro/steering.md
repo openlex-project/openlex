@@ -71,7 +71,7 @@ OpenLex ist eine Open-Access-Plattform für juristische Fachliteratur (Kommentar
 - Zugriff auf `/{n}ed/` ohne existierenden Branch → Redirect auf aktuelle Auflage.
 - URL-Schema für Gesetze: `/law/{law}/{nr}` (aktuell), `/law/{law}/@{datum}/{nr}` (historische Fassung)
 - URL-Schema für Zeitschriften: `/journal/{journal}/{year}/{issue}/{slug}` (Beitrag), `/journal/{journal}/{year}/{page}` (Zitier-Redirect)
-- Journal-Struktur wird aus dem Dateisystem abgeleitet (kein `toc.yaml`): Jahrgänge → Hefte → Artikel mit Frontmatter (title, author, rubrik, pages)
+- Journal-Struktur wird aus dem Dateisystem abgeleitet (kein `toc.yaml`): Jahrgänge → Hefte → Artikel mit Frontmatter (title, author, section, pages)
 - `unit_type` nur bei Gesetzen (in `sync.yaml`): `article` (Art.) oder `section` (§)
 - Fragmente für Untergliederung: `#rn-1` (Kommentare), `#abs-1`, `#abs-1-s-1`, `#abs-1-lit-a` (Gesetze)
 
@@ -379,13 +379,13 @@ articles:
     authors:
       - name: "Prof. Dr. Max Mustermann"
         orcid: "0000-0001-2345-6789"
-    rubrik: "Aufsätze"
+    section: "Aufsätze"
     pages: "1-12"
     numbering: "commentary"
 ```
 
 - `authors`: Array mit Name + optionalem ORCID
-- `rubrik` gruppiert Beiträge im Heft-Inhaltsverzeichnis
+- `section` gruppiert Beiträge im Heft-Inhaltsverzeichnis
 - `pages` ermöglicht Zitier-Redirect: `/journal/zfkir/2026/42` → Beitrag mit Seite 42
 - `numbering` pro Artikel (commentary, textbook, decimal, none)
 - `doi_prefix` im Journal-meta.yaml → Artikel-DOI: `{prefix}.{year}.{firstPage}`
