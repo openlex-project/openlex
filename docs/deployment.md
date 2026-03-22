@@ -20,8 +20,8 @@ Edit `site.yaml` in the project root to configure name, tagline, branding, and c
 |---|---|---|
 | `GITHUB_PAT` | GitHub PAT with access to content repos | `ghp_...` |
 | `NEXTAUTH_SECRET` | Secret for NextAuth.js session encryption | `openssl rand -base64 32` |
-| `KV_REST_API_URL` | Upstash Redis URL (bookmarks, history, users) | `https://...upstash.io` |
-| `KV_REST_API_TOKEN` | Upstash Redis token | |
+| `REDIS_REST_URL` | Upstash Redis URL (bookmarks, history, users) | `https://...upstash.io` |
+| `REDIS_REST_TOKEN` | Upstash Redis token | |
 
 Content repos are configured in `site.yaml` under `content_repos` (not as env var). See [site-yaml.md](site-yaml.md).
 
