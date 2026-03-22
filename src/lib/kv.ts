@@ -66,3 +66,40 @@ export async function getHistory(userId: string, limit = 50): Promise<HistoryEnt
   const raw = await redis.zrange<string[]>(`history:${userId}`, 0, limit - 1, { rev: true });
   return raw.map((s) => (typeof s === "string" ? JSON.parse(s) : s) as HistoryEntry);
 }
+
+/** User settings */
+export async function getUserSettings(userId: string): Promise<Record<string, string>> {
+  return (await redis.hgetall(`settings:${userId}`)) ?? {};
+}
+
+export async function setUserSetting(userId: string, key: string, value: string): Promise<void> {
+  await redis.hset(`settings:${userId}`, { [key]: value });
+}
+
+/** Check if a bookmark exists */
+export async function hasBookmark(userId: string, path: string): Promise<boolean> {
+  return !!(await redis.sismember(`bookmarks:${userId}`, path));
+}
+
+/** Export all user data (GDPR Art. 15) */
+export async function exportUserData(userId: string): Promise<Record<string, unknown>> {
+  const email = userId; // userId is the email
+  const [user, bookmarks, history, settings] = await Promise.all([
+    redis.hgetall(`user:${email}`),
+    getBookmarks(userId),
+    getHistory(userId),
+    getUserSettings(userId),
+  ]);
+  return { user, bookmarks, history, settings };
+}
+
+/** Delete all user data (GDPR Art. 17) */
+export async function deleteAllUserData(userId: string): Promise<void> {
+  const email = userId;
+  await Promise.all([
+    redis.del(`user:${email}`),
+    redis.del(`bookmarks:${userId}`),
+    redis.del(`history:${userId}`),
+    redis.del(`settings:${userId}`),
+  ]);
+}

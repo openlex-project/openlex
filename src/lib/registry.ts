@@ -192,7 +192,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
   }
 
   const slugMap = new Map<string, ContentEntry>();
-  const reserved = new Set(["category", "login", "search", "api", "favicon.svg", "bookmarks", "history"]);
+  const reserved = new Set(["category", "login", "search", "api", "favicon.svg", "bookmarks", "history", "profile", "feedback"]);
 
   for (const [slug, entry] of books) {
     if (reserved.has(slug)) throw new Error(`Slug "${slug}" is reserved`);
