@@ -44,6 +44,14 @@ export default async function LawPage({ params }: Props) {
     <div className="flex">
       <LawSidebar law={law} title={meta.title_short ?? meta.title} unitLabel={unitLabel} toc={meta.toc} provisions={provisions} activeNr={nr} />
       <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
+        {breadcrumb.length > 1 && (
+          <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">
+            <span>{meta.title_short ?? meta.title}</span>
+            {breadcrumb.slice(0, -1).map((node, i) => (
+              <span key={i}><span className="mx-1">›</span>{node.label}{node.title ? ` ${node.title}` : ""}</span>
+            ))}
+          </nav>
+        )}
         <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/law/${law}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {commentaryLinks.length > 0 && (
@@ -58,14 +66,6 @@ export default async function LawPage({ params }: Props) {
           )}
           {nextNr !== undefined ? navLink(`/law/${law}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
-        {breadcrumb.length > 1 && (
-          <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">
-            <span>{meta.title_short ?? meta.title}</span>
-            {breadcrumb.slice(0, -1).map((node, i) => (
-              <span key={i}><span className="mx-1">›</span>{node.label}{node.title ? ` ${node.title}` : ""}</span>
-            ))}
-          </nav>
-        )}
         <h1 className="text-2xl font-bold mb-6">{unitLabel} {nr} {meta.title_short ?? meta.title}</h1>
         <div className="prose prose-gray dark:prose-invert max-w-none whitespace-pre-line">{text}</div>
         <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>

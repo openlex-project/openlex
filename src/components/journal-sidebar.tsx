@@ -39,19 +39,19 @@ export function JournalSidebar({ journal, title, issues, issueLabel = "Heft", ac
     <>
       {open && <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={toggle} />}
       <aside
-        className={`max-lg:fixed lg:sticky top-[57px] left-0 z-40 lg:z-auto h-[calc(100vh-57px)] transition-[width,transform] duration-200 ease-in-out flex flex-col shrink-0 ${
-          open ? "w-72 max-lg:translate-x-0" : "w-0 max-lg:-translate-x-full lg:w-10"
+        className={`sticky top-[57px] h-[calc(100vh-57px)] shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out flex flex-col ${
+          open ? "w-72" : "w-0 lg:w-10"
         }`}
-        style={{ background: "var(--surface)", borderRight: "1px solid var(--border-subtle)" }}
+        style={{ background: "var(--surface)", borderRight: open ? "1px solid var(--border-subtle)" : undefined }}
       >
-        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={open ? t("sidebar.close") : t("sidebar.open")} aria-expanded={open}>
+        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full" style={{ color: "var(--text-tertiary)" }} aria-label={open ? t("sidebar.close") : t("sidebar.open")} aria-expanded={open}>
           {open ? (
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M13 8l-4 4 4 4" /></svg>
           ) : (
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M11 8l4 4-4 4" /></svg>
           )}
         </button>
-        <nav className={`overflow-y-auto flex-1 ${open ? "opacity-100" : "opacity-0 lg:hidden"}`}>
+        <nav className={`overflow-y-auto flex-1 ${open ? "" : "hidden"}`}>
           <a href={base} className="block px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</a>
           <ul className="py-1 text-sm">
             {issues.map((iss) => {

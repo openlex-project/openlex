@@ -14,13 +14,6 @@ interface Props {
   activeNr?: string;
 }
 
-/** Collect all provision nrs under a node */
-function collectNrs(node: LawTocNode): string[] {
-  if (node.nr) return [node.nr];
-  return node.children?.flatMap(collectNrs) ?? [];
-}
-
-/** Find all structure labels that contain the active provision */
 function findExpandedKeys(toc: LawTocNode[], nr: string, path: string[] = []): string[] {
   for (const node of toc) {
     if (node.nr === nr) return path;
@@ -39,45 +32,35 @@ function TocNode({ node, law, unitLabel, activeNr, depth, expanded, onToggle }: 
 }) {
   const pathname = usePathname();
 
-  // Leaf provision
   if (node.nr) {
     const href = `/law/${law}/${node.nr}`;
     const active = pathname === href;
     return (
       <li>
-        <a
-          href={href}
-          className={`block px-4 py-1 text-sm transition-colors ${active ? "font-semibold" : ""}`}
-          style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}
-        >
+        <a href={href} className={`block px-4 py-1 text-sm truncate ${active ? "font-semibold" : ""}`}
+          style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>
           {unitLabel} {node.nr}{node.title ? ` ${node.title}` : ""}
         </a>
       </li>
     );
   }
 
-  // Structure node
   const key = depth + "-" + (node.label ?? node.title);
   const isExpanded = expanded.has(key);
 
   return (
     <li>
-      <button
-        onClick={() => onToggle(key)}
-        aria-expanded={isExpanded}
-        className="w-full flex items-center gap-1 px-4 py-1 text-sm text-left transition-colors"
-        style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: "var(--text-primary)" }}
-      >
+      <button onClick={() => onToggle(key)} aria-expanded={isExpanded}
+        className="w-full flex items-center gap-1 px-4 py-1 text-sm text-left"
+        style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: "var(--text-primary)" }}>
         <svg className={`w-3 h-3 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
         <span className="font-medium">{node.label}</span>
         {node.title && <span className="truncate" style={{ color: "var(--text-tertiary)" }}>{node.title}</span>}
       </button>
       {isExpanded && node.children && (
-        <ul>
-          {node.children.map((child, i) => (
-            <TocNode key={child.nr ?? `${i}-${child.label}`} node={child} law={law} unitLabel={unitLabel} activeNr={activeNr} depth={depth + 1} expanded={expanded} onToggle={onToggle} />
-          ))}
-        </ul>
+        <ul>{node.children.map((child, i) => (
+          <TocNode key={child.nr ?? `${i}-${child.label}`} node={child} law={law} unitLabel={unitLabel} activeNr={activeNr} depth={depth + 1} expanded={expanded} onToggle={onToggle} />
+        ))}</ul>
       )}
     </li>
   );
@@ -88,7 +71,6 @@ export function LawSidebar({ law, title, unitLabel, toc, provisions, activeNr }:
   const t = useT();
   const [open, setOpen] = useState(true);
 
-  // Auto-expand ancestors of active provision
   const initialExpanded = useMemo(() => {
     if (!activeNr) return new Set<string>();
     return new Set(findExpandedKeys(toc, activeNr));
@@ -101,7 +83,6 @@ export function LawSidebar({ law, title, unitLabel, toc, provisions, activeNr }:
     if (stored !== null) setOpen(stored === "1");
   }, []);
 
-  // Update expanded when active provision changes
   useEffect(() => {
     if (activeNr) {
       setExpanded((prev) => {
@@ -123,42 +104,36 @@ export function LawSidebar({ law, title, unitLabel, toc, provisions, activeNr }:
     <>
       {open && <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={toggle} />}
       <aside
-        className={`max-lg:fixed lg:sticky top-[57px] left-0 z-40 lg:z-auto h-[calc(100vh-57px)] transition-[width,transform] duration-200 ease-in-out flex flex-col shrink-0 ${
-          open ? "w-72 max-lg:translate-x-0" : "w-0 max-lg:-translate-x-full lg:w-10"
+        className={`sticky top-[57px] h-[calc(100vh-57px)] shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out flex flex-col ${
+          open ? "w-72" : "w-0 lg:w-10"
         }`}
-        style={{ background: "var(--surface)", borderRight: "1px solid var(--border-subtle)" }}
+        style={{ background: "var(--surface)", borderRight: open ? "1px solid var(--border-subtle)" : undefined }}
       >
-        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={open ? t("sidebar.close") : t("sidebar.open")} aria-expanded={open}>
+        <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full" style={{ color: "var(--text-tertiary)" }} aria-label={open ? t("sidebar.close") : t("sidebar.open")} aria-expanded={open}>
           {open ? (
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M13 8l-4 4 4 4" /></svg>
           ) : (
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18M11 8l4 4-4 4" /></svg>
           )}
         </button>
-        <nav className={`overflow-y-auto flex-1 ${open ? "opacity-100" : "opacity-0 lg:hidden"}`}>
-          <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</div>
-          {hasToc ? (
-            <ul className="py-1">
-              {toc.map((node, i) => (
+        {open && (
+          <nav className="overflow-y-auto flex-1">
+            <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</div>
+            {hasToc ? (
+              <ul className="py-1">{toc.map((node, i) => (
                 <TocNode key={node.nr ?? `${i}-${node.label}`} node={node} law={law} unitLabel={unitLabel} activeNr={activeNr} depth={0} expanded={expanded} onToggle={onToggle} />
-              ))}
-            </ul>
-          ) : (
-            <ul className="py-1 text-sm">
-              {provisions.map((nr) => {
+              ))}</ul>
+            ) : (
+              <ul className="py-1 text-sm">{provisions.map((nr) => {
                 const href = `/law/${law}/${nr}`;
                 const active = pathname === href;
                 return (
-                  <li key={nr}>
-                    <a href={href} className={`block px-4 py-1.5 transition-colors ${active ? "font-semibold" : ""}`} style={{ color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>
-                      {unitLabel} {nr}
-                    </a>
-                  </li>
+                  <li key={nr}><a href={href} className={`block px-4 py-1.5 ${active ? "font-semibold" : ""}`} style={{ color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>{unitLabel} {nr}</a></li>
                 );
-              })}
-            </ul>
-          )}
-        </nav>
+              })}</ul>
+            )}
+          </nav>
+        )}
       </aside>
       {!open && (
         <button onClick={toggle} className="fixed bottom-4 left-4 z-30 lg:hidden rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-white" style={{ background: "var(--color-brand-600)" }} aria-label={t("nav.open")}>
