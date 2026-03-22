@@ -89,10 +89,16 @@ export interface JournalEntry extends BookMeta {
   issues: JournalIssue[];
 }
 
+export type ContentEntry =
+  | { type: "book"; entry: BookEntry }
+  | { type: "law"; entry: LawMeta }
+  | { type: "journal"; entry: JournalEntry };
+
 export interface ContentRegistry {
   books: Map<string, BookEntry>;
   laws: Map<string, LawMeta>;
   journals: Map<string, JournalEntry>;
+  slugMap: Map<string, ContentEntry>;
 }
 
 function getContentRepos(): string[] {
@@ -185,7 +191,26 @@ export async function buildRegistry(): Promise<ContentRegistry> {
     }
   }
 
-  return { books, laws, journals };
+  const slugMap = new Map<string, ContentEntry>();
+  const reserved = new Set(["category", "login", "search", "api", "favicon.svg"]);
+
+  for (const [slug, entry] of books) {
+    if (reserved.has(slug)) throw new Error(`Slug "${slug}" is reserved`);
+    if (slugMap.has(slug)) throw new Error(`Slug collision: "${slug}" used by both ${slugMap.get(slug)!.type} and book`);
+    slugMap.set(slug, { type: "book", entry });
+  }
+  for (const [slug, entry] of laws) {
+    if (reserved.has(slug)) throw new Error(`Slug "${slug}" is reserved`);
+    if (slugMap.has(slug)) throw new Error(`Slug collision: "${slug}" used by both ${slugMap.get(slug)!.type} and law`);
+    slugMap.set(slug, { type: "law", entry });
+  }
+  for (const [slug, entry] of journals) {
+    if (reserved.has(slug)) throw new Error(`Slug "${slug}" is reserved`);
+    if (slugMap.has(slug)) throw new Error(`Slug collision: "${slug}" used by both ${slugMap.get(slug)!.type} and journal`);
+    slugMap.set(slug, { type: "journal", entry });
+  }
+
+  return { books, laws, journals, slugMap };
 }
 
 /** Find a toc entry by slug (filename without .md) */

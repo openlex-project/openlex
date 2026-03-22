@@ -33,7 +33,7 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
   const pathname = usePathname();
 
   if (node.nr) {
-    const href = `/law/${law}/${node.nr}`;
+    const href = `/${law}/${node.nr}`;
     const active = pathname === href;
     return (
       <li>
@@ -99,7 +99,7 @@ export function SidebarLaw({ law, title, unitLabel, toc, provisions, activeNr }:
         ))}</ul>
       ) : (
         <ul className="py-1 text-sm">{provisions.map((nr) => {
-          const href = `/law/${law}/${nr}`;
+          const href = `/${law}/${nr}`;
           const active = pathname === href;
           return (
             <li key={nr}><a href={href} className={`block px-4 py-1.5 ${active ? "font-semibold" : ""}`} style={{ color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>{unitLabel} {nr}</a></li>

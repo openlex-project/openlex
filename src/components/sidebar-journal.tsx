@@ -24,7 +24,7 @@ export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", ac
   });
 
   const toggleIssue = (key: string) => setExpanded((s) => { const n = new Set(s); n.has(key) ? n.delete(key) : n.add(key); return n; });
-  const base = `/journal/${journal}`;
+  const base = `/${journal}`;
 
   return (
     <SidebarShell>

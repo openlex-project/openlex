@@ -20,7 +20,7 @@ interface Props {
 
 export function SidebarBook({ work, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
   const pathname = usePathname();
-  const prefix = edition === "main" ? `/book/${work}` : `/book/${work}/${edition}`;
+  const prefix = edition === "main" ? `/${work}` : `/${work}/${edition}`;
 
   const renderEntry = (entry: TocEntry, depth = 0) => {
     const slug = entry.file.replace(/\.md$/, "");
@@ -54,7 +54,7 @@ export function SidebarBook({ work, toc, edition, activeSlug, headings = [], bac
       {backmatter.length > 0 && (
         <ul className="py-2 text-sm mt-2" style={{ borderTop: "1px solid var(--border-subtle)" }}>
           {backmatter.map((s) => {
-            const href = `/book/${work}/${s.id}`;
+            const href = `/${work}/${s.id}`;
             const active = pathname === href;
             return (
               <li key={s.id}>

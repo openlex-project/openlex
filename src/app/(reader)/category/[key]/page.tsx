@@ -26,7 +26,7 @@ export default async function CategoryPage({ params }: Props) {
     if ((b.category ?? b.type) !== key) continue;
     const firstSlug = b.toc[0]?.file.replace(/\.md$/, "") ?? "";
     items.push({
-      href: `/book/${b.slug}/${firstSlug}`,
+      href: `/${b.slug}/${firstSlug}`,
       title: b.title_short ?? b.title,
       subtitle: b.title_short ? b.title : undefined,
       detail: b.editors.map((e) => e.name).join(", "),
@@ -36,7 +36,7 @@ export default async function CategoryPage({ params }: Props) {
   for (const j of journals.values()) {
     if ((j.category ?? "journal") !== key) continue;
     items.push({
-      href: `/journal/${j.slug}`,
+      href: `/${j.slug}`,
       title: j.title_short ?? j.title,
       subtitle: j.title_short ? j.title : undefined,
       detail: [j.issn && `ISSN ${j.issn}`, j.issues.length > 0 && `${j.issues.length} issues`].filter(Boolean).join(" · ") || undefined,
@@ -48,7 +48,7 @@ export default async function CategoryPage({ params }: Props) {
     const provisions = await getLawProvisions(l.repo, l.slug);
     const first = provisions[0] ?? 1;
     items.push({
-      href: `/law/${l.slug}/${first}`,
+      href: `/${l.slug}/${first}`,
       title: l.title_short ?? l.title,
       subtitle: l.title_short ? l.title : undefined,
     });

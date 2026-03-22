@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { buildRegistry, getJournalArticleContent, type JournalArticle } from "@/lib/registry";
+import { getJournalArticleContent, type ContentRegistry, type JournalEntry, type JournalArticle } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
 import { renderMarkdown } from "@/lib/markdown";
 import { SidebarJournal } from "@/components/sidebar-journal";
@@ -8,10 +8,11 @@ import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
 
 interface Props {
-  params: Promise<{ journal: string; slug?: string[] }>;
+  registry: ContentRegistry;
+  entry: JournalEntry;
+  rest: string[];
 }
 
-/** Format authors: "Mustermann/Beispiel" or linked with ORCID */
 function authorNames(a: JournalArticle) {
   return a.authors.map((au) => au.name).join(" / ");
 }
@@ -35,22 +36,17 @@ function AuthorLine({ article }: { article: JournalArticle }) {
   );
 }
 
-export default async function JournalPage({ params }: Props) {
-  const { journal: journalSlug, slug = [] } = await params;
+export default async function JournalPage({ registry, entry: journal, rest }: Props) {
   const h = await headers();
   const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
-  const registry = await buildRegistry();
-  const journal = registry.journals.get(journalSlug);
-  if (!journal) notFound();
-
-  const base = `/journal/${journalSlug}`;
+  const base = `/${journal.slug}`;
   const issueWord = t(locale, "issue.word");
 
-  // /journal/{journal} — overview
-  if (slug.length === 0) {
+  // Overview
+  if (rest.length === 0) {
     return (
       <div className="flex">
-        <SidebarJournal journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} />
+        <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title}</h1>
           {journal.issn && <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>ISSN {journal.issn}</p>}
@@ -76,9 +72,9 @@ export default async function JournalPage({ params }: Props) {
     );
   }
 
-  // /journal/{journal}/{year}/{issue}
-  if (slug.length === 2) {
-    const [year, issueNr] = slug;
+  // Issue: /{year}/{issue}
+  if (rest.length === 2) {
+    const [year, issueNr] = rest;
     const issue = journal.issues.find((i) => i.year === year && i.issue === issueNr);
 
     if (!issue) {
@@ -94,20 +90,20 @@ export default async function JournalPage({ params }: Props) {
       notFound();
     }
 
-    const sectionen = new Map<string, typeof issue.articles>();
+    const sections = new Map<string, typeof issue.articles>();
     for (const a of issue.articles) {
-      const list = sectionen.get(a.section) ?? [];
+      const list = sections.get(a.section) ?? [];
       list.push(a);
-      sectionen.set(a.section, list);
+      sections.set(a.section, list);
     }
 
     return (
       <div className="flex">
-        <SidebarJournal journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
+        <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <h1 className="text-2xl font-bold mb-1">{journal.title_short ?? journal.title} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
           <div className="space-y-6 mt-6">
-            {[...sectionen.entries()].map(([section, articles]) => (
+            {[...sections.entries()].map(([section, articles]) => (
               <section key={section}>
                 <h2 className="text-lg font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>{section}</h2>
                 <ul className="space-y-3">
@@ -129,9 +125,9 @@ export default async function JournalPage({ params }: Props) {
     );
   }
 
-  // /journal/{journal}/{year}/{issue}/{article}
-  if (slug.length === 3) {
-    const [year, issueNr, articleSlug] = slug;
+  // Article: /{year}/{issue}/{article}
+  if (rest.length === 3) {
+    const [year, issueNr, articleSlug] = rest;
     const issue = journal.issues.find((i) => i.year === year && i.issue === issueNr);
     if (!issue) notFound();
     const article = issue.articles.find((a) => a.slug === articleSlug);
@@ -148,7 +144,7 @@ export default async function JournalPage({ params }: Props) {
 
     return (
       <div className="flex">
-        <SidebarJournal journal={journalSlug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
+        <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
         <article className="flex-1 min-w-0 px-8 lg:px-12 py-8">
           <nav className="flex items-center justify-between text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
             {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {authorLastNames(prev)}</Link> : <span />}
