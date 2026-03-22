@@ -15,6 +15,8 @@ export interface SiteConfig {
   brand_hue: number;
   logo_text?: boolean;
   categories?: CategoryConfig[];
+  template?: string;
+  home?: import("@/lib/template").HomeSection[];
 }
 
 let cached: SiteConfig | null = null;

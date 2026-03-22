@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "@/components/providers";
 import { LocaleProvider } from "@/components/locale-provider";
 import { loadSiteConfig } from "@/lib/site";
+import { loadTemplate } from "@/lib/template";
 import { defaultLocale, type Locale } from "@/lib/i18n";
 import "./globals.css";
 
@@ -32,9 +33,13 @@ export default async function RootLayout({
 }>) {
   const h = await headers();
   const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  const template = await loadTemplate(site.template);
 
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.brand_hue } as React.CSSProperties} suppressHydrationWarning>
+      <head>
+        {template.css && <style dangerouslySetInnerHTML={{ __html: template.css }} />}
+      </head>
       <body className="antialiased">
         <Providers>
           <LocaleProvider locale={locale}>{children}</LocaleProvider>

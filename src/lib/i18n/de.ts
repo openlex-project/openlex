@@ -27,6 +27,8 @@ const de: Record<string, string> = {
   "page.abbr": "S.",
   "skip": "Zum Inhalt springen",
   "home.aria": "Startseite",
+  "home.featured": "Empfohlen",
+  "home.recent": "Zuletzt hinzugefügt",
   "commentary.on": "Kommentar zu {slug}",
   "issues.count": "{n} Hefte",
   "issue.label": "Heft {issue}/{year}",

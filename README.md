@@ -19,6 +19,8 @@ Content is authored in Pandoc-flavor Markdown, managed in private GitHub repos, 
 - Branch-based editions
 - i18n (de/en)
 - Configurable site identity, branding, and content categories via `site.yaml`
+- Template system: built-in, remote (GitHub), or local templates with CSS + component variants
+- Data-driven homepage layout (hero, featured, categories, recent sections)
 - Law sync from gesetze-im-internet.de (GII) and EUR-Lex
 
 ## Configuration
@@ -48,6 +50,7 @@ See [site-yaml.md](docs/site-yaml.md) for full reference.
 ## Documentation
 
 - [site.yaml](docs/site-yaml.md) – Site identity, branding, categories
+- [Templates](docs/templates.md) – Template system, CSS overrides, component variants
 - [meta.yaml](docs/meta-yaml.md) – Metadata for books/journals
 - [toc.yaml](docs/toc-yaml.md) – Table of contents (books)
 - [sync.yaml](docs/sync-yaml.md) – Law configuration and sync

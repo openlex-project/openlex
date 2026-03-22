@@ -4,6 +4,7 @@ import { SearchBox } from "@/components/search-box";
 import { LogoFull } from "@/components/logo";
 import { LicenseProvider, LicenseDisplay } from "@/components/license-context";
 import { loadSiteConfig } from "@/lib/site";
+import { loadTemplate } from "@/lib/template";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 
 export default async function ReaderLayout({
@@ -14,6 +15,8 @@ export default async function ReaderLayout({
   const h = await headers();
   const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
   const site = loadSiteConfig();
+  const template = await loadTemplate(site.template);
+  const minimal = template.variants.header === "minimal";
 
   return (
     <LicenseProvider>
@@ -25,9 +28,11 @@ export default async function ReaderLayout({
           <a href="/" className="shrink-0" aria-label={t(locale, "home.aria")}>
             <LogoFull name={site.logo_text !== false ? site.name : undefined} className="text-[var(--color-brand-600)] dark:text-[var(--color-brand-300)]" />
           </a>
-          <div className="flex-1 max-w-lg mx-auto">
-            <SearchBox />
-          </div>
+          {!minimal && (
+            <div className="flex-1 max-w-lg mx-auto">
+              <SearchBox />
+            </div>
+          )}
           <div className="shrink-0">
             <UserButton />
           </div>

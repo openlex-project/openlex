@@ -13,6 +13,7 @@ copyright: "OpenLex"
 default_locale: "de"
 brand_hue: 265
 logo_text: true
+template: default
 
 categories:
   - key: book
@@ -21,6 +22,10 @@ categories:
     label: { de: "Zeitschriften", en: "Journals" }
   - key: law
     label: { de: "Gesetze", en: "Laws" }
+
+home:
+  - type: hero
+  - type: categories
 ```
 
 ## Fields
@@ -33,6 +38,8 @@ categories:
 | `default_locale` | string | ✓ | Default locale (`de`, `en`, etc.) |
 | `brand_hue` | number | ✓ | oklch color hue (0–360) — drives the entire color palette |
 | `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
+| `template` | string | | Template to use: built-in name (`default`, `academic`), GitHub repo (`org/repo[@ref]`), or local path (`./templates/...`). Default: `default`. See [templates.md](templates.md). |
+| `home` | array | | Homepage section layout. Overridden by template if template defines `home`. See [templates.md](templates.md). |
 | `categories` | array | | Content categories for homepage and listing pages |
 
 ## Brand Hue

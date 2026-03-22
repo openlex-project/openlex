@@ -27,6 +27,8 @@ const en: Record<string, string> = {
   "page.abbr": "p.",
   "skip": "Skip to content",
   "home.aria": "Home",
+  "home.featured": "Featured",
+  "home.recent": "Recently added",
   "commentary.on": "Commentary on {slug}",
   "issues.count": "{n} issues",
   "issue.label": "Issue {issue}/{year}",
