@@ -4,8 +4,7 @@ interface Props {
 }
 
 /**
- * OpenLex monogram: geometric O with L integrated.
- * The L shares the left stroke of the O, emerging from the bottom.
+ * Monogram logo: geometric O with L integrated.
  */
 export function Logo({ size = 32, className }: Props) {
   return (
@@ -18,7 +17,6 @@ export function Logo({ size = 32, className }: Props) {
       className={className}
       aria-hidden="true"
     >
-      {/* O — open circle, thick stroke, gap at bottom-left */}
       <path
         d="M14 38 C6.3 34.2 2 27 2 20 2 10 10 2 22 2 34 2 42 10 42 20 42 30 34 38 22 38"
         stroke="currentColor"
@@ -26,7 +24,6 @@ export function Logo({ size = 32, className }: Props) {
         strokeLinecap="round"
         fill="none"
       />
-      {/* L — vertical from O's bottom-left, horizontal base */}
       <path
         d="M14 26 L14 44 L36 44"
         stroke="currentColor"
@@ -39,11 +36,11 @@ export function Logo({ size = 32, className }: Props) {
   );
 }
 
-export function LogoFull({ className }: { className?: string }) {
+export function LogoFull({ className, name }: { className?: string; name: string }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className ?? ""}`}>
       <Logo size={28} />
-      <span className="font-semibold text-lg tracking-tight">OpenLex</span>
+      <span className="font-semibold text-lg tracking-tight">{name}</span>
     </span>
   );
 }

@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "@/components/providers";
 import { LocaleProvider } from "@/components/locale-provider";
+import { loadSiteConfig } from "@/lib/site";
 import type { Locale } from "@/lib/i18n";
 import "./globals.css";
 
@@ -16,9 +17,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const site = loadSiteConfig();
+
 export const metadata: Metadata = {
-  title: "OpenLex",
-  description: "Open-Access-Plattform für juristische Fachliteratur",
+  title: site.name,
+  description: site.tagline[site.default_locale] ?? "",
   icons: { icon: "/favicon.svg" },
 };
 
@@ -31,7 +34,7 @@ export default async function RootLayout({
   const locale = (h.get("x-locale") ?? "de") as Locale;
 
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.brand_hue } as React.CSSProperties} suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
           <LocaleProvider locale={locale}>{children}</LocaleProvider>

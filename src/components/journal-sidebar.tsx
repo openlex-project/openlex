@@ -8,12 +8,13 @@ interface Props {
   zeitschrift: string;
   title: string;
   issues: JournalIssue[];
+  issueLabel?: string;
   activeYear?: string;
   activeIssue?: string;
   activeArticle?: string;
 }
 
-export function JournalSidebar({ zeitschrift, title, issues, activeYear, activeIssue, activeArticle }: Props) {
+export function JournalSidebar({ zeitschrift, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(true);
   const [expanded, setExpanded] = useState<Set<string>>(() => {
@@ -62,7 +63,7 @@ export function JournalSidebar({ zeitschrift, title, issues, activeYear, activeI
                     className={`w-full flex items-center justify-between px-4 py-1.5 text-left transition-colors ${isActive && !activeArticle ? "font-semibold" : ""}`}
                     style={{ color: isActive && !activeArticle ? "var(--active-text)" : "var(--text-primary)" }}
                   >
-                    <span>Heft {iss.issue}/{iss.year}</span>
+                    <span>{issueLabel} {iss.issue}/{iss.year}</span>
                     <svg className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                   </button>
                   {isExpanded && (

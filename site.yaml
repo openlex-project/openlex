@@ -1,0 +1,17 @@
+# Site configuration — edit this file to rebrand your instance.
+
+name: "OpenLex"
+tagline:
+  de: "Open-Access-Plattform für juristische Fachliteratur"
+  en: "Open-access platform for legal literature"
+copyright: "OpenLex"
+default_locale: "de"
+
+# oklch hue (0–360) — drives the entire color palette
+brand_hue: 265
+
+# Content types to show on the homepage
+content:
+  books: true
+  journals: true
+  laws: true

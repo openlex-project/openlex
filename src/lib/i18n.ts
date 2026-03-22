@@ -1,11 +1,11 @@
-export const defaultLocale = "de";
+import { loadSiteConfig } from "./site";
+
+export const defaultLocale = loadSiteConfig().default_locale;
 export const locales = ["de", "en"] as const;
 export type Locale = (typeof locales)[number];
 
 const dictionaries: Record<Locale, Record<string, string>> = {
   de: {
-    "site.title": "OpenLex",
-    "site.tagline": "Open-Access-Plattform für juristische Fachliteratur",
     "nav.search": "Suche…",
     "nav.login": "Anmelden",
     "nav.logout": "Abmelden",
@@ -22,13 +22,18 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     "feedback.addition": "Ergänzung",
     "feedback.question": "Frage",
     "section.books": "Kommentare & Bücher",
+    "section.journals": "Zeitschriften",
     "section.laws": "Gesetze",
     "law.link": "Gesetzestext →",
-    "footer.copy": "© OpenLex",
+    "skip": "Zum Inhalt springen",
+    "home.aria": "Startseite",
+    "commentary.on": "Kommentar zu {slug}",
+    "issues.count": "{n} Hefte",
+    "issue.label": "Heft {issue}/{year}",
+    "issue.word": "Heft",
+    "edition.label": "{ref}. Auflage",
   },
   en: {
-    "site.title": "OpenLex",
-    "site.tagline": "Open-access platform for legal literature",
     "nav.search": "Search…",
     "nav.login": "Sign in",
     "nav.logout": "Sign out",
@@ -45,14 +50,27 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     "feedback.addition": "Suggestion",
     "feedback.question": "Question",
     "section.books": "Commentaries & Books",
+    "section.journals": "Journals",
     "section.laws": "Laws",
     "law.link": "Legal text →",
-    "footer.copy": "© OpenLex",
+    "skip": "Skip to content",
+    "home.aria": "Home",
+    "commentary.on": "Commentary on {slug}",
+    "issues.count": "{n} issues",
+    "issue.label": "Issue {issue}/{year}",
+    "issue.word": "Issue",
+    "edition.label": "{ref}th edition",
   },
 };
 
 export function t(locale: Locale, key: string, params?: Record<string, string>): string {
-  let str = dictionaries[locale]?.[key] ?? dictionaries[defaultLocale][key] ?? key;
+  const site = loadSiteConfig();
+  // Dynamic keys from site config
+  if (key === "site.title") return site.name;
+  if (key === "site.tagline") return site.tagline[locale] ?? site.tagline[defaultLocale] ?? "";
+  if (key === "footer.copy") return `© ${site.copyright}`;
+
+  let str = dictionaries[locale]?.[key] ?? dictionaries[defaultLocale as Locale][key] ?? key;
   if (params) {
     for (const [k, v] of Object.entries(params)) {
       str = str.replace(`{${k}}`, v);

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { buildRegistry } from "@/lib/registry";
+import { loadSiteConfig } from "@/lib/site";
 import { t, type Locale } from "@/lib/i18n";
 import { Logo } from "@/components/logo";
 
@@ -8,6 +9,7 @@ export default async function Home() {
   const { books, laws, journals } = await buildRegistry();
   const h = await headers();
   const locale = (h.get("x-locale") ?? "de") as Locale;
+  const site = loadSiteConfig();
 
   return (
     <div className="px-6 py-12 max-w-5xl mx-auto">
@@ -22,8 +24,8 @@ export default async function Home() {
         </p>
       </section>
 
-      {/* Kommentare & Bücher */}
-      {books.size > 0 && (
+      {/* Books */}
+      {site.content.books && books.size > 0 && (
         <section className="mb-12">
           <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-tertiary)" }}>
             {t(locale, "section.books")}
@@ -41,7 +43,7 @@ export default async function Home() {
                   )}
                   <div className="text-xs mt-2" style={{ color: "var(--text-tertiary)" }}>
                     {b.editors.map((e) => e.name).join(", ")}
-                    {b.comments_on && <span className="ml-2">· Kommentar zu {b.comments_on.toUpperCase()}</span>}
+                    {b.comments_on && <span className="ml-2">· {t(locale, "commentary.on", { slug: b.comments_on.toUpperCase() })}</span>}
                   </div>
                 </Link>
               );
@@ -50,11 +52,11 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Zeitschriften */}
-      {journals.size > 0 && (
+      {/* Journals */}
+      {site.content.journals && journals.size > 0 && (
         <section className="mb-12">
           <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-tertiary)" }}>
-            Zeitschriften
+            {t(locale, "section.journals")}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {[...journals.values()].map((j) => (
@@ -67,7 +69,7 @@ export default async function Home() {
                 )}
                 <div className="text-xs mt-2" style={{ color: "var(--text-tertiary)" }}>
                   {j.issn && `ISSN ${j.issn}`}
-                  {j.issues.length > 0 && ` · ${j.issues.length} Hefte`}
+                  {j.issues.length > 0 && ` · ${t(locale, "issues.count", { n: String(j.issues.length) })}`}
                 </div>
               </Link>
             ))}
@@ -75,8 +77,8 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Gesetze */}
-      {laws.size > 0 && (
+      {/* Laws */}
+      {site.content.laws && laws.size > 0 && (
         <section className="mb-12">
           <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: "var(--text-tertiary)" }}>
             {t(locale, "section.laws")}

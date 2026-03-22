@@ -6,18 +6,18 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* Brand palette */
-  --color-brand-50: oklch(0.97 0.02 265);
-  --color-brand-100: oklch(0.93 0.04 265);
-  --color-brand-200: oklch(0.87 0.08 265);
-  --color-brand-300: oklch(0.76 0.12 265);
-  --color-brand-400: oklch(0.65 0.17 265);
-  --color-brand-500: oklch(0.55 0.20 265);
-  --color-brand-600: oklch(0.48 0.21 265);
-  --color-brand-700: oklch(0.42 0.19 265);
-  --color-brand-800: oklch(0.35 0.16 265);
-  --color-brand-900: oklch(0.28 0.12 265);
-  --color-brand-950: oklch(0.20 0.08 265);
+  /* Brand palette — hue set via --brand-hue custom property */
+  --color-brand-50: oklch(0.97 0.02 var(--brand-hue));
+  --color-brand-100: oklch(0.93 0.04 var(--brand-hue));
+  --color-brand-200: oklch(0.87 0.08 var(--brand-hue));
+  --color-brand-300: oklch(0.76 0.12 var(--brand-hue));
+  --color-brand-400: oklch(0.65 0.17 var(--brand-hue));
+  --color-brand-500: oklch(0.55 0.20 var(--brand-hue));
+  --color-brand-600: oklch(0.48 0.21 var(--brand-hue));
+  --color-brand-700: oklch(0.42 0.19 var(--brand-hue));
+  --color-brand-800: oklch(0.35 0.16 var(--brand-hue));
+  --color-brand-900: oklch(0.28 0.12 var(--brand-hue));
+  --color-brand-950: oklch(0.20 0.08 var(--brand-hue));
 
   /* Accent (warm gold) */
   --color-accent-400: oklch(0.82 0.14 80);
@@ -27,35 +27,36 @@
 
 /* ─── Semantic tokens (light) ─── */
 :root {
+  --brand-hue: 265;
   --surface: white;
-  --surface-secondary: oklch(0.985 0.002 265);
+  --surface-secondary: oklch(0.985 0.002 var(--brand-hue));
   --surface-elevated: white;
-  --text-primary: oklch(0.20 0.02 265);
-  --text-secondary: oklch(0.45 0.02 265);
-  --text-tertiary: oklch(0.58 0.015 265);
-  --border: oklch(0.90 0.01 265);
-  --border-subtle: oklch(0.94 0.005 265);
+  --text-primary: oklch(0.20 0.02 var(--brand-hue));
+  --text-secondary: oklch(0.45 0.02 var(--brand-hue));
+  --text-tertiary: oklch(0.58 0.015 var(--brand-hue));
+  --border: oklch(0.90 0.01 var(--brand-hue));
+  --border-subtle: oklch(0.94 0.005 var(--brand-hue));
   --ring: var(--color-brand-500);
-  --active-bg: oklch(0.96 0.03 265);
+  --active-bg: oklch(0.96 0.03 var(--brand-hue));
   --active-text: var(--color-brand-600);
-  --hover-bg: oklch(0.97 0.005 265);
+  --hover-bg: oklch(0.97 0.005 var(--brand-hue));
 }
 
 /* ─── Semantic tokens (dark) ─── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface: oklch(0.16 0.02 265);
-    --surface-secondary: oklch(0.14 0.02 265);
-    --surface-elevated: oklch(0.20 0.025 265);
-    --text-primary: oklch(0.93 0.01 265);
-    --text-secondary: oklch(0.68 0.015 265);
-    --text-tertiary: oklch(0.52 0.015 265);
-    --border: oklch(0.28 0.02 265);
-    --border-subtle: oklch(0.23 0.015 265);
+    --surface: oklch(0.16 0.02 var(--brand-hue));
+    --surface-secondary: oklch(0.14 0.02 var(--brand-hue));
+    --surface-elevated: oklch(0.20 0.025 var(--brand-hue));
+    --text-primary: oklch(0.93 0.01 var(--brand-hue));
+    --text-secondary: oklch(0.68 0.015 var(--brand-hue));
+    --text-tertiary: oklch(0.52 0.015 var(--brand-hue));
+    --border: oklch(0.28 0.02 var(--brand-hue));
+    --border-subtle: oklch(0.23 0.015 var(--brand-hue));
     --ring: var(--color-brand-400);
-    --active-bg: oklch(0.22 0.04 265);
+    --active-bg: oklch(0.22 0.04 var(--brand-hue));
     --active-text: var(--color-brand-300);
-    --hover-bg: oklch(0.20 0.02 265);
+    --hover-bg: oklch(0.20 0.02 var(--brand-hue));
   }
 }
 
@@ -158,7 +159,7 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
-  .directive-note { background: oklch(0.22 0.04 265); }
+  .directive-note { background: oklch(0.22 0.04 var(--brand-hue)); }
   .directive-law { background: oklch(0.22 0.04 80); }
   .directive-review { background: oklch(0.22 0.04 155); }
   .directive-warning { background: oklch(0.22 0.04 25); }
@@ -251,7 +252,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .glass-header {
-    background: oklch(0.16 0.02 265 / 0.85);
+    background: oklch(0.16 0.02 var(--brand-hue) / 0.85);
   }
 }
 
@@ -266,12 +267,12 @@ body {
 
 .card:hover {
   border-color: var(--color-brand-300);
-  box-shadow: 0 4px 16px oklch(0.55 0.20 265 / 0.08);
+  box-shadow: 0 4px 16px oklch(0.55 0.20 var(--brand-hue) / 0.08);
 }
 
 @media (prefers-color-scheme: dark) {
   .card:hover {
     border-color: var(--color-brand-600);
-    box-shadow: 0 4px 16px oklch(0.55 0.20 265 / 0.12);
+    box-shadow: 0 4px 16px oklch(0.55 0.20 var(--brand-hue) / 0.12);
   }
 }

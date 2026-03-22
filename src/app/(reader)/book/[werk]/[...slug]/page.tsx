@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { buildRegistry, getBookContent, findTocEntry, findTocNeighbors, extractHeadings, getBackmatterSections, type TocEntry, type BookEntry } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
 import { fetchFile } from "@/lib/github";
 import { renderMarkdown } from "@/lib/markdown";
 import { createCitationEngine, parseReferencesYaml } from "@/lib/citeproc";
+import { t, type Locale } from "@/lib/i18n";
 import { FeedbackButton } from "@/components/feedback-button";
 import { BookSidebar } from "@/components/book-sidebar";
 import { FootnoteTooltips } from "@/components/footnote-tooltips";
@@ -107,6 +109,8 @@ export default async function BookPage({ params }: Props) {
   const parsed = parseSlug(slug);
   if (!parsed) notFound();
   const { fileSlug, ref } = parsed;
+  const h = await headers();
+  const locale = (h.get("x-locale") ?? "de") as Locale;
 
   const registry = await buildRegistry();
   const meta = registry.books.get(werk);
@@ -150,7 +154,7 @@ export default async function BookPage({ params }: Props) {
   });
 
   const displayName = meta.title_short ?? meta.title;
-  const edition = ref === "main" ? null : ref.replace("ed", ". Auflage");
+  const edition = ref === "main" ? null : t(locale, "edition.label", { ref: ref.replace("ed", "") });
 
   const slugPrefix = ref === "main" ? `/book/${werk}` : `/book/${werk}/${ref}`;
   const prevHref = prev ? `${slugPrefix}/${prev.file.replace(/\.md$/, "")}` : null;
@@ -199,7 +203,7 @@ export default async function BookPage({ params }: Props) {
           {displayName} – {tocEntry?.title ?? fileSlug}
           {edition && <span className="ml-2" style={{ color: "var(--color-accent-600)" }}>({edition})</span>}
           {meta.comments_on && tocEntry?.provisions?.[0] && (
-            <> · <a href={`/law/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>Gesetzestext →</a></>
+            <> · <a href={`/law/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</a></>
           )}
         </div>
         <div
