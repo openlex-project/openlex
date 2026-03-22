@@ -22,6 +22,7 @@ export interface BookMeta {
   title_short?: string;
   lang: string;
   license: string;
+  category?: string;
   numbering?: string;
   comments_on?: string;
   csl?: string;
@@ -37,6 +38,7 @@ export interface LawMeta {
   unit_type: "article" | "section";
   lang: string;
   license?: string;
+  category?: string;
   repo: string;
 }
 
@@ -47,6 +49,7 @@ interface SyncYaml {
     unit_type: string;
     lang: string;
     license?: string;
+    category?: string;
   }>;
 }
 
@@ -164,6 +167,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
           unit_type: law.unit_type as LawMeta["unit_type"],
           lang: law.lang,
           license: law.license,
+          category: law.category,
           repo,
         });
       }

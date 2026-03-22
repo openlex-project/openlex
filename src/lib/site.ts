@@ -2,13 +2,18 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import { parse } from "yaml";
 
+export interface CategoryConfig {
+  key: string;
+  label: Record<string, string>;
+}
+
 export interface SiteConfig {
   name: string;
   tagline: Record<string, string>;
   copyright: string;
   default_locale: string;
   brand_hue: number;
-  content: { books: boolean; journals: boolean; laws: boolean };
+  categories?: CategoryConfig[];
 }
 
 let cached: SiteConfig | null = null;

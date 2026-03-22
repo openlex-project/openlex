@@ -10,8 +10,13 @@ default_locale: "de"
 # oklch hue (0–360) — drives the entire color palette
 brand_hue: 265
 
-# Content types to show on the homepage
-content:
-  books: true
-  journals: true
-  laws: true
+# Content categories — controls homepage sections and /category/[key] pages.
+# Items declare their category in meta.yaml / sync.yaml.
+# Items without a category default to their type (book / journal / law).
+categories:
+  - key: book
+    label: { de: "Kommentare & Bücher", en: "Commentaries & Books" }
+  - key: journal
+    label: { de: "Zeitschriften", en: "Journals" }
+  - key: law
+    label: { de: "Gesetze", en: "Laws" }
