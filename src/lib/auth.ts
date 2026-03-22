@@ -10,51 +10,75 @@ import GitLabProvider from "next-auth/providers/gitlab";
 import CognitoProvider from "next-auth/providers/cognito";
 import { storeUserEmail } from "@/lib/kv";
 
-const providers: AuthOptions["providers"] = [];
-
-/* ─── Well-known providers (auto-detected from env vars) ─── */
+/* ─── Provider factories ─── */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const wellKnown: { prefix: string; factory: (id: string, secret: string) => any }[] = [
-  { prefix: "OAUTH_GITHUB", factory: (id, secret) => GitHubProvider({ clientId: id, clientSecret: secret }) },
-  { prefix: "OAUTH_GOOGLE", factory: (id, secret) => GoogleProvider({ clientId: id, clientSecret: secret }) },
-  { prefix: "OAUTH_APPLE", factory: (id, secret) => AppleProvider({ clientId: id, clientSecret: secret }) },
-  { prefix: "OAUTH_AZURE", factory: (id, secret) => AzureADProvider({ clientId: id, clientSecret: secret, tenantId: process.env.OAUTH_AZURE_TENANT ?? "common" }) },
-  { prefix: "OAUTH_KEYCLOAK", factory: (id, secret) => KeycloakProvider({ clientId: id, clientSecret: secret, issuer: process.env.OAUTH_KEYCLOAK_ISSUER ?? "" }) },
-  { prefix: "OAUTH_OKTA", factory: (id, secret) => OktaProvider({ clientId: id, clientSecret: secret, issuer: process.env.OAUTH_OKTA_ISSUER ?? "" }) },
-  { prefix: "OAUTH_AUTH0", factory: (id, secret) => Auth0Provider({ clientId: id, clientSecret: secret, issuer: process.env.OAUTH_AUTH0_ISSUER ?? "" }) },
-  { prefix: "OAUTH_GITLAB", factory: (id, secret) => GitLabProvider({ clientId: id, clientSecret: secret }) },
-  { prefix: "OAUTH_COGNITO", factory: (id, secret) => CognitoProvider({ clientId: id, clientSecret: secret, issuer: process.env.OAUTH_COGNITO_ISSUER ?? "" }) },
-];
+const FACTORIES: Record<string, (slot: SlotEnv) => any> = {
+  github: (s) => GitHubProvider({ clientId: s.id, clientSecret: s.secret }),
+  google: (s) => GoogleProvider({ clientId: s.id, clientSecret: s.secret }),
+  apple: (s) => AppleProvider({ clientId: s.id, clientSecret: s.secret }),
+  azure: (s) => AzureADProvider({ clientId: s.id, clientSecret: s.secret, tenantId: s.extra.TENANT ?? "common" }),
+  gitlab: (s) => GitLabProvider({ clientId: s.id, clientSecret: s.secret }),
+  keycloak: (s) => KeycloakProvider({ clientId: s.id, clientSecret: s.secret, issuer: s.issuer! }),
+  okta: (s) => OktaProvider({ clientId: s.id, clientSecret: s.secret, issuer: s.issuer! }),
+  auth0: (s) => Auth0Provider({ clientId: s.id, clientSecret: s.secret, issuer: s.issuer! }),
+  cognito: (s) => CognitoProvider({ clientId: s.id, clientSecret: s.secret, issuer: s.issuer! }),
+  oidc: (s) => ({
+    id: `oidc-${s.slot}`,
+    name: s.name ?? `SSO ${s.slot}`,
+    type: "oauth" as const,
+    wellKnown: `${s.issuer!.replace(/\/$/, "")}/.well-known/openid-configuration`,
+    clientId: s.id,
+    clientSecret: s.secret,
+    idToken: true,
+    profile(profile: Record<string, string>) {
+      return { id: profile.sub, name: profile.name ?? profile.preferred_username, email: profile.email, image: profile.picture };
+    },
+  }),
+};
 
-for (const { prefix, factory } of wellKnown) {
-  const id = process.env[`${prefix}_ID`];
-  const secret = process.env[`${prefix}_SECRET`];
-  if (id && secret) providers.push(factory(id, secret));
+interface SlotEnv {
+  slot: number;
+  id: string;
+  secret: string;
+  provider: string;
+  issuer?: string;
+  name?: string;
+  extra: Record<string, string>;
 }
 
-/* ─── Generic OIDC (custom SSO) ─── */
-// Supports OAUTH_OIDC_1_*, OAUTH_OIDC_2_*, etc. for multiple custom providers
-for (let i = 1; i <= 5; i++) {
-  const prefix = `OAUTH_OIDC_${i}`;
-  const id = process.env[`${prefix}_ID`];
-  const secret = process.env[`${prefix}_SECRET`];
-  const issuer = process.env[`${prefix}_ISSUER`];
-  const name = process.env[`${prefix}_NAME`] ?? `SSO ${i}`;
-  if (id && secret && issuer) {
-    providers.push({
-      id: `oidc-${i}`,
-      name,
-      type: "oauth",
-      wellKnown: `${issuer.replace(/\/$/, "")}/.well-known/openid-configuration`,
-      clientId: id,
-      clientSecret: secret,
-      idToken: true,
-      profile(profile) {
-        return { id: profile.sub, name: profile.name ?? profile.preferred_username, email: profile.email, image: profile.picture };
-      },
-    });
+function readSlot(n: number): SlotEnv | null {
+  const id = process.env[`OAUTH_${n}_ID`];
+  const secret = process.env[`OAUTH_${n}_SECRET`];
+  if (!id || !secret) return null;
+
+  const issuer = process.env[`OAUTH_${n}_ISSUER`];
+  const provider = process.env[`OAUTH_${n}_PROVIDER`] ?? (issuer ? "oidc" : null);
+  if (!provider) return null;
+
+  const extra: Record<string, string> = {};
+  for (const [key, val] of Object.entries(process.env)) {
+    if (key.startsWith(`OAUTH_${n}_`) && val && !["ID", "SECRET", "ISSUER", "PROVIDER", "NAME"].includes(key.replace(`OAUTH_${n}_`, ""))) {
+      extra[key.replace(`OAUTH_${n}_`, "")] = val;
+    }
   }
+
+  return { slot: n, id, secret, provider, issuer, name: process.env[`OAUTH_${n}_NAME`], extra };
+}
+
+/* ─── Build providers list ─── */
+
+const providers: AuthOptions["providers"] = [];
+
+for (let i = 1; i <= 10; i++) {
+  const slot = readSlot(i);
+  if (!slot) continue;
+  const factory = FACTORIES[slot.provider];
+  if (!factory) { console.warn(`Unknown OAuth provider: ${slot.provider} (slot ${i})`); continue; }
+  if (["keycloak", "okta", "auth0", "cognito", "oidc"].includes(slot.provider) && !slot.issuer) {
+    console.warn(`OAuth slot ${i} (${slot.provider}) requires OAUTH_${i}_ISSUER`); continue;
+  }
+  providers.push(factory(slot));
 }
 
 export const authOptions: AuthOptions = {
