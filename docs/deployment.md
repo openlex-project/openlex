@@ -21,10 +21,37 @@ Edit `site.yaml` in the project root to configure name, tagline, branding, and c
 | `GITHUB_PAT` | GitHub PAT with access to content repos | `ghp_...` |
 | `CONTENT_REPOS` | Comma-separated list of content repos | `org/oc-dsgvo,org/openlex-laws` |
 | `NEXTAUTH_SECRET` | Secret for NextAuth.js session encryption | `openssl rand -base64 32` |
-| `OAUTH_GITHUB_ID` | GitHub OAuth App Client ID | |
-| `OAUTH_GITHUB_SECRET` | GitHub OAuth App Client Secret | |
-| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL (for bookmarks) | `https://...upstash.io` |
-| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token | |
+| `KV_REST_API_URL` | Upstash Redis URL (bookmarks, history, users) | `https://...upstash.io` |
+| `KV_REST_API_TOKEN` | Upstash Redis token | |
+
+#### OAuth Providers
+
+Configure one or more OAuth providers by setting their env vars. Only providers with both `_ID` and `_SECRET` set will appear on the login page.
+
+| Provider | Variables |
+|---|---|
+| GitHub | `OAUTH_GITHUB_ID`, `OAUTH_GITHUB_SECRET` |
+| Google | `OAUTH_GOOGLE_ID`, `OAUTH_GOOGLE_SECRET` |
+| Apple | `OAUTH_APPLE_ID`, `OAUTH_APPLE_SECRET` |
+| Microsoft/Azure AD | `OAUTH_AZURE_ID`, `OAUTH_AZURE_SECRET`, `OAUTH_AZURE_TENANT` (optional, default: `common`) |
+| GitLab | `OAUTH_GITLAB_ID`, `OAUTH_GITLAB_SECRET` |
+| Keycloak | `OAUTH_KEYCLOAK_ID`, `OAUTH_KEYCLOAK_SECRET`, `OAUTH_KEYCLOAK_ISSUER` |
+| Okta | `OAUTH_OKTA_ID`, `OAUTH_OKTA_SECRET`, `OAUTH_OKTA_ISSUER` |
+| Auth0 | `OAUTH_AUTH0_ID`, `OAUTH_AUTH0_SECRET`, `OAUTH_AUTH0_ISSUER` |
+| AWS Cognito | `OAUTH_COGNITO_ID`, `OAUTH_COGNITO_SECRET`, `OAUTH_COGNITO_ISSUER` |
+
+#### Custom OIDC (SSO)
+
+For custom identity providers, use numbered OIDC slots (up to 5):
+
+```
+OAUTH_OIDC_1_ID=client-id
+OAUTH_OIDC_1_SECRET=client-secret
+OAUTH_OIDC_1_ISSUER=https://idp.example.com/realms/main
+OAUTH_OIDC_1_NAME=Company SSO
+```
+
+The `_NAME` is shown on the login button. The `_ISSUER` must support OpenID Connect Discovery (`.well-known/openid-configuration`).
 
 ## Setting Up a Content Repo
 

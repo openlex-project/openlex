@@ -10,6 +10,17 @@ export async function getBookmarks(userId: string): Promise<string[]> {
   return (await redis.smembers(`bookmarks:${userId}`)) ?? [];
 }
 
+/** Store user email + name on sign-in */
+export async function storeUserEmail(email: string, name?: string): Promise<void> {
+  await redis.hset(`user:${email}`, { email, name: name ?? "", ts: Date.now() });
+}
+
+/** Get all stored user emails */
+export async function getUserEmails(): Promise<string[]> {
+  const keys = await redis.keys("user:*");
+  return keys.map((k) => k.replace("user:", ""));
+}
+
 /** Toggle a bookmark, returns new state */
 export async function toggleBookmark(
   userId: string,

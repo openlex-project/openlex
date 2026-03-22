@@ -1,6 +1,10 @@
 const de: Record<string, string> = {
   "nav.search": "Suche…",
   "nav.login": "Anmelden",
+  "login.title": "Anmelden",
+  "login.subtitle": "Für Lesezeichen, Verlauf und Feedback",
+  "login.with": "Mit {name} anmelden",
+  "login.none": "Kein Login-Provider konfiguriert.",
   "nav.logout": "Abmelden",
   "nav.bookmarks": "Lesezeichen",
   "nav.history": "Verlauf",

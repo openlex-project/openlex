@@ -1,6 +1,10 @@
 const en: Record<string, string> = {
   "nav.search": "Search…",
   "nav.login": "Sign in",
+  "login.title": "Sign in",
+  "login.subtitle": "For bookmarks, history, and feedback",
+  "login.with": "Sign in with {name}",
+  "login.none": "No login provider configured.",
   "nav.logout": "Sign out",
   "nav.bookmarks": "Bookmarks",
   "nav.history": "History",
