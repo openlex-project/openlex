@@ -40,6 +40,14 @@ export interface LawMeta {
   license?: string;
   category?: string;
   repo: string;
+  toc: LawTocNode[];
+}
+
+export interface LawTocNode {
+  label?: string;
+  title: string;
+  nr?: string;
+  children?: LawTocNode[];
 }
 
 interface SyncYaml {
@@ -160,6 +168,8 @@ export async function buildRegistry(): Promise<ContentRegistry> {
     if (syncRaw) {
       const sync = parse(syncRaw) as SyncYaml;
       for (const [slug, law] of Object.entries(sync.laws)) {
+        const tocRaw = await fetchFile(repo, `${slug}/toc.yaml`);
+        const toc: LawTocNode[] = tocRaw ? (parse(tocRaw) as LawTocNode[]) : [];
         laws.set(slug, {
           slug,
           title: law.title,
@@ -169,6 +179,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
           license: law.license,
           category: law.category,
           repo,
+          toc,
         });
       }
     }
@@ -262,6 +273,18 @@ export async function getLawProvisions(repo: string, slug: string): Promise<numb
     .map((f) => parseInt(f.replace(".md", ""), 10))
     .filter((n) => !isNaN(n))
     .sort((a, b) => a - b);
+}
+
+/** Find breadcrumb path to a provision in a law TOC */
+export function findLawBreadcrumb(toc: LawTocNode[], nr: string): LawTocNode[] {
+  for (const node of toc) {
+    if (node.nr === nr) return [node];
+    if (node.children) {
+      const path = findLawBreadcrumb(node.children, nr);
+      if (path.length) return [node, ...path];
+    }
+  }
+  return [];
 }
 
 export async function getJournalArticleContent(
