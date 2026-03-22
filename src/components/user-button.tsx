@@ -34,12 +34,14 @@ export default function UserButton() {
   const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [providers, setProviders] = useState<Provider[]>([]);
+  const [providers, setProviders] = useState<Provider[] | null>(null);
   const timeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
-    if (!session) getProviders().then((p) => { if (p) setProviders(Object.values(p)); });
-  }, [session]);
+    getProviders().then((p) => setProviders(p ? Object.values(p) : []));
+  }, []);
+
+  if (!session && providers !== null && providers.length === 0) return null;
 
   const enter = () => { clearTimeout(timeout.current); setOpen(true); };
   const leave = () => { timeout.current = setTimeout(() => setOpen(false), 200); };
@@ -95,10 +97,7 @@ export default function UserButton() {
           ) : (
             <>
               <div className="px-4 py-2 text-xs" style={{ color: "var(--text-tertiary)" }}>{t("login.subtitle")}</div>
-              {providers.length === 0 ? (
-                <div className="px-4 py-2 text-sm" style={{ color: "var(--text-tertiary)" }}>{t("login.none")}</div>
-              ) : (
-                providers.map((p) => (
+              {providers!.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => signIn(p.id, { callbackUrl: window.location.pathname })}
@@ -109,8 +108,7 @@ export default function UserButton() {
                     <ProviderIcon id={p.id} />
                     {t("login.with", { name: p.name })}
                   </button>
-                ))
-              )}
+              ))}
             </>
           )}
         </div>
