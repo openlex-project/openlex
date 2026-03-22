@@ -22,7 +22,7 @@
 
 ## Features
 
-- [ ] Law TOC/sidebar — parts/chapters from GII XML `<gliederungseinheit>`
+- [x] Law TOC/sidebar — parts/chapters from GII XML `<gliederungseinheit>`
 - [ ] Historical law versions — `@{date}` resolution via Git tags
 - [ ] Citation bar — dynamic CSL citation for current position
 - [ ] Backmatter plugins — remark-index, remark-glossary, split bibliography
