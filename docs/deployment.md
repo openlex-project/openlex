@@ -58,6 +58,8 @@ Edit `site.yaml` in the project root to configure name, tagline, branding, and c
 - UI strings are in `src/lib/i18n/` with one file per locale (`de.ts`, `en.ts`)
 - Default locale is set in `site.yaml` (`default_locale`)
 - Code-level fallback is `en`
+- Server components use `t(locale, key)` from `@/lib/i18n`
+- Client components use the `useT()` hook from `@/lib/i18n/useT`
 - To add a locale: create `src/lib/i18n/{locale}.ts`, add to `locales` array in `index.ts`
 
 ## Build Process

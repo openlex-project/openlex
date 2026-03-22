@@ -12,6 +12,7 @@ tagline:
 copyright: "OpenLex"
 default_locale: "de"
 brand_hue: 265
+logo_text: true
 
 categories:
   - key: book
@@ -31,6 +32,7 @@ categories:
 | `copyright` | string | ✓ | Copyright holder (shown as `© {copyright}` in footer) |
 | `default_locale` | string | ✓ | Default locale (`de`, `en`, etc.) |
 | `brand_hue` | number | ✓ | oklch color hue (0–360) — drives the entire color palette |
+| `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
 | `categories` | array | | Content categories for homepage and listing pages |
 
 ## Brand Hue
