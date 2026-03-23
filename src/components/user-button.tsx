@@ -46,14 +46,24 @@ export default function UserButton() {
   const enter = () => { clearTimeout(timeout.current); setOpen(true); };
   const leave = () => { timeout.current = setTimeout(() => setOpen(false), 200); };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") { setOpen(false); ref.current?.querySelector("button")?.focus(); }
+    if (!open) return;
+    const items = ref.current?.querySelectorAll<HTMLElement>("[role='menuitem']");
+    if (!items?.length) return;
+    const idx = Array.from(items).indexOf(document.activeElement as HTMLElement);
+    if (e.key === "ArrowDown") { e.preventDefault(); items[(idx + 1) % items.length]!.focus(); }
+    if (e.key === "ArrowUp") { e.preventDefault(); items[(idx - 1 + items.length) % items.length]!.focus(); }
+  };
+
   const menuLink = (href: string, label: string) => (
-    <Link href={href} onClick={() => setOpen(false)} className="block px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-primary)" }} role="menuitem">
+    <Link href={href} onClick={() => setOpen(false)} className="block px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-primary)" }} role="menuitem" tabIndex={0}>
       {label}
     </Link>
   );
 
   return (
-    <div ref={ref} className="relative" onMouseEnter={enter} onMouseLeave={leave}>
+    <div ref={ref} className="relative" onMouseEnter={enter} onMouseLeave={leave} onKeyDown={handleKeyDown}>
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-colors"
@@ -90,7 +100,7 @@ export default function UserButton() {
               {menuLink("/history", t("nav.history"))}
               {menuLink("/feedback", t("nav.feedback"))}
               <div className="border-t my-1" style={{ borderColor: "var(--border-subtle)" }} />
-              <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-tertiary)" }} role="menuitem">
+              <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-tertiary)" }} role="menuitem" tabIndex={0}>
                 {t("nav.logout")}
               </button>
             </>
@@ -104,6 +114,7 @@ export default function UserButton() {
                     className="flex items-center gap-3 w-full px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]"
                     style={{ color: "var(--text-primary)" }}
                     role="menuitem"
+                    tabIndex={0}
                   >
                     <ProviderIcon id={p.id} />
                     {t("login.with", { name: p.name })}

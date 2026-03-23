@@ -49,6 +49,7 @@ export function SidebarShell({ children, width = "w-72" }: Props) {
           open ? width : "w-0 lg:w-10"
         }`}
         style={{ background: "var(--surface)", borderRight: open ? "1px solid var(--border-subtle)" : undefined }}
+        aria-label={t("sidebar.aria")}
       >
         <button onClick={toggle} className="hidden lg:flex items-center justify-end px-3 h-10 w-full" style={{ color: "var(--text-tertiary)" }} aria-label={open ? t("sidebar.close") : t("sidebar.open")} aria-expanded={open}>
           {open ? (

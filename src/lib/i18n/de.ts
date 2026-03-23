@@ -31,6 +31,7 @@ const de: Record<string, string> = {
   "law.link": "Gesetzestext →",
   "sidebar.close": "Sidebar schließen",
   "sidebar.open": "Sidebar öffnen",
+  "sidebar.aria": "Inhaltsverzeichnis",
   "nav.open": "Navigation öffnen",
   "page.abbr": "S.",
   "skip": "Zum Inhalt springen",
@@ -64,5 +65,7 @@ const de: Record<string, string> = {
   "profile.deleteConfirmPhrase": "endg\u00FCltig l\u00F6schen",
   "profile.deleteAccountFinal": "Konto endg\u00FCltig l\u00F6schen",
   "profile.cancel": "Abbrechen",
+  "bookmark.add": "Lesezeichen setzen",
+  "bookmark.remove": "Lesezeichen entfernen",
 };
 export default de;

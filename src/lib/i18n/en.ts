@@ -31,6 +31,7 @@ const en: Record<string, string> = {
   "law.link": "Legal text →",
   "sidebar.close": "Close sidebar",
   "sidebar.open": "Open sidebar",
+  "sidebar.aria": "Table of contents",
   "nav.open": "Open navigation",
   "page.abbr": "p.",
   "skip": "Skip to content",
@@ -64,5 +65,7 @@ const en: Record<string, string> = {
   "profile.deleteConfirmPhrase": "permanently delete",
   "profile.deleteAccountFinal": "Permanently delete account",
   "profile.cancel": "Cancel",
+  "bookmark.add": "Add bookmark",
+  "bookmark.remove": "Remove bookmark",
 };
 export default en;

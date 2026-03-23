@@ -3,10 +3,12 @@
 import { useState, useEffect, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { useT } from "@/lib/i18n/useT";
 
 export function BookmarkButton({ title }: { title?: string }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const t = useT();
   const [bookmarked, setBookmarked] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -40,7 +42,7 @@ export function BookmarkButton({ title }: { title?: string }) {
       disabled={pending}
       className="inline-flex items-center gap-1 text-sm transition-colors"
       style={{ color: bookmarked ? "var(--color-brand-600)" : "var(--text-tertiary)" }}
-      aria-label={bookmarked ? "Lesezeichen entfernen" : "Lesezeichen setzen"}
+      aria-label={bookmarked ? t("bookmark.remove") : t("bookmark.add")}
       aria-pressed={bookmarked}
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill={bookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5}>
