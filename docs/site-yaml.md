@@ -20,7 +20,7 @@ content_repos:
 
 footer:
   - text: "© OpenLex"
-  - license: true
+  - license:
   - slug: impressum
     label: { de: "Impressum", en: "Imprint" }
   - slug: datenschutz
@@ -124,7 +124,7 @@ The `footer` is a flat array of items, displayed left to right, separated by `·
 ```yaml
 footer:
   - text: "© 2026 OpenLex"
-  - license: true
+  - license:
   - slug: impressum
     label: { de: "Impressum", en: "Imprint" }
   - slug: datenschutz
@@ -138,7 +138,7 @@ Each item is one of four types:
 | Key | Description |
 |---|---|
 | `text` | Plain text, shown as-is (e.g. copyright notice) |
-| `license` | CC license badge with link (from current page's content license) |
+| `license` | CC license badge with link (from current page's content license). No value needed — presence of key suffices. |
 | `slug` | Local markdown page — renders `footer/{slug}.md` at `/{slug}` |
 | `href` | External link, opens in a new tab |
 

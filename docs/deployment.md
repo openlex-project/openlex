@@ -118,14 +118,24 @@ The Pagefind search index is generated *before* `next build` so the static files
 1. GitHub → Settings → Developer Settings → OAuth Apps → New
 2. Homepage URL: `https://your-domain.vercel.app`
 3. Callback URL: `https://your-domain.vercel.app/api/auth/callback/github`
-4. Client ID → `OAUTH_GITHUB_ID`, Client Secret → `OAUTH_GITHUB_SECRET`
+4. Set env vars: `OAUTH_1_PROVIDER=github`, `OAUTH_1_ID=<Client ID>`, `OAUTH_1_SECRET=<Client Secret>`
 
 ### Google (optional)
 
 1. Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client
 2. Authorized redirect URI: `https://your-domain.vercel.app/api/auth/callback/google`
-3. Client ID → `OAUTH_GOOGLE_ID`, Client Secret → `OAUTH_GOOGLE_SECRET`
+3. Set env vars: `OAUTH_2_PROVIDER=google`, `OAUTH_2_ID=<Client ID>`, `OAUTH_2_SECRET=<Client Secret>`
 
 ## Revalidation
 
 Content is cached with ISR (Incremental Static Regeneration): 5 minutes. After a push to a content repo, content is automatically refreshed on the next request after cache expiry.
+
+## OpenGraph Social Cards
+
+Every page automatically generates OpenGraph meta tags (`og:title`, `og:image`, `twitter:card`) for rich link previews on social media, Slack, WhatsApp, etc. Dynamic OG images are rendered at `/api/og` with the page title and site branding.
+
+No configuration needed — works out of the box.
+
+## Analytics
+
+Set `analytics: vercel` in `site.yaml` to enable [Vercel Analytics](https://vercel.com/analytics). Off by default. See [site-yaml.md](site-yaml.md).
