@@ -9,6 +9,8 @@ default_locale: "de"
 # oklch hue (0–360) — drives the entire color palette
 brand_hue: 265
 
+analytics: vercel
+
 # Content repositories — GitHub repos containing books, journals, or laws.
 content_repos:
   - openlex-project/oc-dsgvo
