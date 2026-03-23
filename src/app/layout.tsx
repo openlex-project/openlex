@@ -38,6 +38,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.brand_hue } as React.CSSProperties} suppressHydrationWarning>
       <head>
+        <link rel="dns-prefetch" href="https://api.github.com" />
         {template.css && <style dangerouslySetInnerHTML={{ __html: template.css }} />}
       </head>
       <body className="antialiased">
