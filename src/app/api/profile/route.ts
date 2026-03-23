@@ -1,30 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAuth } from "@/lib/api-auth";
 import { exportUserData, deleteAllUserData, getUserSettings, setUserSetting } from "@/lib/kv";
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (auth instanceof NextResponse) return auth;
   if (req.nextUrl.searchParams.has("settings")) {
-    return NextResponse.json({ settings: await getUserSettings(session.user.email) });
+    return NextResponse.json({ settings: await getUserSettings(auth) });
   }
-  const data = await exportUserData(session.user.email);
-  return NextResponse.json(data);
+  return NextResponse.json(await exportUserData(auth));
 }
 
 export async function PATCH(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (auth instanceof NextResponse) return auth;
   const { key, value } = (await req.json()) as { key: string; value: string };
-  await setUserSetting(session.user.email, key, value);
-  const settings = await getUserSettings(session.user.email);
-  return NextResponse.json({ settings });
+  await setUserSetting(auth, key, value);
+  return NextResponse.json({ settings: await getUserSettings(auth) });
 }
 
 export async function DELETE() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  await deleteAllUserData(session.user.email);
+  const auth = await requireAuth();
+  if (auth instanceof NextResponse) return auth;
+  await deleteAllUserData(auth);
   return NextResponse.json({ deleted: true });
 }

@@ -3,12 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useT } from "@/lib/i18n/useT";
+import { search as pfSearch, type PagefindResult } from "@/lib/pagefind";
 
-interface SearchResult {
-  url: string;
-  meta: { title?: string };
-  excerpt: string;
-}
+type SearchResult = PagefindResult;
 
 export function SearchBox() {
   const router = useRouter();
@@ -48,14 +45,8 @@ export function SearchBox() {
     if (!q.trim()) { setResults([]); return; }
     setLoading(true);
     try {
-      // @ts-expect-error pagefind loaded from static files
-      const pagefind = await import(/* webpackIgnore: true */ "/pagefind/pagefind.js");
-      await pagefind.init();
-      const search = await pagefind.search(q);
-      const loaded: SearchResult[] = await Promise.all(
-        search.results.slice(0, 8).map(async (r: { data: () => Promise<SearchResult> }) => r.data()),
-      );
-      setResults(loaded);
+      const all = await pfSearch(q);
+      setResults(all.slice(0, 8));
     } catch { setResults([]); }
     finally { setLoading(false); }
   }, []);

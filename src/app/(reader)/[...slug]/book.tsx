@@ -125,7 +125,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
         <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <h1 className="text-2xl font-bold mb-8">{bm.title}</h1>
-          <div className="prose prose-gray dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: bm.html }} />
+          <div className="content-prose" dangerouslySetInnerHTML={{ __html: bm.html }} />
         </article>
       </div>
     );
@@ -187,7 +187,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
           </span>
           <BookmarkButton title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
         </div>
-        <div className="prose prose-gray prose-rn dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
+        <div className="content-prose prose-rn" dangerouslySetInnerHTML={{ __html: html }} />
         {navBar("bottom")}
         <SetLicense value={meta.license} />
         <FeedbackButton repo={meta.repo} />

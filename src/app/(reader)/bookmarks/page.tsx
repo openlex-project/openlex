@@ -23,7 +23,7 @@ export default function BookmarksPage() {
 
   if (!session) {
     return (
-      <div className="px-4 sm:px-6 py-8 sm:py-12 max-w-3xl mx-auto">
+      <div className="page-container">
         <h1 className="text-xl sm:text-2xl font-bold mb-4">{t("bookmarks.title")}</h1>
         <p style={{ color: "var(--text-secondary)" }}>{t("bookmarks.login")}</p>
       </div>
@@ -31,7 +31,7 @@ export default function BookmarksPage() {
   }
 
   return (
-    <div className="px-4 sm:px-6 py-8 sm:py-12 max-w-3xl mx-auto">
+    <div className="page-container">
       <h1 className="text-xl sm:text-2xl font-bold mb-6">{t("bookmarks.title")}</h1>
       {loading ? (
         <p style={{ color: "var(--text-tertiary)" }}>…</p>

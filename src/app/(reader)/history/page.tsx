@@ -29,7 +29,7 @@ export default function HistoryPage() {
 
   if (!session) {
     return (
-      <div className="px-4 sm:px-6 py-8 sm:py-12 max-w-3xl mx-auto">
+      <div className="page-container">
         <h1 className="text-xl sm:text-2xl font-bold mb-4">{t("history.title")}</h1>
         <p style={{ color: "var(--text-secondary)" }}>{t("history.login")}</p>
       </div>
@@ -39,7 +39,7 @@ export default function HistoryPage() {
   const fmt = (ts: number) => new Date(ts).toLocaleDateString(locale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="px-4 sm:px-6 py-8 sm:py-12 max-w-3xl mx-auto">
+    <div className="page-container">
       <h1 className="text-xl sm:text-2xl font-bold mb-6">{t("history.title")}</h1>
       {loading ? (
         <p style={{ color: "var(--text-tertiary)" }}>…</p>

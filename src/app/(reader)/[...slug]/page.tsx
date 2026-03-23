@@ -51,7 +51,7 @@ export default async function CatchAllPage({ params }: Props) {
     const html = await renderMarkdown(md);
     return (
       <article className="max-w-3xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
-        <div className="prose prose-gray dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
+        <div className="content-prose" dangerouslySetInnerHTML={{ __html: html }} />
       </article>
     );
   }

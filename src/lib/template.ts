@@ -122,10 +122,3 @@ export async function loadTemplate(templateField?: string): Promise<TemplateConf
   return config;
 }
 
-/** Resolve a single variant value with fallback. */
-export function resolveVariant<K extends keyof TemplateVariants>(
-  variants: TemplateVariants,
-  key: K,
-): TemplateVariants[K] {
-  return variants[key] ?? DEFAULT_VARIANTS[key];
-}

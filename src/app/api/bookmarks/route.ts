@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getBookmarks, toggleBookmark } from "@/lib/kv";
-import { isBookmarked } from "@/lib/kv";
+import { requireAuth } from "@/lib/api-auth";
+import { getBookmarks, toggleBookmark, isBookmarked } from "@/lib/kv";
 
 export async function GET(req: NextRequest) {
+  // Bookmarks GET returns [] for unauthenticated (not 401)
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return NextResponse.json({ bookmarks: [] });
   const path = req.nextUrl.searchParams.get("path");
@@ -13,9 +14,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (auth instanceof NextResponse) return auth;
   const { path, title } = (await req.json()) as { path: string; title?: string };
-  const added = await toggleBookmark(session.user.email, path, title);
-  return NextResponse.json({ bookmarked: added });
+  return NextResponse.json({ bookmarked: await toggleBookmark(auth, path, title) });
 }

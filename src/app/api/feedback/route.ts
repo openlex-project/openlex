@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAuth } from "@/lib/api-auth";
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (auth instanceof NextResponse) return auth;
 
   const { repo, category, location, selectedText, comment } = await req.json();
   if (!repo || !category || !location || !comment) {
-    return NextResponse.json({ error: "Fehlende Felder" }, { status: 400 });
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
   const pat = process.env.GITHUB_PAT;
   if (!pat) {
-    return NextResponse.json({ error: "Server-Konfigurationsfehler" }, { status: 500 });
+    return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
   }
 
   const labels = ["feedback", category];
@@ -29,7 +26,7 @@ export async function POST(req: NextRequest) {
     `**Fundstelle:** ${location}`,
     selectedText ? `**Markierter Text:**\n> ${selectedText}` : "",
     `**Kommentar:**\n${comment}`,
-    `\n<!-- openlex-user: ${session.user.email ?? session.user.name ?? "unknown"} -->`,
+    `\n<!-- openlex-user: ${auth} -->`,
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -44,7 +41,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (!res.ok) {
-    return NextResponse.json({ error: "Issue konnte nicht erstellt werden" }, { status: 502 });
+    return NextResponse.json({ error: "Failed to create issue" }, { status: 502 });
   }
 
   const issue = await res.json();

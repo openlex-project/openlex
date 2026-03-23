@@ -4,16 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/useT";
-
-interface SearchResult {
-  url: string;
-  meta: { title?: string };
-  excerpt: string;
-}
-
-interface PendingResult {
-  data: () => Promise<SearchResult>;
-}
+import { search as pfSearch, filters as pfFilters, type PagefindResult } from "@/lib/pagefind";
 
 const PAGE_SIZE = 20;
 
@@ -21,8 +12,8 @@ function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") ?? "";
   const t = useT();
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [pending, setPending] = useState<PendingResult[]>([]);
+  const [results, setResults] = useState<PagefindResult[]>([]);
+  const [allResults, setAllResults] = useState<PagefindResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [filters, setFilters] = useState<Record<string, Record<string, number>>>({});
@@ -33,19 +24,14 @@ function SearchResults() {
     if (!q) return;
     setLoading(true);
     try {
-      // @ts-expect-error pagefind loaded from static files
-      const pagefind = await import(/* webpackIgnore: true */ "/pagefind/pagefind.js");
-      await pagefind.init();
       const f = filterOverride ?? activeFilter;
       const filterArg: Record<string, string> = {};
       for (const [k, v] of Object.entries(f)) { if (v) filterArg[k] = v; }
-      const search = await pagefind.search(q, { filters: Object.keys(filterArg).length > 0 ? filterArg : undefined });
-      const allPending = search.results as PendingResult[];
-      const first = await Promise.all(allPending.slice(0, PAGE_SIZE).map((r) => r.data()));
-      setResults(first);
-      setPending(allPending.slice(PAGE_SIZE));
-      setFilters(await pagefind.filters() as Record<string, Record<string, number>>);
-    } catch { setResults([]); setPending([]); }
+      const all = await pfSearch(q, { filters: Object.keys(filterArg).length > 0 ? filterArg : undefined });
+      setResults(all.slice(0, PAGE_SIZE));
+      setAllResults(all);
+      setFilters(await pfFilters());
+    } catch { setResults([]); setAllResults([]); }
     finally { setLoading(false); }
   }, [activeFilter]);
 
@@ -53,19 +39,19 @@ function SearchResults() {
 
   // Infinite scroll: load more when sentinel is visible
   useEffect(() => {
-    if (!sentinelRef.current || pending.length === 0) return;
-    const observer = new IntersectionObserver(async (entries) => {
-      if (!entries[0]?.isIntersecting || loadingMore || pending.length === 0) return;
+    if (!sentinelRef.current || results.length >= allResults.length) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0]?.isIntersecting || loadingMore || results.length >= allResults.length) return;
       setLoadingMore(true);
-      const next = pending.slice(0, PAGE_SIZE);
-      const loaded = await Promise.all(next.map((r) => r.data()));
-      setResults((prev) => [...prev, ...loaded]);
-      setPending((prev) => prev.slice(PAGE_SIZE));
+      setResults((prev) => {
+        const next = allResults.slice(prev.length, prev.length + PAGE_SIZE);
+        return [...prev, ...next];
+      });
       setLoadingMore(false);
     }, { rootMargin: "200px" });
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [pending, loadingMore]);
+  }, [allResults, results.length, loadingMore]);
 
   const toggleFilter = (key: string, value: string) => {
     const next = { ...activeFilter };
@@ -115,7 +101,7 @@ function SearchResults() {
               </li>
             ))}
           </ul>
-          {pending.length > 0 && (
+          {results.length < allResults.length && (
             <div ref={sentinelRef} className="py-8 text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
               {loadingMore ? t("search.loadingMore") : ""}
             </div>
