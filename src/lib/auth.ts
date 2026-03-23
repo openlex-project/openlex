@@ -8,7 +8,7 @@ import OktaProvider from "next-auth/providers/okta";
 import Auth0Provider from "next-auth/providers/auth0";
 import GitLabProvider from "next-auth/providers/gitlab";
 import CognitoProvider from "next-auth/providers/cognito";
-import { storeUserEmail } from "@/lib/kv";
+import { storeUserEmail } from "@/lib/redis";
 import { log } from "@/lib/logger";
 
 /* ─── Provider factories ─── */

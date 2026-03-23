@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { requireAuth } from "@/lib/api-auth";
-import { getBookmarks, toggleBookmark, isBookmarked } from "@/lib/kv";
+import { getBookmarks, toggleBookmark, isBookmarked } from "@/lib/redis";
 import { log } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {

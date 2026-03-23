@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
-import { exportUserData, deleteAllUserData, getUserSettings, setUserSetting } from "@/lib/kv";
+import { exportUserData, deleteAllUserData, getUserSettings, setUserSetting } from "@/lib/redis";
 import { log } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
