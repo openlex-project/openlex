@@ -45,6 +45,7 @@ home:
 | `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
 | `template` | string | | Template to use: built-in name (`default`, `academic`), GitHub repo (`org/repo[@ref]`), or local path (`./templates/...`). Default: `default`. See [templates.md](templates.md). |
 | `home` | array | | Homepage section layout. Overridden by template if template defines `home`. See [templates.md](templates.md). |
+| `footer_pages` | array | | Footer links — local markdown pages (`slug`) or external links (`href`). See below. |
 | `categories` | array | | Content categories for homepage and listing pages |
 
 ## Brand Hue
@@ -106,6 +107,26 @@ categories:
   - key: law
     label: { de: "Gesetze", en: "Laws" }
 ```
+
+## Footer Pages
+
+Footer pages appear as links in the site footer. Each entry is either a local markdown page or an external link.
+
+```yaml
+footer_pages:
+  - slug: impressum
+    label: { de: "Impressum", en: "Imprint" }
+  - slug: datenschutz
+    label: { de: "Datenschutz", en: "Privacy Policy" }
+  - href: "https://github.com/openlex-project/openlex"
+    label: { de: "GitHub", en: "GitHub" }
+```
+
+- `slug` — renders `footer/{slug}.md` from the project root as a page at `/{slug}`
+- `href` — external link, opens in a new tab
+- `label` — per-locale display text
+
+Markdown files live in the `footer/` directory in the project root (not in content repos).
 
 ## Notes
 

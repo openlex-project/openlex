@@ -15,6 +15,16 @@ content_repos:
   - openlex-project/oc-dsgvo
   - openlex-project/openlex-laws
 
+# Footer pages — local markdown (slug) or external links (href).
+# Markdown files live in footer/{slug}.md in the project root.
+footer_pages:
+  - slug: impressum
+    label: { de: "Impressum", en: "Imprint" }
+  - slug: datenschutz
+    label: { de: "Datenschutz", en: "Privacy Policy" }
+  - href: "https://github.com/openlex-project/openlex"
+    label: { de: "GitHub", en: "GitHub" }
+
 # Content categories — controls homepage sections and /category/[key] pages.
 # Items declare their category in meta.yaml / sync.yaml.
 # Items without a category default to their type (book / journal / law).
