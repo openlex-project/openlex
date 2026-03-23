@@ -21,9 +21,16 @@ const geistMono = Geist_Mono({
 const site = loadSiteConfig();
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
   title: site.name,
   description: site.tagline[site.default_locale] ?? "",
   icons: { icon: "/favicon.svg" },
+  openGraph: {
+    siteName: site.name,
+    type: "website",
+    images: ["/api/og"],
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default async function RootLayout({
