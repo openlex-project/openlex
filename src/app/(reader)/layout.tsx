@@ -39,9 +39,9 @@ export default async function ReaderLayout({
         </header>
         <main id="main-content" className="flex-1">{children}</main>
         <footer className="border-t px-6 py-4 text-sm flex items-center justify-center gap-1 flex-wrap" style={{ borderColor: "var(--border-subtle)", color: "var(--text-tertiary)" }}>
-          <span>{t(locale, "footer.copy")}</span><LicenseDisplay />
+          <span>{site.copyright}</span><LicenseDisplay />
           {site.footer_pages?.map((p) => (
-            <span key={p.slug ?? p.href}> · <a href={p.slug ? `/${p.slug}` : p.href!} {...(p.href ? { target: "_blank", rel: "noopener" } : {})} className="hover:underline">{p.label[locale] ?? p.label[site.default_locale] ?? Object.values(p.label)[0]}</a></span>
+            <span key={p.slug ?? p.href}> · <a href={p.slug ? `/${p.slug}` : p.href!} {...(p.href ? { target: "_blank", rel: "noopener" } : {})} className="hover:underline" style={{ color: "var(--text-secondary)" }}>{p.label[locale] ?? p.label[site.default_locale] ?? Object.values(p.label)[0]}</a></span>
           ))}
         </footer>
       </div>
