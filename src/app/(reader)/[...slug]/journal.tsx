@@ -9,11 +9,25 @@ import Link from "next/link";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
 import { articleJsonLd } from "@/lib/jsonld";
+import type { Metadata } from "next";
 
 interface Props {
   registry: ContentRegistry;
   entry: JournalEntry;
   rest: string[];
+}
+
+export function journalMetadata(entry: JournalEntry, rest: string[], siteName: string): Metadata {
+  const short = entry.title_short ?? entry.title;
+  if (rest.length >= 3) {
+    const [year, issue, artSlug] = rest;
+    const iss = entry.issues.find((i) => i.year === year && i.issue === issue);
+    const art = iss?.articles.find((a) => a.slug === artSlug);
+    if (art) {
+      return { title: `${art.title} – ${short} – ${siteName}`, openGraph: { title: art.title, description: art.authors.map((a) => a.name).join(", "), images: [`/api/og?title=${encodeURIComponent(art.title)}&sub=${encodeURIComponent(short)}`] } };
+    }
+  }
+  return { title: `${entry.title} – ${siteName}`, openGraph: { title: entry.title, images: [`/api/og?title=${encodeURIComponent(entry.title)}`] } };
 }
 
 function authorNames(a: JournalArticle) {

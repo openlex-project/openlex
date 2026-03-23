@@ -5,11 +5,19 @@ import { SidebarLaw } from "@/components/sidebar-law";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
 import { lawJsonLd } from "@/lib/jsonld";
+import type { Metadata } from "next";
 
 interface Props {
   registry: ContentRegistry;
   entry: LawMeta;
   rest: string[];
+}
+
+export function lawMetadata(entry: LawMeta, rest: string[], siteName: string): Metadata {
+  if (!rest.length) return { title: `${entry.title} – ${siteName}`, openGraph: { title: entry.title, images: [`/api/og?title=${encodeURIComponent(entry.title)}`] } };
+  const nr = rest[0]!;
+  const label = `${entry.unit_type === "article" ? "Art." : "§"} ${nr} ${entry.title_short ?? entry.title}`;
+  return { title: `${label} – ${siteName}`, openGraph: { title: label, images: [`/api/og?title=${encodeURIComponent(label)}`] } };
 }
 
 export default async function LawPage({ registry, entry: meta, rest }: Props) {

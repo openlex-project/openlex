@@ -12,11 +12,21 @@ import { FootnoteTooltips } from "@/components/footnote-tooltips";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
 import { bookChapterJsonLd } from "@/lib/jsonld";
+import type { Metadata } from "next";
 
 interface Props {
   registry: ContentRegistry;
   entry: BookEntry;
   rest: string[];
+}
+
+export function bookMetadata(entry: BookEntry, rest: string[], siteName: string): Metadata {
+  if (!rest.length) return { title: `${entry.title} – ${siteName}`, openGraph: { title: entry.title, images: [`/api/og?title=${encodeURIComponent(entry.title)}`] } };
+  const chapter = findTocEntry(entry.toc, rest.join("/"));
+  if (!chapter) return {};
+  const short = entry.title_short ?? entry.title;
+  const t = `${chapter.title} – ${short}`;
+  return { title: `${t} – ${siteName}`, openGraph: { title: t, images: [`/api/og?title=${encodeURIComponent(chapter.title)}&sub=${encodeURIComponent(short)}`] } };
 }
 
 const BACKMATTER_SLUGS = new Set(["literaturverzeichnis", "rechtsprechungsverzeichnis", "autorenverzeichnis"]);
