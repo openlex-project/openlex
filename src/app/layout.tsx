@@ -53,7 +53,7 @@ export default async function RootLayout({
         <Providers>
           <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </Providers>
-        {site.analytics && <Analytics />}
+        {site.analytics === "vercel" && <Analytics />}
       </body>
     </html>
   );

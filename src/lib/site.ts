@@ -22,7 +22,7 @@ export interface SiteConfig {
   brand_hue: number;
   logo_text?: boolean;
   content_repos?: string[];
-  analytics?: boolean;
+  analytics?: false | "vercel";
   footer?: FooterItem[];
   categories?: CategoryConfig[];
   template?: string;
