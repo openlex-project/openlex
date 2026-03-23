@@ -83,7 +83,6 @@ for (let i = 1; i <= 10; i++) {
 
 export const authOptions: AuthOptions = {
   providers,
-  debug: true,
   pages: { signIn: "/login" },
   events: {
     async signIn({ user }) {
