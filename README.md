@@ -81,4 +81,4 @@ Content repos are configured in `site.yaml` under `content_repos`. For private r
 
 ## License
 
-MIT
+AGPL-3.0
