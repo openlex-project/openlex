@@ -7,15 +7,12 @@ export interface CategoryConfig {
   label: Record<string, string>;
 }
 
-export interface FooterPage {
+export interface FooterItem {
+  text?: string;
+  license?: boolean;
   slug?: string;
   href?: string;
-  label: Record<string, string>;
-}
-
-export interface FooterConfig {
-  text: string;
-  pages?: FooterPage[];
+  label?: Record<string, string>;
 }
 
 export interface SiteConfig {
@@ -25,7 +22,7 @@ export interface SiteConfig {
   brand_hue: number;
   logo_text?: boolean;
   content_repos?: string[];
-  footer?: FooterConfig;
+  footer?: FooterItem[];
   categories?: CategoryConfig[];
   template?: string;
   home?: import("@/lib/template").HomeSection[];

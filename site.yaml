@@ -14,17 +14,17 @@ content_repos:
   - openlex-project/oc-dsgvo
   - openlex-project/openlex-laws
 
-# Footer — text + optional pages (local markdown or external links).
-# Markdown files live in footer/{slug}.md in the project root.
+# Footer — flat list of items, displayed left to right, separated by ·
+# Types: text (plain text), license (CC badge), slug (local markdown page), href (external link)
 footer:
-  text: "© OpenLex"
-  pages:
-    - slug: impressum
-      label: { de: "Impressum", en: "Imprint" }
-    - slug: datenschutz
-      label: { de: "Datenschutz", en: "Privacy Policy" }
-    - href: "https://github.com/openlex-project/openlex"
-      label: { de: "GitHub", en: "GitHub" }
+  - text: "© OpenLex"
+  - license: true
+  - slug: impressum
+    label: { de: "Impressum", en: "Imprint" }
+  - slug: datenschutz
+    label: { de: "Datenschutz", en: "Privacy Policy" }
+  - href: "https://github.com/openlex-project/openlex"
+    label: { de: "GitHub", en: "GitHub" }
 
 # Content categories — controls homepage sections and /category/[key] pages.
 categories:

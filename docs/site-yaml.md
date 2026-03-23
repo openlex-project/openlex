@@ -19,12 +19,12 @@ content_repos:
   - openlex-project/openlex-laws
 
 footer:
-  text: "© OpenLex"
-  pages:
-    - slug: impressum
-      label: { de: "Impressum", en: "Imprint" }
-    - slug: datenschutz
-      label: { de: "Datenschutz", en: "Privacy Policy" }
+  - text: "© OpenLex"
+  - license: true
+  - slug: impressum
+    label: { de: "Impressum", en: "Imprint" }
+  - slug: datenschutz
+    label: { de: "Datenschutz", en: "Privacy Policy" }
 
 categories:
   - key: book
@@ -49,7 +49,7 @@ home:
 | `brand_hue` | number | ✓ | oklch color hue (0–360) — drives the entire color palette |
 | `content_repos` | array | ✓ | GitHub repos containing content (`org/repo`). Books, journals, and laws are auto-detected from `meta.yaml` / `sync.yaml`. |
 | `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
-| `footer` | object | | Footer configuration (`text` + `pages`). See below. |
+| `footer` | array | | Footer items — flat list of `text`, `license`, `slug`, `href` entries. See below. |
 | `template` | string | | Template to use: built-in name (`default`, `academic`), GitHub repo (`org/repo[@ref]`), or local path (`./templates/...`). Default: `default`. See [templates.md](templates.md). |
 | `home` | array | | Homepage section layout. Overridden by template if template defines `home`. See [templates.md](templates.md). |
 | `categories` | array | | Content categories for homepage and listing pages |
@@ -105,7 +105,7 @@ default_locale: "de"
 brand_hue: 150
 
 footer:
-  text: "© JuraOpen"
+  - text: "© JuraOpen"
 
 categories:
   - key: commentaries
@@ -118,24 +118,30 @@ categories:
 
 ## Footer
 
-The `footer` object configures the entire footer in one place.
+The `footer` is a flat array of items, displayed left to right, separated by `·`. Order in the array = order in the footer.
 
 ```yaml
 footer:
-  text: "© 2026 OpenLex"
-  pages:
-    - slug: impressum
-      label: { de: "Impressum", en: "Imprint" }
-    - slug: datenschutz
-      label: { de: "Datenschutz", en: "Privacy Policy" }
-    - href: "https://github.com/openlex-project/openlex"
-      label: { de: "GitHub", en: "GitHub" }
+  - text: "© 2026 OpenLex"
+  - license: true
+  - slug: impressum
+    label: { de: "Impressum", en: "Imprint" }
+  - slug: datenschutz
+    label: { de: "Datenschutz", en: "Privacy Policy" }
+  - href: "https://github.com/openlex-project/openlex"
+    label: { de: "GitHub", en: "GitHub" }
 ```
 
-- `text` — shown as-is in the footer (e.g. copyright notice)
-- `pages[].slug` — renders `footer/{slug}.md` from the project root as a page at `/{slug}`
-- `pages[].href` — external link, opens in a new tab
-- `pages[].label` — per-locale display text
+Each item is one of four types:
+
+| Key | Description |
+|---|---|
+| `text` | Plain text, shown as-is (e.g. copyright notice) |
+| `license` | CC license badge with link (from current page's content license) |
+| `slug` | Local markdown page — renders `footer/{slug}.md` at `/{slug}` |
+| `href` | External link, opens in a new tab |
+
+`slug` and `href` items require a `label` object with per-locale display text.
 
 Markdown files live in the `footer/` directory in the project root (not in content repos).
 
