@@ -13,15 +13,19 @@ export interface FooterPage {
   label: Record<string, string>;
 }
 
+export interface FooterConfig {
+  text: string;
+  pages?: FooterPage[];
+}
+
 export interface SiteConfig {
   name: string;
   tagline: Record<string, string>;
-  copyright: string;
   default_locale: string;
   brand_hue: number;
   logo_text?: boolean;
   content_repos?: string[];
-  footer_pages?: FooterPage[];
+  footer?: FooterConfig;
   categories?: CategoryConfig[];
   template?: string;
   home?: import("@/lib/template").HomeSection[];

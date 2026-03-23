@@ -9,7 +9,6 @@ name: "OpenLex"
 tagline:
   de: "Open-Access-Plattform für juristische Fachliteratur"
   en: "Open-access platform for legal literature"
-copyright: "OpenLex"
 default_locale: "de"
 brand_hue: 265
 logo_text: true
@@ -18,6 +17,14 @@ template: default
 content_repos:
   - openlex-project/oc-dsgvo
   - openlex-project/openlex-laws
+
+footer:
+  text: "© OpenLex"
+  pages:
+    - slug: impressum
+      label: { de: "Impressum", en: "Imprint" }
+    - slug: datenschutz
+      label: { de: "Datenschutz", en: "Privacy Policy" }
 
 categories:
   - key: book
@@ -36,16 +43,15 @@ home:
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `name` | string | ✓ | Site name (header, metadata, footer copyright) |
+| `name` | string | ✓ | Site name (header, metadata) |
 | `tagline` | object | ✓ | Per-locale tagline (`{locale: text}`) |
-| `copyright` | string | ✓ | Copyright holder (shown as `© {copyright}` in footer) |
 | `default_locale` | string | ✓ | Default locale (`de`, `en`, etc.) |
 | `brand_hue` | number | ✓ | oklch color hue (0–360) — drives the entire color palette |
 | `content_repos` | array | ✓ | GitHub repos containing content (`org/repo`). Books, journals, and laws are auto-detected from `meta.yaml` / `sync.yaml`. |
 | `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
+| `footer` | object | | Footer configuration (`text` + `pages`). See below. |
 | `template` | string | | Template to use: built-in name (`default`, `academic`), GitHub repo (`org/repo[@ref]`), or local path (`./templates/...`). Default: `default`. See [templates.md](templates.md). |
 | `home` | array | | Homepage section layout. Overridden by template if template defines `home`. See [templates.md](templates.md). |
-| `footer_pages` | array | | Footer links — local markdown pages (`slug`) or external links (`href`). See below. |
 | `categories` | array | | Content categories for homepage and listing pages |
 
 ## Brand Hue
@@ -95,9 +101,11 @@ name: "JuraOpen"
 tagline:
   de: "Freie juristische Fachliteratur"
   en: "Free legal scholarship"
-copyright: "JuraOpen"
 default_locale: "de"
 brand_hue: 150
+
+footer:
+  text: "© JuraOpen"
 
 categories:
   - key: commentaries
@@ -108,23 +116,26 @@ categories:
     label: { de: "Gesetze", en: "Laws" }
 ```
 
-## Footer Pages
+## Footer
 
-Footer pages appear as links in the site footer. Each entry is either a local markdown page or an external link.
+The `footer` object configures the entire footer in one place.
 
 ```yaml
-footer_pages:
-  - slug: impressum
-    label: { de: "Impressum", en: "Imprint" }
-  - slug: datenschutz
-    label: { de: "Datenschutz", en: "Privacy Policy" }
-  - href: "https://github.com/openlex-project/openlex"
-    label: { de: "GitHub", en: "GitHub" }
+footer:
+  text: "© 2026 OpenLex"
+  pages:
+    - slug: impressum
+      label: { de: "Impressum", en: "Imprint" }
+    - slug: datenschutz
+      label: { de: "Datenschutz", en: "Privacy Policy" }
+    - href: "https://github.com/openlex-project/openlex"
+      label: { de: "GitHub", en: "GitHub" }
 ```
 
-- `slug` — renders `footer/{slug}.md` from the project root as a page at `/{slug}`
-- `href` — external link, opens in a new tab
-- `label` — per-locale display text
+- `text` — shown as-is in the footer (e.g. copyright notice)
+- `pages[].slug` — renders `footer/{slug}.md` from the project root as a page at `/{slug}`
+- `pages[].href` — external link, opens in a new tab
+- `pages[].label` — per-locale display text
 
 Markdown files live in the `footer/` directory in the project root (not in content repos).
 

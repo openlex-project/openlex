@@ -12,7 +12,6 @@ export function t(locale: Locale, key: string, params?: Record<string, string>):
   const site = loadSiteConfig();
   if (key === "site.title") return site.name;
   if (key === "site.tagline") return site.tagline[locale] ?? site.tagline[defaultLocale] ?? "";
-  if (key === "footer.copy") return `© ${site.copyright}`;
 
   let str = dictionaries[locale]?.[key] ?? dictionaries[defaultLocale as Locale][key] ?? key;
   if (params) {

@@ -18,7 +18,7 @@ export default async function CatchAllPage({ params }: Props) {
 
   // Footer pages: single slug, matches site.yaml footer_pages with slug
   const site = loadSiteConfig();
-  const footerPage = site.footer_pages?.find((p) => p.slug === slug[0] && slug.length === 1);
+  const footerPage = site.footer?.pages?.find((p) => p.slug === slug[0] && slug.length === 1);
   if (footerPage) {
     const file = join(process.cwd(), "footer", `${footerPage.slug}.md`);
     if (!existsSync(file)) notFound();

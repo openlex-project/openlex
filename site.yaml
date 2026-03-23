@@ -4,7 +4,6 @@ name: "OpenLex"
 tagline:
   de: "Open-Access-Plattform für juristische Fachliteratur"
   en: "Open-access platform for legal literature"
-copyright: "OpenLex"
 default_locale: "de"
 
 # oklch hue (0–360) — drives the entire color palette
@@ -15,19 +14,19 @@ content_repos:
   - openlex-project/oc-dsgvo
   - openlex-project/openlex-laws
 
-# Footer pages — local markdown (slug) or external links (href).
+# Footer — text + optional pages (local markdown or external links).
 # Markdown files live in footer/{slug}.md in the project root.
-footer_pages:
-  - slug: impressum
-    label: { de: "Impressum", en: "Imprint" }
-  - slug: datenschutz
-    label: { de: "Datenschutz", en: "Privacy Policy" }
-  - href: "https://github.com/openlex-project/openlex"
-    label: { de: "GitHub", en: "GitHub" }
+footer:
+  text: "© OpenLex"
+  pages:
+    - slug: impressum
+      label: { de: "Impressum", en: "Imprint" }
+    - slug: datenschutz
+      label: { de: "Datenschutz", en: "Privacy Policy" }
+    - href: "https://github.com/openlex-project/openlex"
+      label: { de: "GitHub", en: "GitHub" }
 
 # Content categories — controls homepage sections and /category/[key] pages.
-# Items declare their category in meta.yaml / sync.yaml.
-# Items without a category default to their type (book / journal / law).
 categories:
   - key: book
     label: { de: "Kommentare & Bücher", en: "Commentaries & Books" }
