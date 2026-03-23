@@ -11,8 +11,22 @@ import { SidebarBook } from "@/components/sidebar-book";
 import { FootnoteTooltips } from "@/components/footnote-tooltips";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
-import { bookChapterJsonLd } from "@/lib/jsonld";
+import { person, licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
+
+function bookChapterJsonLd(meta: BookEntry, chapter: { title: string; author?: string | { name: string; orcid?: string } }, url: string): string {
+  const authors = chapter.author
+    ? [person(typeof chapter.author === "string" ? { name: chapter.author } : chapter.author)]
+    : meta.editors.map(person);
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Chapter",
+    name: chapter.title,
+    author: authors,
+    isPartOf: { "@type": "Book", name: meta.title, editor: meta.editors.map(person), inLanguage: meta.lang, ...(licenseUrl(meta.license) && { license: licenseUrl(meta.license) }) },
+    url,
+  });
+}
 
 interface Props {
   registry: ContentRegistry;

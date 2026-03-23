@@ -8,8 +8,27 @@ import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
-import { articleJsonLd } from "@/lib/jsonld";
+import { person, licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
+
+function articleJsonLd(journal: JournalEntry, article: JournalArticle, year: string, issue: string, url: string): string {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    headline: article.title,
+    author: article.authors.map(person),
+    isPartOf: {
+      "@type": "Periodical",
+      name: journal.title,
+      ...(journal.issn && { issn: journal.issn }),
+    },
+    ...(article.doi && { identifier: { "@type": "PropertyValue", propertyID: "DOI", value: article.doi } }),
+    ...(article.pages && { pagination: article.pages }),
+    datePublished: year,
+    url,
+    ...(licenseUrl(journal.license) && { license: licenseUrl(journal.license) }),
+  });
+}
 
 interface Props {
   registry: ContentRegistry;

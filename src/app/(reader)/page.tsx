@@ -5,7 +5,17 @@ import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate, type HomeSection } from "@/lib/template";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { Logo } from "@/components/logo";
-import { websiteJsonLd } from "@/lib/jsonld";
+
+function websiteJsonLd(url: string): string {
+  const site = loadSiteConfig();
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: site.name,
+    url,
+    description: site.tagline[site.default_locale] ?? Object.values(site.tagline)[0],
+  });
+}
 
 export default async function Home() {
   const { books, laws, journals, slugMap } = await buildRegistry();

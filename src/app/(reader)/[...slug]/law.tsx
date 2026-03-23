@@ -4,8 +4,20 @@ import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
-import { lawJsonLd } from "@/lib/jsonld";
+import { licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
+
+function lawJsonLd(meta: LawMeta, nr: string, url: string): string {
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Legislation",
+    name: `${meta.unit_type === "article" ? "Art." : "§"} ${nr} ${meta.title}`,
+    legislationIdentifier: `${meta.slug}/${nr}`,
+    inLanguage: meta.lang,
+    url,
+    ...(licenseUrl(meta.license) && { license: licenseUrl(meta.license) }),
+  });
+}
 
 interface Props {
   registry: ContentRegistry;
