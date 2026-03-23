@@ -38,8 +38,8 @@ default_locale: "de"
 brand_hue: 265
 
 content_repos:
-  - openlex-project/oc-dsgvo
-  - openlex-project/openlex-laws
+  - github://openlex-project/oc-dsgvo
+  - github://openlex-project/openlex-laws
   # - gitlab://uni-berlin/kommentar-stgb
 
 footer:

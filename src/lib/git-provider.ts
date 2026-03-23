@@ -16,10 +16,10 @@ export interface RepoRef {
   repo: string;       // "org/repo"
 }
 
-/** Parse `github://org/repo` or `gitlab://host/group/project` or bare `org/repo` (→ github) */
+/** Parse `github://org/repo` or `gitlab://[host/]group/project` */
 export function parseRepoUrl(raw: string): RepoRef {
   const match = raw.match(/^(github|gitlab):\/\/(.+)$/);
-  if (!match) return { provider: "github", host: "github.com", repo: raw };
+  if (!match) throw new Error(`Invalid content_repos entry: "${raw}" — must start with github:// or gitlab://`);
 
   const provider = match[1] as "github" | "gitlab";
   const rest = match[2]!;

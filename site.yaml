@@ -13,10 +13,9 @@ analytics: vercel
 
 # Content repositories — GitHub or GitLab repos containing books, journals, or laws.
 # Format: github://org/repo, gitlab://group/project, gitlab://host/group/project (self-hosted)
-# Bare org/repo (no protocol) defaults to GitHub.
 content_repos:
-  - openlex-project/oc-dsgvo
-  - openlex-project/openlex-laws
+  - github://openlex-project/oc-dsgvo
+  - github://openlex-project/openlex-laws
 
 # Footer — flat list of items, displayed left to right, separated by ·
 # Types: text (plain text), license (CC badge), slug (local markdown page), href (external link)

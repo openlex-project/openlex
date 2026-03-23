@@ -79,7 +79,7 @@ Providers that require `_ISSUER`: `keycloak`, `okta`, `auth0`, `cognito`, `oidc`
 4. Place Markdown files in `content/` (see [content-guide.md](content-guide.md))
 5. Optional: add `jura.csl` + `references.yaml` for citations (see [references-yaml.md](references-yaml.md))
 6. Optional: set `category` in `meta.yaml` for homepage grouping
-7. Add repo name to `content_repos` in `site.yaml`
+7. Add repo to `content_repos` in `site.yaml` (e.g. `github://org/repo`)
 
 ### Journal
 
@@ -87,14 +87,14 @@ Providers that require `_ISSUER`: `keycloak`, `okta`, `auth0`, `cognito`, `oidc`
 2. Add `meta.yaml` with `type: "journal"` (see [meta-yaml.md](meta-yaml.md))
 3. Create year/issue directories with `issue.yaml` and article markdown files
 4. Optional: set `category` in `meta.yaml` for homepage grouping
-5. Add repo name to `content_repos` in `site.yaml`
+5. Add repo to `content_repos` in `site.yaml` (e.g. `github://org/repo`)
 
 ### Laws
 
 1. Create a private GitHub repo (or use an existing mono-repo)
 2. Add `sync.yaml` in the root (see [sync-yaml.md](sync-yaml.md))
 3. Add sync scripts and GitHub Actions workflow (see [sync-yaml.md](sync-yaml.md))
-4. Add repo name to `content_repos` in `site.yaml`
+4. Add repo to `content_repos` in `site.yaml` (e.g. `github://org/repo`)
 
 ## Internationalization
 
