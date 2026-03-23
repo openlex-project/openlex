@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { log } from "@/lib/logger";
 
 const redis = new Redis({
   url: process.env.REDIS_REST_URL ?? "",
@@ -48,7 +49,7 @@ export async function addHistory(userId: string, path: string, title: string): P
     try {
       const parsed = typeof e === "string" ? JSON.parse(e) : e;
       if (parsed.path === path) await redis.zrem(key, e);
-    } catch {}
+    } catch (err) { log.error(err, "Failed to parse history entry"); }
   }
   await redis.zadd(key, { score: Date.now(), member: JSON.stringify({ path, title, ts: Date.now() }) });
   // Trim to 50 entries

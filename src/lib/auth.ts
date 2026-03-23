@@ -9,6 +9,7 @@ import Auth0Provider from "next-auth/providers/auth0";
 import GitLabProvider from "next-auth/providers/gitlab";
 import CognitoProvider from "next-auth/providers/cognito";
 import { storeUserEmail } from "@/lib/kv";
+import { log } from "@/lib/logger";
 
 /* ─── Provider factories ─── */
 
@@ -74,9 +75,9 @@ for (let i = 1; i <= 10; i++) {
   const slot = readSlot(i);
   if (!slot) continue;
   const factory = FACTORIES[slot.provider];
-  if (!factory) { console.warn(`Unknown OAuth provider: ${slot.provider} (slot ${i})`); continue; }
+  if (!factory) { log.warn("Unknown OAuth provider: %s (slot %d)", slot.provider, i); continue; }
   if (["keycloak", "okta", "auth0", "cognito", "oidc"].includes(slot.provider) && !slot.issuer) {
-    console.warn(`OAuth slot ${i} (${slot.provider}) requires OAUTH_${i}_ISSUER`); continue;
+    log.warn("OAuth slot %d (%s) requires OAUTH_%d_ISSUER", i, slot.provider, i); continue;
   }
   providers.push(factory(slot));
 }
@@ -87,7 +88,7 @@ export const authOptions: AuthOptions = {
   events: {
     async signIn({ user }) {
       if (user.email) {
-        await storeUserEmail(user.email, user.name ?? undefined).catch(() => {});
+        await storeUserEmail(user.email, user.name ?? undefined).catch((err) => log.error(err, "Failed to store user email"));
       }
     },
   },

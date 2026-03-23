@@ -5,6 +5,7 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const CSL = require("citeproc");
 import { parse } from "yaml";
+import { log } from "@/lib/logger";
 
 export interface CslReference {
   id: string;
@@ -80,7 +81,8 @@ export function createCitationEngine(
           const last = output[output.length - 1];
           if (Array.isArray(last) && last[1]) return last[1] as string;
         }
-      } catch {
+      } catch (err) {
+        log.error(err, "citeproc: failed to process citation %s", key);
         // Fallback: format manually
         const item = itemsById[key];
         if (item) {
@@ -100,7 +102,8 @@ export function createCitationEngine(
         const bibResult = engine.makeBibliography();
         if (!bibResult || !bibResult[1]) return "";
         return bibResult[1].join("\n");
-      } catch {
+      } catch (err) {
+        log.error(err, "citeproc: failed to generate bibliography");
         return "";
       }
     },

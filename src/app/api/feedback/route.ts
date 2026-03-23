@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
+import { log } from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
   const auth = await requireAuth();
@@ -12,6 +13,7 @@ export async function POST(req: NextRequest) {
 
   const pat = process.env.GITHUB_PAT;
   if (!pat) {
+    log.error("GITHUB_PAT not configured");
     return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
   }
 
@@ -41,6 +43,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (!res.ok) {
+    log.error("GitHub issue creation failed: %d %s", res.status, await res.text());
     return NextResponse.json({ error: "Failed to create issue" }, { status: 502 });
   }
 
