@@ -1,5 +1,5 @@
 import { parse } from "yaml";
-import { fetchFile, listFiles, listDirs } from "./github";
+import { getProvider } from "./git-provider";
 import { loadSiteConfig } from "./site";
 import { log } from "./logger";
 
@@ -108,13 +108,14 @@ function getContentRepos(): string[] {
 }
 
 /** Discover journal issues from per-issue meta.yaml */
-async function discoverJournal(repo: string, doiPrefix?: string): Promise<JournalIssue[]> {
-  const years = (await listDirs(repo, ".")).filter((d) => /^\d{4}$/.test(d)).sort().reverse();
+async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<JournalIssue[]> {
+  const { provider: p, repo } = getProvider(repoUrl);
+  const years = (await p.listDirs(repo, ".")).filter((d) => /^\d{4}$/.test(d)).sort().reverse();
   const issues: JournalIssue[] = [];
   for (const year of years) {
-    const nums = (await listDirs(repo, year)).sort().reverse();
+    const nums = (await p.listDirs(repo, year)).sort().reverse();
     for (const issueNr of nums) {
-      const raw = await fetchFile(repo, `${year}/${issueNr}/issue.yaml`);
+      const raw = await p.fetchFile(repo, `${year}/${issueNr}/issue.yaml`);
       if (!raw) continue;
       const issueMeta = parse(raw) as { articles: { file: string; title: string; authors: { name: string; orcid?: string }[]; section: string; pages?: string; numbering?: string; doi?: string }[] };
       if (!issueMeta.articles?.length) continue;
@@ -141,40 +142,41 @@ export async function buildRegistry(): Promise<ContentRegistry> {
   const laws = new Map<string, LawMeta>();
   const journals = new Map<string, JournalEntry>();
 
-  for (const repo of getContentRepos()) {
+  for (const repoUrl of getContentRepos()) {
     try {
-    const metaRaw = await fetchFile(repo, "meta.yaml");
+    const { provider: p, repo } = getProvider(repoUrl);
+    const metaRaw = await p.fetchFile(repo, "meta.yaml");
     if (metaRaw) {
       const meta = parse(metaRaw) as BookMeta;
 
       if (meta.type === "journal") {
         const jmeta = meta as BookMeta & { doi_prefix?: string };
-        const issues = await discoverJournal(repo, jmeta.doi_prefix);
-        journals.set(meta.slug, { ...meta, repo, doi_prefix: jmeta.doi_prefix, issues });
+        const issues = await discoverJournal(repoUrl, jmeta.doi_prefix);
+        journals.set(meta.slug, { ...meta, repo: repoUrl, doi_prefix: jmeta.doi_prefix, issues });
         continue;
       }
 
-      const tocRaw = await fetchFile(repo, "toc.yaml");
+      const tocRaw = await p.fetchFile(repo, "toc.yaml");
       let toc: TocEntry[];
       if (tocRaw) {
         const parsed = parse(tocRaw) as { contents: TocEntry[] };
         toc = parsed.contents;
       } else {
-        const files = await listFiles(repo, "content");
+        const files = await p.listFiles(repo, "content");
         toc = files
           .filter((f) => f.endsWith(".md"))
           .sort()
           .map((f) => ({ file: f, title: f.replace(/\.md$/, "") }));
       }
-      books.set(meta.slug, { ...meta, repo, toc });
+      books.set(meta.slug, { ...meta, repo: repoUrl, toc });
       continue;
     }
 
-    const syncRaw = await fetchFile(repo, "sync.yaml");
+    const syncRaw = await p.fetchFile(repo, "sync.yaml");
     if (syncRaw) {
       const sync = parse(syncRaw) as SyncYaml;
       for (const [slug, law] of Object.entries(sync.laws)) {
-        const tocRaw = await fetchFile(repo, `${slug}/toc.yaml`);
+        const tocRaw = await p.fetchFile(repo, `${slug}/toc.yaml`);
         const toc: LawTocNode[] = tocRaw ? (parse(tocRaw) as LawTocNode[]) : [];
         laws.set(slug, {
           slug,
@@ -184,13 +186,13 @@ export async function buildRegistry(): Promise<ContentRegistry> {
           lang: law.lang,
           license: law.license,
           category: law.category,
-          repo,
+          repo: repoUrl,
           toc,
         });
       }
     }
     } catch (err) {
-      log.error(err, "Failed to load content repo: %s", repo);
+      log.error(err, "Failed to load content repo: %s", repoUrl);
     }
   }
 
@@ -288,24 +290,27 @@ export function findByProvision(toc: TocEntry[], provision: number): TocEntry[] 
 }
 
 export async function getBookContent(
-  repo: string,
+  repoUrl: string,
   fileSlug: string,
   ref = "main",
 ): Promise<string | null> {
-  return fetchFile(repo, `content/${fileSlug}.md`, ref);
+  const { provider: p, repo } = getProvider(repoUrl);
+  return p.fetchFile(repo, `content/${fileSlug}.md`, ref);
 }
 
 export async function getLawContent(
-  repo: string,
+  repoUrl: string,
   slug: string,
   nr: string,
 ): Promise<string | null> {
-  return fetchFile(repo, `${slug}/${nr}.md`);
+  const { provider: p, repo } = getProvider(repoUrl);
+  return p.fetchFile(repo, `${slug}/${nr}.md`);
 }
 
 /** List all provision numbers for a law */
-export async function getLawProvisions(repo: string, slug: string): Promise<number[]> {
-  const files = await listFiles(repo, slug);
+export async function getLawProvisions(repoUrl: string, slug: string): Promise<number[]> {
+  const { provider: p, repo } = getProvider(repoUrl);
+  const files = await p.listFiles(repo, slug);
   return files
     .filter((f) => f.endsWith(".md"))
     .map((f) => parseInt(f.replace(".md", ""), 10))
@@ -326,10 +331,11 @@ export function findLawBreadcrumb(toc: LawTocNode[], nr: string): LawTocNode[] {
 }
 
 export async function getJournalArticleContent(
-  repo: string,
+  repoUrl: string,
   year: string,
   issue: string,
   slug: string,
 ): Promise<string | null> {
-  return fetchFile(repo, `${year}/${issue}/${slug}.md`);
+  const { provider: p, repo } = getProvider(repoUrl);
+  return p.fetchFile(repo, `${year}/${issue}/${slug}.md`);
 }

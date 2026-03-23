@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { getBookContent, findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterSections, type TocEntry, type BookEntry, type ContentRegistry } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
-import { fetchFile } from "@/lib/github";
+import { getProvider } from "@/lib/git-provider";
 import { renderMarkdown } from "@/lib/markdown";
 import { createCitationEngine, parseReferencesYaml } from "@/lib/citeproc";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
@@ -80,7 +80,8 @@ function collectAuthors(toc: TocEntry[]): { name: string; orcid?: string }[] {
 
 async function renderBackmatter(section: string, meta: BookEntry): Promise<{ title: string; html: string } | null> {
   if ((section === "literaturverzeichnis" || section === "rechtsprechungsverzeichnis") && meta.csl && meta.bibliography) {
-    const [cslXml, refsYaml] = await Promise.all([fetchFile(meta.repo, meta.csl), fetchFile(meta.repo, meta.bibliography)]);
+    const { provider: p, repo } = getProvider(meta.repo);
+    const [cslXml, refsYaml] = await Promise.all([p.fetchFile(repo, meta.csl), p.fetchFile(repo, meta.bibliography)]);
     if (!cslXml || !refsYaml) return null;
     const refs = parseReferencesYaml(refsYaml);
     const cited = await collectCitations(meta.repo, meta.toc);
@@ -134,10 +135,11 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   const tocEntry = findTocEntry(meta.toc, fileSlug);
   const { prev, next } = findTocNeighbors(meta.toc, fileSlug);
 
+  const { provider: p, repo } = getProvider(meta.repo);
   const [markdown, cslXml, referencesYaml] = await Promise.all([
     getBookContent(meta.repo, fileSlug, ref),
-    meta.csl ? fetchFile(meta.repo, meta.csl, ref) : null,
-    meta.bibliography ? fetchFile(meta.repo, meta.bibliography, ref) : null,
+    meta.csl ? p.fetchFile(repo, meta.csl, ref) : null,
+    meta.bibliography ? p.fetchFile(repo, meta.bibliography, ref) : null,
   ]);
   if (!markdown) notFound();
 

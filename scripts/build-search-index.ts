@@ -55,8 +55,9 @@ async function main() {
     const displayName = meta.title_short ?? meta.title;
     const unitLabel = meta.unit_type === "article" ? "Art." : "§";
     // Index known law files by listing directory
-    const { listFiles } = await import("../src/lib/github");
-    const files = await listFiles(meta.repo, slug);
+    const { getProvider } = await import("../src/lib/git-provider");
+    const { provider: p, repo } = getProvider(meta.repo);
+    const files = await p.listFiles(repo, slug);
     for (const file of files.filter((f) => f.endsWith(".md")).sort()) {
       const nr = file.replace(/\.md$/, "");
       const content = await getLawContent(meta.repo, slug, nr);

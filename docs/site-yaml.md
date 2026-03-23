@@ -15,8 +15,10 @@ logo_text: true
 template: default
 
 content_repos:
-  - openlex-project/oc-dsgvo
-  - openlex-project/openlex-laws
+  - openlex-project/oc-dsgvo                       # GitHub (default)
+  - github://openlex-project/openlex-laws           # GitHub (explicit)
+  # - gitlab://uni-berlin/kommentar-stgb            # GitLab
+  # - gitlab://git.uni-berlin.de/group/project      # self-hosted GitLab
 
 footer:
   - text: "© OpenLex"
@@ -47,7 +49,7 @@ home:
 | `tagline` | object | ✓ | Per-locale tagline (`{locale: text}`) |
 | `default_locale` | string | ✓ | Default locale (`de`, `en`, etc.) |
 | `brand_hue` | number | ✓ | oklch color hue (0–360) — drives the entire color palette |
-| `content_repos` | array | ✓ | GitHub repos containing content (`org/repo`). Books, journals, and laws are auto-detected from `meta.yaml` / `sync.yaml`. |
+| `content_repos` | array | ✓ | Git repos containing content. Format: `github://org/repo`, `gitlab://group/project`, `gitlab://host/group/project` (self-hosted). Bare `org/repo` defaults to GitHub. Books, journals, and laws are auto-detected from `meta.yaml` / `sync.yaml`. |
 | `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
 | `analytics` | string | | Analytics provider. Supported: `"vercel"`. Default: off. |
 | `footer` | array | | Footer items — flat list of `text`, `license`, `slug`, `href` entries. See below. |

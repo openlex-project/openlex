@@ -40,6 +40,7 @@ brand_hue: 265
 content_repos:
   - openlex-project/oc-dsgvo
   - openlex-project/openlex-laws
+  # - gitlab://uni-berlin/kommentar-stgb
 
 footer:
   - text: "© OpenLex"
@@ -77,7 +78,7 @@ pnpm install
 pnpm dev
 ```
 
-Content repos are configured in `site.yaml` under `content_repos`. For private repos, create `.env.local` with `GITHUB_PAT`. See [Deployment](docs/deployment.md).
+Content repos are configured in `site.yaml` under `content_repos` (GitHub and GitLab supported). For private repos, create `.env.local` with `GITHUB_PAT` and/or `GITLAB_PAT`. See [Deployment](docs/deployment.md).
 
 ## License
 

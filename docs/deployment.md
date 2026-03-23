@@ -22,6 +22,7 @@ Edit `site.yaml` in the project root to configure name, tagline, branding, and c
 | `NEXTAUTH_SECRET` | Secret for NextAuth.js session encryption | `openssl rand -base64 32` |
 | `REDIS_REST_URL` | Upstash Redis URL (bookmarks, history, users) | `https://...upstash.io` |
 | `REDIS_REST_TOKEN` | Upstash Redis token | |
+| `GITLAB_PAT` | GitLab PAT for content repos (if using `gitlab://` repos) | `glpat-...` |
 | `LOG_LEVEL` | Log level: `fatal`, `error`, `warn`, `info` (default), `debug`, `trace` | `info` |
 
 Content repos are configured in `site.yaml` under `content_repos` (not as env var). See [site-yaml.md](site-yaml.md).

@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { parse } from "yaml";
-import { fetchFile } from "@/lib/github";
+import { getProvider } from "@/lib/git-provider";
 import { log } from "@/lib/logger";
 
 /* ─── Types ─── */
@@ -84,10 +84,11 @@ function readLocalTemplate(dir: string): TemplateConfig {
   };
 }
 
-async function fetchRemoteTemplate(repo: string, ref: string): Promise<TemplateConfig> {
+async function fetchRemoteTemplate(repoSpec: string, ref: string): Promise<TemplateConfig> {
+  const { provider: p, repo } = getProvider(repoSpec);
   const [cfgRaw, css] = await Promise.all([
-    fetchFile(repo, "template.yaml", ref),
-    fetchFile(repo, "styles.css", ref),
+    p.fetchFile(repo, "template.yaml", ref),
+    p.fetchFile(repo, "styles.css", ref),
   ]);
   const cfg = cfgRaw ? (parse(cfgRaw) as Partial<TemplateConfig>) : {};
   return {
