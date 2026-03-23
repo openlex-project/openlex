@@ -42,7 +42,7 @@ export default async function ReaderLayout({
           {site.footer?.map((item, i) => {
             const sep = i > 0 ? " · " : "";
             if (item.text) return <span key={i}>{sep}{item.text}</span>;
-            if (item.license) return <span key={i}>{sep}<LicenseDisplay /></span>;
+            if ("license" in item) return <span key={i}>{sep}<LicenseDisplay /></span>;
             if (item.slug) return <span key={i}>{sep}<a href={`/${item.slug}`} className="hover:underline" style={{ color: "var(--text-secondary)" }}>{item.label?.[locale] ?? item.label?.[site.default_locale] ?? item.slug}</a></span>;
             if (item.href) return <span key={i}>{sep}<a href={item.href} target="_blank" rel="noopener" className="hover:underline" style={{ color: "var(--text-secondary)" }}>{item.label?.[locale] ?? item.label?.[site.default_locale] ?? item.href}</a></span>;
             return null;
