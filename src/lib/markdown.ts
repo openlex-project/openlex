@@ -11,6 +11,7 @@ import remarkInlineFootnotes from "./remark/remark-inline-footnotes";
 import remarkNumbering, { type NumberingOptions } from "./remark/remark-numbering";
 import remarkCitations from "./remark/remark-citations";
 import { createCitationEngine, parseReferencesYaml } from "./citeproc";
+import { log } from "./logger";
 
 /** Convert Pandoc-style `::: name` to remark-directive `:::name` */
 function normalizeFencedDivs(md: string): string {
@@ -60,8 +61,13 @@ export async function renderMarkdown(
   markdown: string,
   opts?: RenderOptions,
 ): Promise<string> {
-  const needsCustom = opts?.numbering || (opts?.cslXml && opts?.referencesYaml);
-  const proc = needsCustom ? buildProcessor(opts) : defaultProcessor;
-  const result = await proc.process(normalizeFencedDivs(markdown));
-  return String(result);
+  try {
+    const needsCustom = opts?.numbering || (opts?.cslXml && opts?.referencesYaml);
+    const proc = needsCustom ? buildProcessor(opts) : defaultProcessor;
+    const result = await proc.process(normalizeFencedDivs(markdown));
+    return String(result);
+  } catch (err) {
+    log.error(err, "Markdown render failed");
+    return `<p style="color:red">Render error</p>`;
+  }
 }

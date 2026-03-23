@@ -1,6 +1,7 @@
 import { parse } from "yaml";
 import { fetchFile, listFiles, listDirs } from "./github";
 import { loadSiteConfig } from "./site";
+import { log } from "./logger";
 
 export interface TocEntry {
   file: string;
@@ -141,6 +142,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
   const journals = new Map<string, JournalEntry>();
 
   for (const repo of getContentRepos()) {
+    try {
     const metaRaw = await fetchFile(repo, "meta.yaml");
     if (metaRaw) {
       const meta = parse(metaRaw) as BookMeta;
@@ -186,6 +188,9 @@ export async function buildRegistry(): Promise<ContentRegistry> {
           toc,
         });
       }
+    }
+    } catch (err) {
+      log.error(err, "Failed to load content repo: %s", repo);
     }
   }
 

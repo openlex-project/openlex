@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { parse } from "yaml";
 import { fetchFile } from "@/lib/github";
+import { log } from "@/lib/logger";
 
 /* ─── Types ─── */
 
@@ -115,7 +116,13 @@ export async function loadTemplate(templateField?: string): Promise<TemplateConf
   } else if (spec.kind === "local") {
     config = readLocalTemplate(spec.path);
   } else {
-    config = await fetchRemoteTemplate(spec.repo, spec.ref);
+    try {
+      config = await fetchRemoteTemplate(spec.repo, spec.ref);
+    } catch (err) {
+      log.error(err, "Failed to load remote template: %s", raw);
+      const b = BUILTIN["default"]!;
+      config = { name: b.name, variants: b.variants, css: readBuiltinCss(b.cssFile) };
+    }
   }
 
   cached = config;
