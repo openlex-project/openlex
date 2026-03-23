@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import Providers from "@/components/providers";
 import { LocaleProvider } from "@/components/locale-provider";
 import { loadSiteConfig } from "@/lib/site";
@@ -52,6 +53,7 @@ export default async function RootLayout({
         <Providers>
           <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </Providers>
+        {site.analytics && <Analytics />}
       </body>
     </html>
   );

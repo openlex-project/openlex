@@ -22,6 +22,7 @@ export interface SiteConfig {
   brand_hue: number;
   logo_text?: boolean;
   content_repos?: string[];
+  analytics?: boolean;
   footer?: FooterItem[];
   categories?: CategoryConfig[];
   template?: string;
