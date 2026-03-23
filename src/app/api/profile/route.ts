@@ -3,9 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { exportUserData, deleteAllUserData, getUserSettings, setUserSetting } from "@/lib/kv";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (req.nextUrl.searchParams.has("settings")) {
+    return NextResponse.json({ settings: await getUserSettings(session.user.email) });
+  }
   const data = await exportUserData(session.user.email);
   return NextResponse.json(data);
 }

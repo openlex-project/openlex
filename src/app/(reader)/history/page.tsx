@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/useT";
+import { useLocale } from "@/components/locale-provider";
 
 interface HistoryEntry {
   path: string;
@@ -14,6 +15,7 @@ interface HistoryEntry {
 export default function HistoryPage() {
   const { data: session } = useSession();
   const t = useT();
+  const locale = useLocale();
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +36,7 @@ export default function HistoryPage() {
     );
   }
 
-  const fmt = (ts: number) => new Date(ts).toLocaleDateString("de-DE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  const fmt = (ts: number) => new Date(ts).toLocaleDateString(locale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
   return (
     <div className="px-4 sm:px-6 py-8 sm:py-12 max-w-3xl mx-auto">

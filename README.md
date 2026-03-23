@@ -14,11 +14,13 @@ Content is authored in Pandoc-flavor Markdown, managed in private GitHub repos, 
 - Cross-links between laws and commentaries
 - Full-text search (Pagefind, client-side)
 - Dark mode (system preference)
-- GitHub/Google OAuth login
+- Flexible OAuth login (GitHub, Google, Apple, Azure AD, GitLab, Keycloak, Okta, Auth0, Cognito, generic OIDC)
+- Bookmarks, reading history, user profile with GDPR data export/deletion
 - Feedback system (GitHub Issues)
 - Branch-based editions
 - i18n (de/en)
-- Configurable site identity, branding, and content categories via `site.yaml`
+- OpenGraph social cards with dynamic OG images
+- Configurable site identity, branding, footer, and content categories via `site.yaml`
 - Template system: built-in, remote (GitHub), or local templates with CSS + component variants
 - Data-driven homepage layout (hero, featured, categories, recent sections)
 - Law sync from gesetze-im-internet.de (GII) and EUR-Lex
@@ -32,9 +34,18 @@ name: "OpenLex"
 tagline:
   de: "Open-Access-Plattform für juristische Fachliteratur"
   en: "Open-access platform for legal literature"
-copyright: "OpenLex"
 default_locale: "de"
 brand_hue: 265
+
+content_repos:
+  - openlex-project/oc-dsgvo
+  - openlex-project/openlex-laws
+
+footer:
+  - text: "© OpenLex"
+  - license:
+  - slug: impressum
+    label: { de: "Impressum", en: "Imprint" }
 
 categories:
   - key: book
@@ -49,7 +60,7 @@ See [site-yaml.md](docs/site-yaml.md) for full reference.
 
 ## Documentation
 
-- [site.yaml](docs/site-yaml.md) – Site identity, branding, categories
+- [site.yaml](docs/site-yaml.md) – Site identity, branding, categories, footer
 - [Templates](docs/templates.md) – Template system, CSS overrides, component variants
 - [meta.yaml](docs/meta-yaml.md) – Metadata for books/journals
 - [toc.yaml](docs/toc-yaml.md) – Table of contents (books)
@@ -66,7 +77,7 @@ pnpm install
 pnpm dev
 ```
 
-For content repo access: create `.env.local` with `GITHUB_PAT` and `CONTENT_REPOS`. See [Deployment](docs/deployment.md).
+Content repos are configured in `site.yaml` under `content_repos`. For private repos, create `.env.local` with `GITHUB_PAT`. See [Deployment](docs/deployment.md).
 
 ## License
 

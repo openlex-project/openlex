@@ -15,7 +15,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Nicht angemeldet" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { path, title } = (await req.json()) as { path: string; title: string };
   await addHistory(session.user.email, path, title);

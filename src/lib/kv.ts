@@ -16,10 +16,9 @@ export async function storeUserEmail(email: string, name?: string): Promise<void
   await redis.hset(`user:${email}`, { email, name: name ?? "", ts: Date.now() });
 }
 
-/** Get all stored user emails */
-export async function getUserEmails(): Promise<string[]> {
-  const keys = await redis.keys("user:*");
-  return keys.map((k) => k.replace("user:", ""));
+/** Check if a path is bookmarked */
+export async function isBookmarked(userId: string, path: string): Promise<boolean> {
+  return !!(await redis.hexists(`bookmarks:${userId}`, path));
 }
 
 /** Toggle a bookmark, returns new state */
@@ -72,11 +71,6 @@ export async function getUserSettings(userId: string): Promise<Record<string, st
 
 export async function setUserSetting(userId: string, key: string, value: string): Promise<void> {
   await redis.hset(`settings:${userId}`, { [key]: value });
-}
-
-/** Check if a bookmark exists */
-export async function hasBookmark(userId: string, path: string): Promise<boolean> {
-  return !!(await redis.sismember(`bookmarks:${userId}`, path));
 }
 
 /** Export all user data (GDPR Art. 15) */
