@@ -16,8 +16,8 @@ export function BookmarkButton({ title }: { title?: string }) {
   useEffect(() => {
     if (!session) return;
     fetch(`/api/bookmarks?path=${encodeURIComponent(pathname)}`)
-      .then((r) => r.json())
-      .then((d) => setBookmarked(d.bookmarked));
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d) setBookmarked(d.bookmarked); });
   }, [session, pathname]);
 
   if (!session) return null;

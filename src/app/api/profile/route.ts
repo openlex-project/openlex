@@ -4,9 +4,9 @@ import { exportUserData, deleteAllUserData, getUserSettings, setUserSetting } fr
 import { log } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
-  const auth = await requireAuth();
-  if (auth instanceof NextResponse) return auth;
   try {
+    const auth = await requireAuth();
+    if (auth instanceof NextResponse) return auth;
     if (req.nextUrl.searchParams.has("settings")) {
       return NextResponse.json({ settings: await getUserSettings(auth) });
     }
@@ -18,9 +18,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const auth = await requireAuth();
-  if (auth instanceof NextResponse) return auth;
   try {
+    const auth = await requireAuth();
+    if (auth instanceof NextResponse) return auth;
     const { key, value } = (await req.json()) as { key: string; value: string };
     await setUserSetting(auth, key, value);
     return NextResponse.json({ settings: await getUserSettings(auth) });
@@ -31,9 +31,9 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE() {
-  const auth = await requireAuth();
-  if (auth instanceof NextResponse) return auth;
   try {
+    const auth = await requireAuth();
+    if (auth instanceof NextResponse) return auth;
     await deleteAllUserData(auth);
     return NextResponse.json({ deleted: true });
   } catch (err) {

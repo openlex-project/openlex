@@ -6,9 +6,9 @@ import { getBookmarks, toggleBookmark, isBookmarked } from "@/lib/redis";
 import { log } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return NextResponse.json({ bookmarks: [] });
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) return NextResponse.json({ bookmarks: [] });
     const path = req.nextUrl.searchParams.get("path");
     if (path) return NextResponse.json({ bookmarked: await isBookmarked(session.user.email, path) });
     return NextResponse.json({ bookmarks: await getBookmarks(session.user.email) });
@@ -19,9 +19,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth();
-  if (auth instanceof NextResponse) return auth;
   try {
+    const auth = await requireAuth();
+    if (auth instanceof NextResponse) return auth;
     const { path, title } = (await req.json()) as { path: string; title?: string };
     return NextResponse.json({ bookmarked: await toggleBookmark(auth, path, title) });
   } catch (err) {

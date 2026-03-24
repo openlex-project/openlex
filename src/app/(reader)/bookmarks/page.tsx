@@ -16,8 +16,8 @@ export default function BookmarksPage() {
   useEffect(() => {
     if (!session) { setLoading(false); return; }
     fetch("/api/bookmarks")
-      .then((r) => r.json())
-      .then((d) => setBookmarks(d.bookmarks))
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => setBookmarks(d?.bookmarks ?? []))
       .finally(() => setLoading(false));
   }, [session]);
 

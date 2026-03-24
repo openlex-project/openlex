@@ -10,8 +10,8 @@ export function HistoryTracker({ title }: { title: string }) {
 
   useEffect(() => {
     if (!session) return;
-    fetch("/api/profile?settings").then((r) => r.json()).then((d) => {
-      if (d.settings?.history_enabled === "false") return;
+    fetch("/api/profile?settings").then((r) => r.ok ? r.json() : null).then((d) => {
+      if (!d || d.settings?.history_enabled === "false") return;
       fetch("/api/history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -6,9 +6,9 @@ import { addHistory, getHistory } from "@/lib/redis";
 import { log } from "@/lib/logger";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return NextResponse.json({ history: [] });
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) return NextResponse.json({ history: [] });
     return NextResponse.json({ history: await getHistory(session.user.email) });
   } catch (err) {
     log.error(err, "history GET failed");
@@ -17,9 +17,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth();
-  if (auth instanceof NextResponse) return auth;
   try {
+    const auth = await requireAuth();
+    if (auth instanceof NextResponse) return auth;
     const { path, title } = (await req.json()) as { path: string; title: string };
     await addHistory(auth, path, title);
     return NextResponse.json({ ok: true });

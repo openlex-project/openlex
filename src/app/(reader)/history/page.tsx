@@ -22,8 +22,8 @@ export default function HistoryPage() {
   useEffect(() => {
     if (!session) { setLoading(false); return; }
     fetch("/api/history")
-      .then((r) => r.json())
-      .then((d) => setHistory(d.history))
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => setHistory(d?.history ?? []))
       .finally(() => setLoading(false));
   }, [session]);
 
