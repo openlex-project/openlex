@@ -6,10 +6,28 @@ const redis = new Redis({
   token: process.env.REDIS_REST_TOKEN ?? "",
 });
 
+/** Delete key if wrong type (legacy migration) */
+async function ensureHash(key: string): Promise<void> {
+  const type = await redis.type(key);
+  if (type !== "hash" && type !== "none") {
+    log.warn("Deleting key %s with wrong type %s (expected hash)", key, type);
+    await redis.del(key);
+  }
+}
+
 /** Get user bookmarks */
 export async function getBookmarks(userId: string): Promise<{ path: string; title: string }[]> {
-  const data = (await redis.hgetall(`bookmarks:${userId}`)) ?? {};
-  return Object.entries(data).map(([path, title]) => ({ path, title: title as string }));
+  const key = `bookmarks:${userId}`;
+  try {
+    const data = (await redis.hgetall(key)) ?? {};
+    return Object.entries(data).map(([path, title]) => ({ path, title: title as string }));
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("WRONGTYPE")) {
+      await ensureHash(key);
+      return [];
+    }
+    throw err;
+  }
 }
 
 /** Store user email + name on sign-in */
