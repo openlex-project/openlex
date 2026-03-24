@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/components/providers";
 import { LocaleProvider } from "@/components/locale-provider";
 import { loadSiteConfig } from "@/lib/site";
@@ -54,6 +55,7 @@ export default async function RootLayout({
           <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </Providers>
         {site.analytics === "vercel" && <Analytics />}
+        {site.analytics === "vercel" && <SpeedInsights />}
       </body>
     </html>
   );
