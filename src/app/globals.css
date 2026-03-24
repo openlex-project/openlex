@@ -118,7 +118,7 @@ body {
 }
 
 /* Desktop: floated margin numbers */
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .prose .rn {
     float: left;
     width: 3rem;
@@ -132,8 +132,8 @@ body {
   }
 }
 
-/* Mobile: inline block above paragraph */
-@media (max-width: 639px) {
+/* Mobile + Tablet: inline block above paragraph */
+@media (max-width: 1023px) {
   .prose .rn {
     display: block;
     margin-bottom: 0.125rem;
