@@ -27,6 +27,7 @@ export interface SiteConfig {
   categories?: CategoryConfig[];
   template?: string;
   home?: import("@/lib/template").HomeSection[];
+  revalidate?: number | false;
 }
 
 let cached: SiteConfig | null = null;

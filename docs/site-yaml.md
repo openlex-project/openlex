@@ -52,6 +52,7 @@ home:
 | `content_repos` | array | ✓ | Git repos containing content. Format: `github://org/repo`, `gitlab://group/project`, `gitlab://host/group/project` (self-hosted). Books, journals, and laws are auto-detected from `meta.yaml` / `sync.yaml`. |
 | `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
 | `analytics` | string | | Analytics provider. Supported: `"vercel"`. Default: off. |
+| `revalidate` | number \| false | | ISR cache duration in seconds. Default: `3600`. Set `false` to disable periodic refetch (use deploy hooks instead). |
 | `footer` | array | | Footer items — flat list of `text`, `license`, `slug`, `href` entries. See below. |
 | `template` | string | | Template to use: built-in name (`default`, `academic`), GitHub repo (`org/repo[@ref]`), or local path (`./templates/...`). Default: `default`. See [templates.md](templates.md). |
 | `home` | array | | Homepage section layout. Overridden by template if template defines `home`. See [templates.md](templates.md). |

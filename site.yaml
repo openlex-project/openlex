@@ -6,6 +6,10 @@ tagline:
   en: "Open-access platform for legal literature"
 default_locale: "de"
 
+# ISR revalidation interval in seconds (default: 3600).
+# Set to false to disable periodic refetch (use deploy hooks instead).
+revalidate: false
+
 # oklch hue (0–360) — drives the entire color palette
 brand_hue: 265
 

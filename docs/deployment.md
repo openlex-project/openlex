@@ -130,7 +130,31 @@ The Pagefind search index is generated *before* `next build` so the static files
 
 ## Revalidation
 
-Content is cached with ISR (Incremental Static Regeneration): 5 minutes. After a push to a content repo, content is automatically refreshed on the next request after cache expiry.
+Content is cached with ISR (Incremental Static Regeneration). The cache duration is configurable via `revalidate` in `site.yaml` (default: 3600 seconds = 1 hour).
+
+Set `revalidate: false` to disable periodic refetch entirely and use deploy hooks instead:
+
+1. Create a [Vercel Deploy Hook](https://vercel.com/docs/deploy-hooks) for your project
+2. Add a workflow to each content repo that calls the hook on push:
+
+```yaml
+# .github/workflows/deploy.yml (GitHub)
+on: push
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container: alpine/curl
+    steps:
+      - run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+```
+
+```yaml
+# .gitlab-ci.yml (GitLab)
+deploy:
+  image: alpine/curl
+  script: curl -X POST "$VERCEL_DEPLOY_HOOK"
+  only: [main]
+```
 
 ## OpenGraph Social Cards
 

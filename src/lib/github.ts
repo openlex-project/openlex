@@ -1,5 +1,6 @@
 import { log } from "@/lib/logger";
 import type { ContentProvider } from "./git-provider";
+import { getRevalidate } from "./git-provider";
 
 const GITHUB_PAT = process.env.GITHUB_PAT ?? "";
 const API = "https://api.github.com";
@@ -17,7 +18,7 @@ async function ghFetch(url: string): Promise<Response | null> {
         Authorization: `Bearer ${GITHUB_PAT}`,
         Accept: "application/vnd.github.v3+json",
       },
-      next: { revalidate: 300 },
+      next: { revalidate: getRevalidate() },
     });
     if (!res.ok) log.warn("GitHub API %d: %s", res.status, url);
     return res;

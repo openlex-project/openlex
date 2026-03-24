@@ -1,4 +1,10 @@
 import { log } from "@/lib/logger";
+import { loadSiteConfig } from "@/lib/site";
+
+/** ISR revalidate value from site.yaml (default: 3600) */
+export function getRevalidate(): number | false {
+  return loadSiteConfig().revalidate ?? 3600;
+}
 
 /* ─── Interface ─── */
 
@@ -49,7 +55,7 @@ function gitlabProvider(host: string): ContentProvider {
     try {
       const res = await fetch(url, {
         headers: { "PRIVATE-TOKEN": token },
-        next: { revalidate: 300 },
+        next: { revalidate: getRevalidate() },
       });
       if (!res.ok) log.warn("GitLab API %d: %s", res.status, url);
       return res;
