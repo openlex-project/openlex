@@ -1,9 +1,31 @@
-# Related Content / Kommentierungen
+# Related Content
 
 ## Konzept
 
-Auf Gesetzesseiten werden verknüpfte Kommentierungen angezeigt.
-Datenquelle: `provisions[]` in toc.yaml + `comments_on` in meta.yaml (existiert bereits).
+Generisches, bidirektionales Cross-Linking zwischen allen Content-Typen.
+
+### Datenquellen
+
+1. **`provisions[]` + `comments_on`** (Books) — Primäre Kommentar↔Gesetz-Beziehung. Automatisch bidirektional.
+2. **`related[]`** (Books + Journals) — Generische Verweise auf beliebige Content-Pfade. Bidirektional.
+
+### Reverse-Index
+
+Die Registry baut beim Start einen `relatedIndex: Map<string, RelatedLink[]>`:
+- Für jede Seite werden alle verlinkten Inhalte gesammelt
+- Bidirektional: wenn A auf B verweist, zeigt B auch A
+- Typ-Erkennung über slugMap (book, law, journal)
+
+### Pfad-Format
+
+```
+{content-slug}/{rest}
+```
+
+Beispiele:
+- `dsgvo/5` → Art. 5 DSGVO (Gesetz)
+- `oc-dsgvo/art-5` → Kommentar-Abschnitt
+- `zfdr/2025/1/aufsatz` → Zeitschriftenartikel
 
 ## site.yaml
 
@@ -11,45 +33,22 @@ Datenquelle: `provisions[]` in toc.yaml + `comments_on` in meta.yaml (existiert 
 commentary_display: badge   # "badge" (default) | "sidebar"
 ```
 
-- `badge` — Kompakte Card unter der Überschrift (gut für wenig Content)
-- `sidebar` — Rechte Sidebar à la Beck (sticky, ab xl-Breakpoint; fällt auf kleineren Screens auf Badge zurück)
-- Nicht gesetzt → `badge`
+- `badge` — Kompakte Card unter der Überschrift
+- `sidebar` — Rechte Sidebar (Phase 2, ab xl-Breakpoint, Badge-Fallback auf kleineren Screens)
 
 ## UX
 
 ### Badge (default)
 
-```
-§ 5 DSGVO Grundsätze  🔖 📤 ⬇️
-┌─ Kommentierungen ──────────────────┐
-│ 📖 Online-Kommentar DSGVO → Art. 5 │
-│ 📖 Weiterer Kommentar → Art. 5     │
-└────────────────────────────────────┘
+Zeigt alle Related Links unter der `<h1>` mit typ-spezifischen Icons:
+- 📖 BookOpen → Kommentare/Bücher
+- ⚖️ Scale → Gesetze
+- 📄 FileText → Zeitschriftenartikel
 
-Gesetzestext...
-```
-
-- Unter `<h1>`, vor dem Gesetzestext
-- Nur sichtbar wenn Matches existieren
-- Skaliert: 1 Kommentar = 1 Zeile, n Kommentare = n Zeilen
-
-### Sidebar (Phase 2)
-
-```
-┌──────────────────────┬──────────────────┐
-│ § 5 Grundsätze  🔖   │ Kommentierungen  │
-│                      │                  │
-│ Gesetzestext...      │ 📖 OC-DSGVO      │
-│                      │ 📖 Kommentar B   │
-│                      │ 📖 Kommentar C   │
-└──────────────────────┴──────────────────┘
-```
-
-- Sticky rechte Spalte ab `xl` (1280px+)
-- Unter `xl`: automatisch Badge-Fallback
-- Gleiche Datenquelle, nur Layout-Wechsel
+Nur sichtbar wenn Links existieren.
 
 ## Dateien
 
-- `src/components/commentary-links.tsx` — Badge + Sidebar Variante, liest `commentary_display` aus site.yaml
-- Eingebunden in `law.tsx` (ersetzt die bestehenden inline Commentary-Links in der prev/next-Nav)
+- `src/lib/registry.ts` — `RelatedLink` Typ, `relatedIndex` in `ContentRegistry`
+- `src/components/related-content.tsx` — Badge-Komponente
+- Eingebunden in `book.tsx` und `law.tsx`

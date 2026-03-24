@@ -14,6 +14,7 @@ import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
 import { ShareMenu } from "@/components/share-menu";
 import { ExportMenu } from "@/components/export-menu";
+import { RelatedContent } from "@/components/related-content";
 import { loadSiteConfig } from "@/lib/site";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
@@ -196,6 +197,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
           {site.sharing?.length && <ShareMenu title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} siteName={site.name} targets={site.sharing} />}
           {site.export && <ExportMenu formats={site.export.formats} requireAuth={site.export.require_auth} contentType="book" />}
         </div>
+        <RelatedContent links={registry.relatedIndex.get(`/${meta.slug}/${fileSlug}`) ?? []} />
         <div className="content-prose prose-rn" dangerouslySetInnerHTML={{ __html: html }} />
         {navBar("bottom")}
         <SetLicense value={meta.license} />

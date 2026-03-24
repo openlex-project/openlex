@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getLawContent, getLawProvisions, findByProvision, findLawBreadcrumb, type ContentRegistry, type LawMeta } from "@/lib/registry";
+import { getLawContent, getLawProvisions, findLawBreadcrumb, type ContentRegistry, type LawMeta } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
 import { ShareMenu } from "@/components/share-menu";
 import { ExportMenu } from "@/components/export-menu";
-import { CommentaryLinks } from "@/components/commentary-links";
+import { RelatedContent } from "@/components/related-content";
 import { loadSiteConfig } from "@/lib/site";
 import { licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
@@ -48,20 +48,13 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   if (!text) notFound();
 
   const unitLabel = meta.unit_type === "article" ? "Art." : "§";
-  const provisionNr = parseInt(nr, 10);
 
-  const commentaryLinks: { slug: string; name: string; fileSlug: string }[] = [];
-  for (const book of registry.books.values()) {
-    if (book.comments_on !== meta.slug) continue;
-    const entries = findByProvision(book.toc, provisionNr);
-    for (const entry of entries) {
-      commentaryLinks.push({ slug: book.slug, name: book.title_short ?? book.title, fileSlug: entry.file.replace(/\.md$/, "") });
-    }
-  }
+  const related = registry.relatedIndex.get(`/${meta.slug}/${nr}`) ?? [];
 
   const breadcrumb = findLawBreadcrumb(meta.toc, nr);
-  const prevNr = provisions[provisions.indexOf(provisionNr) - 1];
-  const nextNr = provisions[provisions.indexOf(provisionNr) + 1];
+  const idx = provisions.indexOf(parseInt(nr, 10));
+  const prevNr = provisions[idx - 1];
+  const nextNr = provisions[idx + 1];
 
   const navLink = (href: string, label: string, align?: "right") => (
     <Link href={href} className={`hover:underline shrink-0 ${align === "right" ? "text-right" : ""}`} style={{ color: "var(--active-text)" }}>{label}</Link>
@@ -91,7 +84,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
           {site.sharing?.length && <ShareMenu title={pageTitle} siteName={site.name} targets={site.sharing} />}
           {site.export && <ExportMenu formats={site.export.formats} requireAuth={site.export.require_auth} contentType="law" />}
         </h1>
-        <CommentaryLinks links={commentaryLinks} />
+        <RelatedContent links={related} />
         <div className="content-prose whitespace-pre-line">{text}</div>
         <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/${meta.slug}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}

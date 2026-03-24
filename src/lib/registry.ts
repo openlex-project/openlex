@@ -7,6 +7,7 @@ export interface TocEntry {
   file: string;
   title: string;
   provisions?: number[];
+  related?: string[];
   author?: string | { name: string; orcid: string };
   children?: TocEntry[];
 }
@@ -77,6 +78,7 @@ export interface JournalArticle {
   pages?: string;
   numbering?: string;
   doi?: string;
+  related?: string[];
 }
 
 export interface JournalIssue {
@@ -96,11 +98,18 @@ export type ContentEntry =
   | { type: "law"; entry: LawMeta }
   | { type: "journal"; entry: JournalEntry };
 
+export interface RelatedLink {
+  type: "book" | "law" | "journal";
+  path: string;
+  name: string;
+}
+
 export interface ContentRegistry {
   books: Map<string, BookEntry>;
   laws: Map<string, LawMeta>;
   journals: Map<string, JournalEntry>;
   slugMap: Map<string, ContentEntry>;
+  relatedIndex: Map<string, RelatedLink[]>;
 }
 
 function getContentRepos(): string[] {
@@ -117,7 +126,7 @@ async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<Jou
     for (const issueNr of nums) {
       const raw = await p.fetchFile(repo, `${year}/${issueNr}/issue.yaml`);
       if (!raw) continue;
-      const issueMeta = parse(raw) as { articles: { file: string; title: string; authors: { name: string; orcid?: string }[]; section: string; pages?: string; numbering?: string; doi?: string }[] };
+      const issueMeta = parse(raw) as { articles: { file: string; title: string; authors: { name: string; orcid?: string }[]; section: string; pages?: string; numbering?: string; doi?: string; related?: string[] }[] };
       if (!issueMeta.articles?.length) continue;
       const articles: JournalArticle[] = issueMeta.articles.map((a) => {
         const firstPage = a.pages?.split("-")[0];
@@ -129,6 +138,7 @@ async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<Jou
           pages: a.pages,
           numbering: a.numbering,
           doi: a.doi ?? (doiPrefix && firstPage ? `${doiPrefix}.${year}.${firstPage}` : undefined),
+          related: a.related,
         };
       });
       issues.push({ year, issue: issueNr, articles });
@@ -220,7 +230,79 @@ export async function buildRegistry(): Promise<ContentRegistry> {
     slugMap.set(slug, { type: "journal", entry });
   }
 
-  const result = { books, laws, journals, slugMap };
+  // Build bidirectional related index
+  const relatedIndex = new Map<string, RelatedLink[]>();
+  const addRelated = (sourcePath: string, targetPath: string, link: RelatedLink) => {
+    const existing = relatedIndex.get(targetPath) ?? [];
+    if (!existing.some((l) => l.path === link.path)) existing.push(link);
+    relatedIndex.set(targetPath, existing);
+  };
+
+  // Books: provisions[] → law pages (bidirectional)
+  for (const [slug, book] of books) {
+    if (!book.comments_on) continue;
+    const walkToc = (entries: TocEntry[]) => {
+      for (const e of entries) {
+        const filePath = `/${slug}/${e.file.replace(/\.md$/, "")}`;
+        if (e.provisions) {
+          for (const nr of e.provisions) {
+            const lawPath = `/${book.comments_on}/${nr}`;
+            addRelated(filePath, lawPath, { type: "book", path: filePath, name: book.title_short ?? book.title });
+            addRelated(lawPath, filePath, { type: "law", path: lawPath, name: `${slug === book.comments_on ? "" : book.comments_on + " "}${nr}` });
+          }
+        }
+        if (e.children) walkToc(e.children);
+      }
+    };
+    walkToc(book.toc);
+  }
+
+  // All content: related[] → bidirectional links
+  const resolveLink = (path: string): RelatedLink | null => {
+    const parts = path.split("/");
+    const entry = slugMap.get(parts[0]!);
+    if (!entry) return null;
+    if (entry.type === "law") return { type: "law", path: `/${path}`, name: `${entry.entry.title_short ?? entry.entry.title} ${parts[1] ?? ""}`.trim() };
+    if (entry.type === "book") {
+      const toc = findTocEntry(entry.entry.toc, parts.slice(1).join("/"));
+      return { type: "book", path: `/${path}`, name: `${entry.entry.title_short ?? entry.entry.title}${toc ? ` – ${toc.title}` : ""}` };
+    }
+    if (entry.type === "journal") return { type: "journal", path: `/${path}`, name: entry.entry.title_short ?? entry.entry.title };
+    return null;
+  };
+
+  for (const [slug, book] of books) {
+    const walkRelated = (entries: TocEntry[]) => {
+      for (const e of entries) {
+        if (e.related) {
+          const sourcePath = `/${slug}/${e.file.replace(/\.md$/, "")}`;
+          const sourceLink: RelatedLink = { type: "book", path: sourcePath, name: `${book.title_short ?? book.title} – ${e.title}` };
+          for (const target of e.related) {
+            const targetLink = resolveLink(target);
+            if (targetLink) { addRelated(sourcePath, `/${target}`, targetLink); addRelated(`/${target}`, sourcePath, sourceLink); }
+          }
+        }
+        if (e.children) walkRelated(e.children);
+      }
+    };
+    walkRelated(book.toc);
+  }
+
+  for (const [slug, journal] of journals) {
+    for (const iss of journal.issues) {
+      for (const art of iss.articles) {
+        if (!art.related) continue;
+        const sourcePath = `/${slug}/${iss.year}/${iss.issue}/${art.slug}`;
+        const sourceLink: RelatedLink = { type: "journal", path: sourcePath, name: `${journal.title_short ?? journal.title} – ${art.title}` };
+        for (const target of art.related) {
+          const targetLink = resolveLink(target);
+          if (targetLink) { addRelated(sourcePath, `/${target}`, targetLink); addRelated(`/${target}`, sourcePath, sourceLink); }
+        }
+      }
+    }
+  }
+
+  const result = { books, laws, journals, slugMap, relatedIndex };
   _cache = { data: result, ts: Date.now() };
   return result;
 }

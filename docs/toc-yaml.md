@@ -36,6 +36,33 @@ contents:
     title: "Art. 5 – Grundsätze"
     author: Max Mustermann
     provisions: [5]
+    related:
+      - dsgvo/6                  # cross-link to a law provision
+      - other-book/chapter-3     # cross-link to another book
+```
+
+## Related Content
+
+The `related` field links a toc entry to any other content in the platform. Paths use the format `{slug}/{rest}`:
+
+```yaml
+related:
+  - dsgvo/6                        # → law provision Art. 6 DSGVO
+  - other-commentary/art-5         # → another book's chapter
+  - journal-slug/2025/1/article    # → a journal article
+```
+
+Links are **bidirectional**: if `oc-dsgvo/art-5` declares `related: [dsgvo/6]`, then the page for Art. 6 DSGVO will also show a link back to `oc-dsgvo/art-5`. The display uses type-specific icons (📖 book, ⚖️ law, 📄 journal).
+
+Journal articles support the same field in their `issue.yaml`:
+
+```yaml
+articles:
+  - file: aufsatz.md
+    title: "Datenschutzgrundsätze"
+    related:
+      - dsgvo/5
+      - oc-dsgvo/art-5
 ```
 
 ## Fields per Entry
@@ -45,6 +72,7 @@ contents:
 | `file` | string | ✓ | Filename relative to `content/` |
 | `title` | string | ✓ | Display title (navigation, sidebar, TOC) |
 | `provisions` | number[] | | Assigned provision numbers (for cross-links) |
+| `related` | string[] | | Paths to related content (bidirectional, see below) |
 | `author` | string \| object | | Chapter author (see below) |
 | `frontmatter` | boolean | | If `true`, placed before TOC in print (e.g. Vorwort) |
 | `children` | TocEntry[] | | Sub-entries for multi-file chapters |
@@ -97,6 +125,7 @@ Entries with `frontmatter: true` are placed before the table of contents in the 
 - The order in `contents` determines the table of contents and navigation order.
 - The URL slug is derived from the filename: `art-5.md` → `/book/{werk}/art-5`.
 - `provisions` enables cross-links from law to commentary.
+- `related` enables cross-links to any content (laws, other books, journal articles). Links are bidirectional: if A links to B, B also shows A.
 - The Makefile extracts all files recursively: `yq '.. | select(has("file")) | .file' toc.yaml`.
 
 ## Without toc.yaml
