@@ -247,7 +247,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
         if (e.provisions) {
           for (const nr of e.provisions) {
             const lawPath = `/${book.comments_on}/${nr}`;
-            addRelated(filePath, lawPath, { type: "book", path: filePath, name: book.title_short ?? book.title });
+            addRelated(filePath, lawPath, { type: "book", path: filePath, name: `${book.title_short ?? book.title} – ${e.title}` });
             addRelated(lawPath, filePath, { type: "law", path: lawPath, name: `${slug === book.comments_on ? "" : book.comments_on + " "}${nr}` });
           }
         }
