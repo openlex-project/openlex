@@ -110,7 +110,7 @@ body {
 }
 
 /* ─── Randnummern ─── */
-.prose .rn {
+.content-prose .rn {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-tertiary);
@@ -119,7 +119,7 @@ body {
 
 /* Tablet: floated margin numbers, compact */
 @media (min-width: 640px) {
-  .prose .rn {
+  .content-prose .rn {
     float: left;
     width: 2.5rem;
     margin-left: -3rem;
@@ -134,7 +134,7 @@ body {
 
 /* Desktop: wider margin numbers */
 @media (min-width: 1024px) {
-  .prose .rn {
+  .content-prose .rn {
     width: 3rem;
     margin-left: -4rem;
     padding-right: 0.75rem;
@@ -146,7 +146,7 @@ body {
 
 /* Mobile: inline block above paragraph */
 @media (max-width: 639px) {
-  .prose .rn {
+  .content-prose .rn {
     display: block;
     margin-bottom: 0.125rem;
   }
