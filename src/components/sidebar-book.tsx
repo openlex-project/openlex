@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SidebarShell } from "./sidebar-shell";
@@ -19,9 +20,31 @@ interface Props {
   backmatter?: BackmatterSection[];
 }
 
-export function SidebarBook({ work, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
+function useActiveHeading(ids: string[]) {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!ids.length) return;
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    if (!els.length) return;
+    const ob = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) { setActiveId(e.target.id); break; }
+        }
+      },
+      { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+    );
+    els.forEach((el) => ob.observe(el));
+    return () => ob.disconnect();
+  }, [ids]);
+  return activeId;
+}
+
+export function SidebarBook({ work, toc, edition, headings = [], backmatter = [] }: Props) {
   const pathname = usePathname();
   const prefix = edition === "main" ? `/${work}` : `/${work}/${edition}`;
+  const headingIds = headings.map((h) => h.id);
+  const activeHeadingId = useActiveHeading(headingIds);
 
   const renderEntry = (entry: TocEntry, depth = 0) => {
     const slug = entry.file.replace(/\.md$/, "");
@@ -36,14 +59,17 @@ export function SidebarBook({ work, toc, edition, activeSlug, headings = [], bac
         </Link>
         {entry.children?.length ? <ul>{entry.children.map((c) => renderEntry(c, depth + 1))}</ul> : null}
         {active && headings.length > 0 && (
-          <ul>{headings.map((h) => (
-            <li key={h.id}>
-              <a href={`#${h.id}`} className="block py-1 truncate text-xs"
-                style={{ paddingLeft: `${1 + (h.level - 1) * 0.75}rem`, paddingRight: "1rem", color: "var(--text-tertiary)" }}>
-                {h.text}
-              </a>
-            </li>
-          ))}</ul>
+          <ul>{headings.map((h) => {
+            const isCurrent = activeHeadingId === h.id;
+            return (
+              <li key={h.id}>
+                <a href={`#${h.id}`} className={`block py-1 truncate text-xs${isCurrent ? " font-semibold" : ""}`}
+                  style={{ paddingLeft: `${1 + (h.level - 1) * 0.75}rem`, paddingRight: "1rem", color: isCurrent ? "var(--active-text)" : "var(--text-tertiary)" }}>
+                  {h.text}
+                </a>
+              </li>
+            );
+          })}</ul>
         )}
       </li>
     );
