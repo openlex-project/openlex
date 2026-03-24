@@ -137,7 +137,12 @@ async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<Jou
   return issues;
 }
 
+let _cache: { data: ContentRegistry; ts: number } | null = null;
+const CACHE_TTL = 5 * 60_000; // 5 min — avoids GitHub API rate limit during dev
+
 export async function buildRegistry(): Promise<ContentRegistry> {
+  if (_cache && Date.now() - _cache.ts < CACHE_TTL) return _cache.data;
+
   const books = new Map<string, BookEntry>();
   const laws = new Map<string, LawMeta>();
   const journals = new Map<string, JournalEntry>();
@@ -215,7 +220,9 @@ export async function buildRegistry(): Promise<ContentRegistry> {
     slugMap.set(slug, { type: "journal", entry });
   }
 
-  return { books, laws, journals, slugMap };
+  const result = { books, laws, journals, slugMap };
+  _cache = { data: result, ts: Date.now() };
+  return result;
 }
 
 /** Find a toc entry by slug (filename without .md) */
