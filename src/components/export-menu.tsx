@@ -45,7 +45,7 @@ export function ExportMenu({ formats, requireAuth, contentType }: { formats: str
         <Download className="w-5 h-5" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 min-w-[180px] rounded-md border py-1 shadow-lg" style={{ background: "var(--bg-primary)", borderColor: "var(--border)" }}>
+        <div className="absolute right-0 top-full mt-1 z-50 min-w-[180px] rounded-md border py-1 shadow-lg" style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
           {formats.map((fmt) =>
             scopes.length ? (
               scopes.map((scope) => (

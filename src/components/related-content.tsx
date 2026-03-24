@@ -12,7 +12,7 @@ const icons: Record<string, React.ReactNode> = {
 export function RelatedContent({ links }: { links: RelatedLink[] }) {
   if (!links.length) return null;
   return (
-    <div className="mb-6 rounded-md border px-4 py-3" style={{ borderColor: "var(--border)", background: "var(--bg-secondary)" }}>
+    <div className="mb-6 rounded-md border px-4 py-3" style={{ borderColor: "var(--border)", background: "var(--surface-secondary)" }}>
       <div className="text-xs font-medium mb-1.5" style={{ color: "var(--text-tertiary)" }}>{t(defaultLocale as "de" | "en", "commentary.title")}</div>
       <ul className="space-y-1">
         {links.map((link) => (
