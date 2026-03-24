@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLawContent, getLawProvisions, findByProvision, findLawBreadcrumb, type ContentRegistry, type LawMeta } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
@@ -59,7 +60,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   const nextNr = provisions[provisions.indexOf(provisionNr) + 1];
 
   const navLink = (href: string, label: string, align?: "right") => (
-    <a href={href} className={`hover:underline shrink-0 ${align === "right" ? "text-right" : ""}`} style={{ color: "var(--active-text)" }}>{label}</a>
+    <Link href={href} className={`hover:underline shrink-0 ${align === "right" ? "text-right" : ""}`} style={{ color: "var(--active-text)" }}>{label}</Link>
   );
 
   return (
@@ -81,7 +82,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
               {commentaryLinks.map((c, i) => (
                 <span key={`${c.slug}-${c.fileSlug}`}>
                   {i > 0 && ", "}
-                  <a href={`/${c.slug}/${c.fileSlug}`} className="hover:underline">{c.name}</a>
+                  <Link href={`/${c.slug}/${c.fileSlug}`} className="hover:underline">{c.name}</Link>
                 </span>
               ))}
             </span>

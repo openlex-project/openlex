@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { getBookContent, findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterSections, type TocEntry, type BookEntry, type ContentRegistry } from "@/lib/registry";
@@ -162,7 +163,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
 
   const navBar = (pos: "top" | "bottom") => (
     <nav aria-label={pos === "top" ? "Kapitelnavigation" : "Kapitelnavigation unten"} className={`flex flex-wrap items-center justify-between gap-2 text-sm ${pos === "top" ? "mb-6 pb-3 border-b" : "mt-12 pt-6 border-t"}`} style={{ borderColor: "var(--border)" }}>
-      {prev ? <a href={prevHref!} className="hover:underline shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>← {prev.title}</a> : <span />}
+      {prev ? <Link href={prevHref!} className="hover:underline shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>← {prev.title}</Link> : <span />}
       {pos === "top" && authorName && (
         <span className="hidden sm:block mx-4 truncate" style={{ color: "var(--text-secondary)" }}>
           {authorOrcid ? (
@@ -170,7 +171,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
           ) : authorName}
         </span>
       )}
-      {next ? <a href={nextHref!} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{next.title} →</a> : <span />}
+      {next ? <Link href={nextHref!} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{next.title} →</Link> : <span />}
     </nav>
   );
 
@@ -184,7 +185,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
             {displayName} – {tocEntry?.title ?? fileSlug}
             {edition && <span className="ml-2" style={{ color: "var(--color-accent-600)" }}>({edition})</span>}
             {meta.comments_on && tocEntry?.provisions?.[0] && (
-              <> · <a href={`/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</a></>
+              <> · <Link href={`/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</Link></>
             )}
           </span>
           <BookmarkButton title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
