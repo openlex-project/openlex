@@ -162,6 +162,6 @@ Every page automatically generates OpenGraph meta tags (`og:title`, `og:image`, 
 
 No configuration needed — works out of the box.
 
-## Analytics
+## Analytics & Speed Insights
 
-Set `analytics: vercel` in `site.yaml` to enable [Vercel Analytics](https://vercel.com/analytics). Off by default. See [site-yaml.md](site-yaml.md).
+Set `hosting.provider: vercel` in `site.yaml` to enable [Vercel Analytics](https://vercel.com/analytics) and [Speed Insights](https://vercel.com/docs/speed-insights). Both are on by default when the provider is set. See [site-yaml.md](site-yaml.md).

@@ -51,7 +51,7 @@ home:
 | `brand_hue` | number | ✓ | oklch color hue (0–360) — drives the entire color palette |
 | `content_repos` | array | ✓ | Git repos containing content. Format: `github://org/repo`, `gitlab://group/project`, `gitlab://host/group/project` (self-hosted). Books, journals, and laws are auto-detected from `meta.yaml` / `sync.yaml`. |
 | `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
-| `analytics` | string | | Analytics provider. Supported: `"vercel"`. Default: off. |
+| `hosting` | object | | Hosting provider config. See below. |
 | `revalidate` | number \| false | | ISR cache duration in seconds. Default: `3600`. Set `false` to disable periodic refetch (use deploy hooks instead). |
 | `footer` | array | | Footer items — flat list of `text`, `license`, `slug`, `href` entries. See below. |
 | `template` | string | | Template to use: built-in name (`default`, `academic`), GitHub repo (`org/repo[@ref]`), or local path (`./templates/...`). Default: `default`. See [templates.md](templates.md). |
@@ -119,6 +119,25 @@ categories:
   - key: law
     label: { de: "Gesetze", en: "Laws" }
 ```
+
+## Hosting
+
+```yaml
+hosting:
+  provider: vercel          # required — vercel (more providers planned)
+  analytics: true           # optional, default: true
+  speed_insights: true      # optional, default: true
+```
+
+Setting `provider` enables all features by default. Disable individually:
+
+```yaml
+hosting:
+  provider: vercel
+  speed_insights: false     # analytics only, no speed insights
+```
+
+Omit `hosting` entirely to disable all provider-specific features.
 
 ## Footer
 

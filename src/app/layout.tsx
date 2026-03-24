@@ -54,8 +54,8 @@ export default async function RootLayout({
         <Providers>
           <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </Providers>
-        {site.analytics === "vercel" && <Analytics />}
-        {site.analytics === "vercel" && <SpeedInsights />}
+        {site.hosting?.provider === "vercel" && site.hosting.analytics !== false && <Analytics />}
+        {site.hosting?.provider === "vercel" && site.hosting.speed_insights !== false && <SpeedInsights />}
       </body>
     </html>
   );

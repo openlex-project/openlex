@@ -15,6 +15,12 @@ export interface FooterItem {
   label?: Record<string, string>;
 }
 
+export interface HostingConfig {
+  provider: "vercel";
+  analytics?: boolean;
+  speed_insights?: boolean;
+}
+
 export interface SiteConfig {
   name: string;
   tagline: Record<string, string>;
@@ -22,7 +28,7 @@ export interface SiteConfig {
   brand_hue: number;
   logo_text?: boolean;
   content_repos?: string[];
-  analytics?: false | "vercel";
+  hosting?: HostingConfig;
   footer?: FooterItem[];
   categories?: CategoryConfig[];
   template?: string;

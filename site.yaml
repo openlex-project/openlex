@@ -13,7 +13,8 @@ revalidate: false
 # oklch hue (0–360) — drives the entire color palette
 brand_hue: 265
 
-analytics: vercel
+hosting:
+  provider: vercel
 
 # Content repositories — GitHub or GitLab repos containing books, journals, or laws.
 # Format: github://org/repo, gitlab://group/project, gitlab://host/group/project (self-hosted)
