@@ -117,23 +117,35 @@ body {
   user-select: none;
 }
 
-/* Desktop: floated margin numbers */
-@media (min-width: 1024px) {
+/* Tablet: floated margin numbers, compact */
+@media (min-width: 640px) {
   .prose .rn {
     float: left;
+    width: 2.5rem;
+    margin-left: -3rem;
+    text-align: right;
+    padding-right: 0.5rem;
+    padding-top: 0.25rem;
+  }
+  .prose-rn {
+    padding-left: 3rem;
+  }
+}
+
+/* Desktop: wider margin numbers */
+@media (min-width: 1024px) {
+  .prose .rn {
     width: 3rem;
     margin-left: -4rem;
-    text-align: right;
     padding-right: 0.75rem;
-    padding-top: 0.25rem;
   }
   .prose-rn {
     padding-left: 4rem;
   }
 }
 
-/* Mobile + Tablet: inline block above paragraph */
-@media (max-width: 1023px) {
+/* Mobile: inline block above paragraph */
+@media (max-width: 639px) {
   .prose .rn {
     display: block;
     margin-bottom: 0.125rem;
