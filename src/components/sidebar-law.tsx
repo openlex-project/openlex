@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
+import { ChevronRight } from "lucide-react";
 import { SidebarShell } from "./sidebar-shell";
 import type { LawTocNode } from "@/lib/registry";
 
@@ -54,7 +55,7 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
       <button onClick={() => onToggle(key)} aria-expanded={isExpanded}
         className="w-full flex items-center gap-1 px-4 py-1 text-sm text-left"
         style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: "var(--text-primary)" }}>
-        <svg className={`w-3 h-3 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+        <ChevronRight className={`w-3 h-3 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
         <span className="font-medium">{node.label}</span>
         {node.title && <span className="truncate" style={{ color: "var(--text-tertiary)" }}>{node.title}</span>}
       </button>

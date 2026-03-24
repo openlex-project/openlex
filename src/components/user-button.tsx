@@ -5,14 +5,9 @@ import { useSession, signIn, signOut, getProviders } from "next-auth/react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/useT";
 import { ProviderIcon } from "./provider-icon";
+import { User } from "lucide-react";
 
 type Provider = { id: string; name: string };
-
-const UserIcon = () => (
-  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-  </svg>
-);
 
 export default function UserButton() {
   const { data: session } = useSession();
@@ -61,10 +56,10 @@ export default function UserButton() {
           <>
             {session.user?.image ? (
               <img src={session.user.image} alt="" className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
-            ) : <UserIcon />}
+            ) : <User className="w-5 h-5" />}
             <span className="hidden sm:inline max-w-[120px] truncate">{session.user?.name}</span>
           </>
-        ) : <UserIcon />}
+        ) : <User className="w-5 h-5" />}
       </button>
       {open && (
         <div

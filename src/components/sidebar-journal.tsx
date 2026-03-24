@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { SidebarShell } from "./sidebar-shell";
 import type { JournalIssue } from "@/lib/registry";
 
@@ -41,7 +42,7 @@ export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", ac
                 className={`w-full flex items-center justify-between px-4 py-1.5 text-left ${isActive && !activeArticle ? "font-semibold" : ""}`}
                 style={{ color: isActive && !activeArticle ? "var(--active-text)" : "var(--text-primary)" }}>
                 <span>{issueLabel} {iss.issue}/{iss.year}</span>
-                <svg className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
               </button>
               {isExpanded && (
                 <ul className="ml-4" style={{ borderLeft: "1px solid var(--border-subtle)" }}>
