@@ -12,6 +12,9 @@ import { SidebarBook } from "@/components/sidebar-book";
 import { FootnoteTooltips } from "@/components/footnote-tooltips";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
+import { ShareMenu } from "@/components/share-menu";
+import { ExportMenu } from "@/components/export-menu";
+import { loadSiteConfig } from "@/lib/site";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
 
@@ -160,6 +163,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   const authorName = tocEntry?.author ? (typeof tocEntry.author === "string" ? tocEntry.author : tocEntry.author.name) : null;
   const authorOrcid = tocEntry?.author && typeof tocEntry.author === "object" ? tocEntry.author.orcid : null;
   const authorLast = authorName?.split(" ").pop();
+  const site = loadSiteConfig();
 
   const navBar = (pos: "top" | "bottom") => (
     <nav aria-label={pos === "top" ? "Kapitelnavigation" : "Kapitelnavigation unten"} className={`flex flex-wrap items-center justify-between gap-2 text-sm ${pos === "top" ? "mb-6 pb-3 border-b" : "mt-12 pt-6 border-t"}`} style={{ borderColor: "var(--border)" }}>
@@ -189,6 +193,8 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
             )}
           </span>
           <BookmarkButton title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
+          {site.sharing?.length && <ShareMenu title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} siteName={site.name} targets={site.sharing} />}
+          {site.export && <ExportMenu formats={site.export.formats} requireAuth={site.export.require_auth} contentType="book" />}
         </div>
         <div className="content-prose prose-rn" dangerouslySetInnerHTML={{ __html: html }} />
         {navBar("bottom")}

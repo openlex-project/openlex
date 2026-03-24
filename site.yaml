@@ -42,3 +42,22 @@ categories:
     label: { de: "Zeitschriften", en: "Journals" }
   - key: law
     label: { de: "Gesetze", en: "Laws" }
+
+# Social sharing targets — order = display order in dropdown.
+# Omit to disable sharing entirely.
+sharing:
+  - copy
+  - email
+  - x
+  - linkedin
+  - whatsapp
+
+# Export settings — omit to disable export entirely.
+export:
+  formats:
+    - md
+    - docx
+  require_auth: true
+
+# How to display commentary links on law pages: "badge" (default) or "sidebar".
+commentary_display: badge

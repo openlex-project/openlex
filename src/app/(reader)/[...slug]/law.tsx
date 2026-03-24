@@ -5,6 +5,10 @@ import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
+import { ShareMenu } from "@/components/share-menu";
+import { ExportMenu } from "@/components/export-menu";
+import { CommentaryLinks } from "@/components/commentary-links";
+import { loadSiteConfig } from "@/lib/site";
 import { licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
 
@@ -62,6 +66,8 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   const navLink = (href: string, label: string, align?: "right") => (
     <Link href={href} className={`hover:underline shrink-0 ${align === "right" ? "text-right" : ""}`} style={{ color: "var(--active-text)" }}>{label}</Link>
   );
+  const site = loadSiteConfig();
+  const pageTitle = `${unitLabel} ${nr} ${meta.title_short ?? meta.title}`;
 
   return (
     <div className="flex">
@@ -77,19 +83,15 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         )}
         <nav className="flex flex-wrap items-center justify-between gap-2 text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/${meta.slug}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
-          {commentaryLinks.length > 0 && (
-            <span className="hidden sm:block mx-4 truncate" style={{ color: "var(--text-secondary)" }}>
-              {commentaryLinks.map((c, i) => (
-                <span key={`${c.slug}-${c.fileSlug}`}>
-                  {i > 0 && ", "}
-                  <Link href={`/${c.slug}/${c.fileSlug}`} className="hover:underline">{c.name}</Link>
-                </span>
-              ))}
-            </span>
-          )}
           {nextNr !== undefined ? navLink(`/${meta.slug}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
-        <h1 className="text-xl sm:text-2xl font-bold mb-6 flex items-center gap-2">{unitLabel} {nr} {meta.title_short ?? meta.title} <BookmarkButton title={`${unitLabel} ${nr} ${meta.title_short ?? meta.title}`} /></h1>
+        <h1 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
+          {pageTitle}
+          <BookmarkButton title={pageTitle} />
+          {site.sharing?.length && <ShareMenu title={pageTitle} siteName={site.name} targets={site.sharing} />}
+          {site.export && <ExportMenu formats={site.export.formats} requireAuth={site.export.require_auth} contentType="law" />}
+        </h1>
+        <CommentaryLinks links={commentaryLinks} />
         <div className="content-prose whitespace-pre-line">{text}</div>
         <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/${meta.slug}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}

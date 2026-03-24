@@ -34,6 +34,9 @@ export interface SiteConfig {
   template?: string;
   home?: import("@/lib/template").HomeSection[];
   revalidate?: number | false;
+  sharing?: string[];
+  export?: { formats: string[]; require_auth?: boolean };
+  commentary_display?: "badge" | "sidebar";
 }
 
 let cached: SiteConfig | null = null;

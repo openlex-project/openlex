@@ -8,6 +8,9 @@ import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
+import { ShareMenu } from "@/components/share-menu";
+import { ExportMenu } from "@/components/export-menu";
+import { loadSiteConfig } from "@/lib/site";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
 
@@ -172,6 +175,7 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
     const md = await getJournalArticleContent(journal.repo, year!, issueNr!, articleSlug!);
     if (!md) notFound();
     const html = await renderMarkdown(md, article.numbering ? { numbering: { schema: article.numbering } } : undefined);
+    const site = loadSiteConfig();
 
     const idx = issue.articles.indexOf(article);
     const prev = issue.articles[idx - 1];
@@ -187,7 +191,10 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
             <span className="hidden sm:block truncate mx-4" style={{ color: "var(--text-secondary)" }}><AuthorLine article={article} /></span>
             {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{authorLastNames(next)} →</Link> : <span />}
           </nav>
-          <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title} <BookmarkButton title={`${article.title} – ${journal.title_short ?? journal.title}`} /></h1>
+          <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title} <BookmarkButton title={`${article.title} – ${journal.title_short ?? journal.title}`} />
+            {site.sharing?.length && <ShareMenu title={article.title} siteName={site.name} targets={site.sharing} />}
+            {site.export && <ExportMenu formats={site.export.formats} requireAuth={site.export.require_auth} contentType="journal" />}
+          </h1>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
             <AuthorLine article={article} />
             {article.pages && ` · ${t(locale, "page.abbr")} ${article.pages}`}
