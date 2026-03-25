@@ -3,7 +3,7 @@ import { loadSiteConfig } from "@/lib/site";
 
 /** ISR revalidate value from site.yaml (default: 3600) */
 export function getRevalidate(): number | false {
-  return loadSiteConfig().revalidate ?? 3600;
+  return loadSiteConfig().features?.revalidate ?? 3600;
 }
 
 /* ─── Interface ─── */

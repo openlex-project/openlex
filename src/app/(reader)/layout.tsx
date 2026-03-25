@@ -40,7 +40,7 @@ export default async function ReaderLayout({
         </header>
         <main id="main-content" className="flex-1">{children}</main>
         <footer className="border-t px-6 py-4 text-sm flex items-center justify-center gap-1 flex-wrap" style={{ borderColor: "var(--border-subtle)", color: "var(--text-tertiary)" }}>
-          {site.footer?.map((item, i) => {
+          {site.branding?.footer?.map((item, i) => {
             const sep = i > 0 ? " · " : "";
             if (item.text) return <span key={i}>{sep}{item.text}</span>;
             if ("license" in item) return <span key={i}>{sep}<LicenseDisplay /></span>;

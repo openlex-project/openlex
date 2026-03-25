@@ -13,7 +13,7 @@ function websiteJsonLd(url: string): string {
     "@type": "WebSite",
     name: site.name,
     url,
-    description: site.tagline[site.default_locale] ?? Object.values(site.tagline)[0],
+    description: site.branding?.tagline?.[site.default_locale] ?? "",
   });
 }
 

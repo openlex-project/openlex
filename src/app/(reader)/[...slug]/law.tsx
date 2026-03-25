@@ -81,8 +81,8 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         <h1 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
           {pageTitle}
           <BookmarkButton title={pageTitle} />
-          {site.sharing?.length && <ShareMenu title={pageTitle} siteName={site.name} targets={site.sharing} />}
-          {site.export && <ExportMenu formats={site.export.formats} requireAuth={site.export.require_auth} contentType="law" />}
+          {site.features?.sharing?.length && <ShareMenu title={pageTitle} siteName={site.name} targets={site.features?.sharing} />}
+          {site.features?.export && <ExportMenu formats={site.features!.export!.formats} requireAuth={site.features!.export!.require_auth} contentType="law" />}
         </h1>
         <RelatedContent links={related} />
         <div className="content-prose whitespace-pre-line">{text}</div>

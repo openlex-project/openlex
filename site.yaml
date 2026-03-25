@@ -1,38 +1,33 @@
 # Site configuration — edit this file to rebrand your instance.
 
 name: "OpenLex"
-tagline:
-  de: "Open-Access-Plattform für juristische Fachliteratur"
-  en: "Open-access platform for legal literature"
 default_locale: "de"
 
-# ISR revalidation interval in seconds (default: 3600).
-# Set to false to disable periodic refetch (use deploy hooks instead).
-revalidate: false
-
-# oklch hue (0–360) — drives the entire color palette
-brand_hue: 265
-
-hosting:
-  provider: vercel
+# ISR revalidation, sharing, export, analytics, related content display
+# are all under features. Omit a key to disable that feature.
+branding:
+  tagline:
+    de: "Open-Access-Plattform für juristische Fachliteratur"
+    en: "Open-access platform for legal literature"
+  # oklch hue (0–360) — drives the entire color palette
+  brand_hue: 265
+  # Footer — flat list of items, displayed left to right, separated by ·
+  # Types: text (plain text), license (CC badge), slug (local markdown page), href (external link)
+  footer:
+    - text: "© OpenLex"
+    - license:
+    - slug: impressum
+      label: { de: "Impressum", en: "Imprint" }
+    - slug: datenschutz
+      label: { de: "Datenschutz", en: "Privacy Policy" }
+    - href: "https://github.com/openlex-project/openlex"
+      label: { de: "GitHub", en: "GitHub" }
 
 # Content repositories — GitHub or GitLab repos containing books, journals, or laws.
 # Format: github://org/repo, gitlab://group/project, gitlab://host/group/project (self-hosted)
 content_repos:
   - github://openlex-project/oc-dsgvo
   - github://openlex-project/openlex-laws
-
-# Footer — flat list of items, displayed left to right, separated by ·
-# Types: text (plain text), license (CC badge), slug (local markdown page), href (external link)
-footer:
-  - text: "© OpenLex"
-  - license:
-  - slug: impressum
-    label: { de: "Impressum", en: "Imprint" }
-  - slug: datenschutz
-    label: { de: "Datenschutz", en: "Privacy Policy" }
-  - href: "https://github.com/openlex-project/openlex"
-    label: { de: "GitHub", en: "GitHub" }
 
 # Content categories — controls homepage sections and /category/[key] pages.
 categories:
@@ -43,21 +38,29 @@ categories:
   - key: law
     label: { de: "Gesetze", en: "Laws" }
 
-# Social sharing targets — order = display order in dropdown.
-# Omit to disable sharing entirely.
-sharing:
-  - copy
-  - email
-  - x
-  - linkedin
-  - whatsapp
+features:
+  # Social sharing targets — order = display order in dropdown. Omit to disable.
+  sharing:
+    - copy
+    - email
+    - x
+    - linkedin
+    - whatsapp
 
-# Export settings — omit to disable export entirely.
-export:
-  formats:
-    - md
-    - docx
-  require_auth: true
+  # Export settings — omit to disable export entirely.
+  export:
+    formats:
+      - md
+      - docx
+    require_auth: true
 
-# How to display commentary links on law pages: "badge" (default) or "sidebar".
-commentary_display: badge
+  # How to display related content links: "badge" (default) or "sidebar".
+  related_content_display: badge
+
+  # Analytics provider: vercel | plausible | matomo | umami | goatcounter. Omit to disable.
+  analytics:
+    provider: vercel
+
+  # ISR revalidation interval in seconds (default: 3600).
+  # Set to false to disable periodic refetch (use deploy hooks instead).
+  revalidate: false

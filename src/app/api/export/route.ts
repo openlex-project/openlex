@@ -10,9 +10,10 @@ import { log } from "@/lib/logger";
 export async function GET(req: NextRequest) {
   try {
     const site = loadSiteConfig();
-    if (!site.export) return NextResponse.json({ error: "Export disabled" }, { status: 404 });
+    const exportConfig = site.features?.export;
+    if (!exportConfig) return NextResponse.json({ error: "Export disabled" }, { status: 404 });
 
-    if (site.export.require_auth) {
+    if (exportConfig.require_auth) {
       const auth = await requireAuth();
       if (auth instanceof NextResponse) return auth;
     }
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
     const scope = sp.get("scope") ?? "page";
 
     if (!path) return NextResponse.json({ error: "Missing path" }, { status: 400 });
-    if (!site.export.formats.includes(format)) return NextResponse.json({ error: "Unsupported format" }, { status: 400 });
+    if (!exportConfig.formats.includes(format)) return NextResponse.json({ error: "Unsupported format" }, { status: 400 });
 
     const segments = path.replace(/^\//, "").split("/");
     const registry = await buildRegistry();

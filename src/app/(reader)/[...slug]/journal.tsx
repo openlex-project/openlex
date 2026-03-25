@@ -192,8 +192,8 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
             {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{authorLastNames(next)} →</Link> : <span />}
           </nav>
           <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title} <BookmarkButton title={`${article.title} – ${journal.title_short ?? journal.title}`} />
-            {site.sharing?.length && <ShareMenu title={article.title} siteName={site.name} targets={site.sharing} />}
-            {site.export && <ExportMenu formats={site.export.formats} requireAuth={site.export.require_auth} contentType="journal" />}
+            {site.features?.sharing?.length && <ShareMenu title={article.title} siteName={site.name} targets={site.features?.sharing} />}
+            {site.features?.export && <ExportMenu formats={site.features!.export!.formats} requireAuth={site.features!.export!.require_auth} contentType="journal" />}
           </h1>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
             <AuthorLine article={article} />

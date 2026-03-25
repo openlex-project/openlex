@@ -15,28 +15,38 @@ export interface FooterItem {
   label?: Record<string, string>;
 }
 
-export interface HostingConfig {
-  provider: "vercel";
-  analytics?: boolean;
-  speed_insights?: boolean;
+export interface AnalyticsConfig {
+  provider: "vercel" | "plausible" | "matomo" | "umami" | "goatcounter";
+  domain?: string;
+  url?: string;
+  site_id?: string;
+}
+
+export interface BrandingConfig {
+  tagline?: Record<string, string>;
+  brand_hue?: number;
+  footer?: FooterItem[];
+}
+
+export interface FeaturesConfig {
+  sharing?: string[];
+  export?: { formats: string[]; require_auth?: boolean };
+  related_content_display?: "badge" | "sidebar";
+  analytics?: AnalyticsConfig;
+  revalidate?: number | false;
 }
 
 export interface SiteConfig {
   name: string;
-  tagline: Record<string, string>;
   default_locale: string;
-  brand_hue: number;
-  logo_text?: boolean;
+  base_url?: string;
+  branding?: BrandingConfig;
   content_repos?: string[];
-  hosting?: HostingConfig;
-  footer?: FooterItem[];
   categories?: CategoryConfig[];
+  features?: FeaturesConfig;
+  logo_text?: boolean;
   template?: string;
   home?: import("@/lib/template").HomeSection[];
-  revalidate?: number | false;
-  sharing?: string[];
-  export?: { formats: string[]; require_auth?: boolean };
-  commentary_display?: "badge" | "sidebar";
 }
 
 let cached: SiteConfig | null = null;

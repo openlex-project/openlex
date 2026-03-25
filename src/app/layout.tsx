@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/components/providers";
 import { LocaleProvider } from "@/components/locale-provider";
+import { SiteAnalytics } from "@/components/site-analytics";
 import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate } from "@/lib/template";
 import { defaultLocale, type Locale } from "@/lib/i18n";
@@ -25,7 +24,7 @@ const site = loadSiteConfig();
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
   title: site.name,
-  description: site.tagline[site.default_locale] ?? "",
+  description: site.branding?.tagline?.[site.default_locale] ?? "",
   icons: { icon: "/favicon.svg" },
   openGraph: {
     siteName: site.name,
@@ -45,7 +44,7 @@ export default async function RootLayout({
   const template = await loadTemplate(site.template);
 
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.brand_hue } as React.CSSProperties} suppressHydrationWarning>
+    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.branding?.brand_hue ?? 265 } as React.CSSProperties} suppressHydrationWarning>
       <head>
         <link rel="dns-prefetch" href="https://api.github.com" />
         {template.css && <style dangerouslySetInnerHTML={{ __html: template.css }} />}
@@ -54,8 +53,7 @@ export default async function RootLayout({
         <Providers>
           <LocaleProvider locale={locale}>{children}</LocaleProvider>
         </Providers>
-        {site.hosting?.provider === "vercel" && site.hosting.analytics !== false && <Analytics />}
-        {site.hosting?.provider === "vercel" && site.hosting.speed_insights !== false && <SpeedInsights />}
+        <SiteAnalytics config={site.features?.analytics} />
       </body>
     </html>
   );

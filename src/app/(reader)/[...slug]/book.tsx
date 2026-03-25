@@ -194,8 +194,8 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
             )}
           </span>
           <BookmarkButton title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
-          {site.sharing?.length && <ShareMenu title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} siteName={site.name} targets={site.sharing} />}
-          {site.export && <ExportMenu formats={site.export.formats} requireAuth={site.export.require_auth} contentType="book" />}
+          {site.features?.sharing?.length && <ShareMenu title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} siteName={site.name} targets={site.features?.sharing} />}
+          {site.features?.export && <ExportMenu formats={site.features!.export!.formats} requireAuth={site.features!.export!.require_auth} contentType="book" />}
         </div>
         <RelatedContent links={registry.relatedIndex.get(`/${meta.slug}/${fileSlug}`) ?? []} />
         <div className="content-prose prose-rn" dangerouslySetInnerHTML={{ __html: html }} />

@@ -11,7 +11,7 @@ const dictionaries: Record<Locale, Record<string, string>> = { de, en };
 export function t(locale: Locale, key: string, params?: Record<string, string>): string {
   const site = loadSiteConfig();
   if (key === "site.title") return site.name;
-  if (key === "site.tagline") return site.tagline[locale] ?? site.tagline[defaultLocale] ?? "";
+  if (key === "site.tagline") return site.branding?.tagline?.[locale] ?? site.branding?.tagline?.[defaultLocale] ?? "";
 
   let str = dictionaries[locale]?.[key] ?? dictionaries[defaultLocale as Locale][key] ?? key;
   if (params) {
