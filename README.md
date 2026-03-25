@@ -2,7 +2,7 @@
 
 Configurable open-access publishing platform for legal literature — commentaries, textbooks, journals, laws.
 
-Content is authored in Pandoc-flavor Markdown, managed in private GitHub repos, and rendered via a Next.js frontend on Vercel.
+Content is authored in Pandoc-flavor Markdown, managed in private GitHub/GitLab repos, and rendered via a Next.js frontend.
 
 **Live:** [openlex.vercel.app](https://openlex.vercel.app)
 
@@ -12,6 +12,9 @@ Content is authored in Pandoc-flavor Markdown, managed in private GitHub repos, 
 - Automatic bibliography (citeproc-js)
 - Configurable numbering system
 - Cross-links between laws and commentaries
+- Bidirectional related content (any content type ↔ any content type)
+- Social sharing (Copy, Email, X, LinkedIn, WhatsApp)
+- Markdown + DOCX export
 - Full-text search (Pagefind, client-side)
 - Dark mode (system preference)
 - Flexible OAuth login (GitHub, Google, Apple, Azure AD, GitLab, Keycloak, Okta, Auth0, Cognito, generic OIDC)
@@ -21,6 +24,7 @@ Content is authored in Pandoc-flavor Markdown, managed in private GitHub repos, 
 - i18n (de/en)
 - OpenGraph social cards with dynamic OG images
 - Configurable site identity, branding, footer, and content categories via `site.yaml`
+- Configurable analytics (Vercel, Plausible, Matomo, Umami, GoatCounter)
 - Template system: built-in, remote (GitHub), or local templates with CSS + component variants
 - Data-driven homepage layout (hero, featured, categories, recent sections)
 - Law sync from gesetze-im-internet.de (GII) and EUR-Lex
@@ -69,7 +73,6 @@ See [site-yaml.md](docs/site-yaml.md) for full reference.
 - [sync.yaml](docs/sync-yaml.md) – Law configuration and sync
 - [Content Guide](docs/content-guide.md) – Markdown syntax for authors
 - [references.yaml](docs/references-yaml.md) – CSL references
-- [Print Pipeline](docs/print-pipeline.md) – Pandoc/LaTeX PDF generation
 - [Deployment](docs/deployment.md) – Vercel, env vars, setup
 
 ## Quickstart
