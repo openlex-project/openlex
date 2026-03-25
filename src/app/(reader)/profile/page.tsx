@@ -67,9 +67,10 @@ export default function ProfilePage() {
           <button
             onClick={() => toggleSetting("history_enabled")}
             className="relative w-10 h-6 rounded-full transition-colors"
-            style={{ background: settings.history_enabled !== "false" ? "var(--color-brand-600)" : "var(--border)" }}
+            style={{ background: settings.history_enabled !== "false" ? "var(--color-brand-600)" : "var(--text-tertiary)" }}
             role="switch"
             aria-checked={settings.history_enabled !== "false"}
+            aria-label={t("profile.historyEnabled")}
           >
             <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform" style={{ transform: settings.history_enabled !== "false" ? "translateX(16px)" : "none" }} />
           </button>
@@ -105,6 +106,7 @@ export default function ProfilePage() {
               className="w-full text-sm px-3 py-2 rounded-lg border"
               style={{ borderColor: "var(--border)", background: "var(--surface)", color: "var(--text-primary)" }}
               placeholder={confirmPhrase}
+              aria-label={t("profile.deleteConfirm", { phrase: confirmPhrase })}
             />
             <div className="flex gap-2">
               <button

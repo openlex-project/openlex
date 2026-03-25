@@ -90,7 +90,7 @@ export function SearchBox() {
           aria-label={t("search.aria")}
           role="combobox"
           aria-expanded={open && results.length > 0}
-          aria-controls="search-listbox"
+          aria-controls={open && results.length > 0 ? "search-listbox" : undefined}
           aria-activedescendant={active >= 0 ? `search-option-${active}` : undefined}
           className="w-full rounded-lg pl-9 pr-3 py-2 text-sm transition-colors"
           style={{ background: "var(--surface-secondary)", border: "1px solid var(--border)", color: "var(--text-primary)" }}

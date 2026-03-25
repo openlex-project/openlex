@@ -70,11 +70,11 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
           <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">
             <span>{meta.title_short ?? meta.title}</span>
             {breadcrumb.slice(0, -1).map((node, i) => (
-              <span key={i}><span className="mx-1">›</span>{node.label}{node.title ? ` ${node.title}` : ""}</span>
+              <span key={i}><span className="mx-1" aria-hidden="true">›</span>{node.label}{node.title ? ` ${node.title}` : ""}</span>
             ))}
           </nav>
         )}
-        <nav className="flex flex-wrap items-center justify-between gap-2 text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
+        <nav aria-label="Provision navigation" className="flex flex-wrap items-center justify-between gap-2 text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/${meta.slug}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {nextNr !== undefined ? navLink(`/${meta.slug}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>
@@ -86,7 +86,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         </h1>
         <RelatedContent links={related} />
         <div className="content-prose whitespace-pre-line">{text}</div>
-        <nav className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
+        <nav aria-label="Provision navigation" className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
           {prevNr !== undefined ? navLink(`/${meta.slug}/${prevNr}`, `← ${unitLabel} ${prevNr}`) : <span />}
           {nextNr !== undefined ? navLink(`/${meta.slug}/${nextNr}`, `${unitLabel} ${nextNr} →`, "right") : <span />}
         </nav>

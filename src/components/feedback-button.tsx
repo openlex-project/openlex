@@ -97,6 +97,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
                   key={c}
                   type="button"
                   onClick={() => setCategory(c)}
+                  aria-pressed={category === c}
                   className="text-xs px-2 py-1 rounded-full border transition-colors"
                   style={{
                     background: category === c ? "var(--color-brand-600)" : "transparent",

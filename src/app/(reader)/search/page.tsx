@@ -71,6 +71,7 @@ function SearchResults() {
               <button
                 key={`${key}-${val}`}
                 onClick={() => toggleFilter(key, val)}
+                aria-pressed={activeFilter[key] === val}
                 className="text-xs px-2 py-1 rounded-full border transition-colors"
                 style={{
                   background: activeFilter[key] === val ? "var(--color-brand-600)" : "transparent",

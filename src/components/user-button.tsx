@@ -37,7 +37,7 @@ export default function UserButton() {
   };
 
   const menuLink = (href: string, label: string) => (
-    <Link href={href} onClick={() => setOpen(false)} className="block px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-primary)" }} role="menuitem" tabIndex={0}>
+    <Link href={href} onClick={() => setOpen(false)} className="block px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-primary)" }} role="menuitem" tabIndex={-1}>
       {label}
     </Link>
   );
@@ -80,7 +80,7 @@ export default function UserButton() {
               {menuLink("/history", t("nav.history"))}
               {menuLink("/feedback", t("nav.feedback"))}
               <div className="border-t my-1" style={{ borderColor: "var(--border-subtle)" }} />
-              <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-tertiary)" }} role="menuitem" tabIndex={0}>
+              <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-tertiary)" }} role="menuitem" tabIndex={-1}>
                 {t("nav.logout")}
               </button>
             </>
@@ -94,7 +94,7 @@ export default function UserButton() {
                     className="flex items-center gap-3 w-full px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]"
                     style={{ color: "var(--text-primary)" }}
                     role="menuitem"
-                    tabIndex={0}
+                    tabIndex={-1}
                   >
                     <ProviderIcon id={p.id} />
                     {t("login.with", { name: p.name })}
