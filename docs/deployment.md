@@ -130,7 +130,7 @@ The Pagefind search index is generated *before* `next build` so the static files
 
 ## Revalidation
 
-Content is cached with ISR (Incremental Static Regeneration). The cache duration is configurable via `revalidate` in `site.yaml` (default: 3600 seconds = 1 hour).
+Content is cached with ISR (Incremental Static Regeneration). The cache duration is configurable via `features.revalidate` in `site.yaml` (default: 3600 seconds = 1 hour).
 
 Set `revalidate: false` to disable periodic refetch entirely and use deploy hooks instead:
 
@@ -162,6 +162,20 @@ Every page automatically generates OpenGraph meta tags (`og:title`, `og:image`, 
 
 No configuration needed — works out of the box.
 
-## Analytics & Speed Insights
+## Analytics
 
-Set `hosting.provider: vercel` in `site.yaml` to enable [Vercel Analytics](https://vercel.com/analytics) and [Speed Insights](https://vercel.com/docs/speed-insights). Both are on by default when the provider is set. See [site-yaml.md](site-yaml.md).
+Configure analytics in `site.yaml` under `features.analytics`:
+
+```yaml
+features:
+  analytics:
+    provider: vercel    # vercel | plausible | matomo | umami | goatcounter
+```
+
+- `vercel` — [Vercel Analytics](https://vercel.com/analytics) + [Speed Insights](https://vercel.com/docs/speed-insights) (dynamic import, only loaded on Vercel)
+- `plausible` — requires `domain` field
+- `matomo` — requires `url` and `site_id` fields
+- `umami` — requires `url` and `site_id` fields
+- `goatcounter` — requires `url` field
+
+Omit `analytics` entirely to disable all tracking. See [site-yaml.md](site-yaml.md) for full examples.

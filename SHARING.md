@@ -5,18 +5,19 @@ Beide Features sind über `site.yaml` konfigurierbar.
 ## site.yaml
 
 ```yaml
-sharing:
-  - copy        # Copy link
-  - email       # mailto:
-  - x           # X/Twitter
-  - linkedin
-  - whatsapp
+features:
+  sharing:
+    - copy        # Copy link
+    - email       # mailto:
+    - x           # X/Twitter
+    - linkedin
+    - whatsapp
 
-export:
-  formats:
-    - md          # Pandoc-style Markdown
-    - docx        # Word-Dokument
-  require_auth: false   # true = nur eingeloggte User können exportieren
+  export:
+    formats:
+      - md          # Pandoc-style Markdown
+      - docx        # Word-Dokument
+    require_auth: false   # true = nur eingeloggte User können exportieren
 ```
 
 Reihenfolge im Array = Reihenfolge im Dropdown. Weglassen = Feature deaktiviert.

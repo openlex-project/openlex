@@ -1,32 +1,33 @@
 # site.yaml
 
-The `site.yaml` file is located in the project root and configures the site identity, branding, and content categories. This is the only file a deployer needs to edit to rebrand the platform.
+The `site.yaml` file is located in the project root and configures the site identity, branding, content sources, and optional features. This is the only file a deployer needs to edit to rebrand the platform.
 
 ## Schema
 
 ```yaml
+# ─── Identity ───
 name: "OpenLex"
-tagline:
-  de: "Open-Access-Plattform für juristische Fachliteratur"
-  en: "Open-access platform for legal literature"
 default_locale: "de"
-brand_hue: 265
-logo_text: true
-template: default
+# base_url: "https://openlex.example.com"  # optional, only for self-hosted
 
+# ─── Branding ───
+branding:
+  tagline:
+    de: "Open-Access-Plattform für juristische Fachliteratur"
+    en: "Open-access platform for legal literature"
+  brand_hue: 265                # oklch hue (0–360)
+  footer:
+    - text: "© OpenLex"
+    - license:
+    - slug: impressum
+      label: { de: "Impressum", en: "Imprint" }
+
+# ─── Content ───
 content_repos:
   - github://openlex-project/oc-dsgvo
   - github://openlex-project/openlex-laws
-  # - gitlab://uni-berlin/kommentar-stgb            # GitLab
-  # - gitlab://git.uni-berlin.de/group/project      # self-hosted GitLab
-
-footer:
-  - text: "© OpenLex"
-  - license:
-  - slug: impressum
-    label: { de: "Impressum", en: "Imprint" }
-  - slug: datenschutz
-    label: { de: "Datenschutz", en: "Privacy Policy" }
+  # - gitlab://uni-berlin/kommentar-stgb
+  # - gitlab://git.uni-berlin.de/group/project  # self-hosted
 
 categories:
   - key: book
@@ -36,31 +37,52 @@ categories:
   - key: law
     label: { de: "Gesetze", en: "Laws" }
 
-home:
-  - type: hero
-  - type: categories
+# ─── Features (all optional — omit to disable) ───
+features:
+  sharing: [copy, email, x, linkedin, whatsapp]
+  export:
+    formats: [md, docx]
+    require_auth: true
+  related_content_display: badge    # badge | sidebar
+  analytics:
+    provider: vercel                # vercel | plausible | matomo | umami | goatcounter
+  revalidate: false                 # seconds or false (deploy hooks)
 ```
 
-## Fields
+## Root Fields
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `name` | string | ✓ | Site name (header, metadata) |
-| `tagline` | object | ✓ | Per-locale tagline (`{locale: text}`) |
 | `default_locale` | string | ✓ | Default locale (`de`, `en`, etc.) |
-| `brand_hue` | number | ✓ | oklch color hue (0–360) — drives the entire color palette |
-| `content_repos` | array | ✓ | Git repos containing content. Format: `github://org/repo`, `gitlab://group/project`, `gitlab://host/group/project` (self-hosted). Books, journals, and laws are auto-detected from `meta.yaml` / `sync.yaml`. |
-| `logo_text` | boolean | | Show site name next to logo icon (default: `true`). Set `false` for icon-only header. |
-| `hosting` | object | | Hosting provider config. See below. |
-| `revalidate` | number \| false | | ISR cache duration in seconds. Default: `3600`. Set `false` to disable periodic refetch (use deploy hooks instead). |
-| `footer` | array | | Footer items — flat list of `text`, `license`, `slug`, `href` entries. See below. |
-| `template` | string | | Template to use: built-in name (`default`, `academic`), GitHub repo (`org/repo[@ref]`), or local path (`./templates/...`). Default: `default`. See [templates.md](templates.md). |
-| `home` | array | | Homepage section layout. Overridden by template if template defines `home`. See [templates.md](templates.md). |
+| `base_url` | string | | Base URL for self-hosted deployments. Vercel/Netlify auto-detect. |
+| `branding` | object | | Tagline, color hue, footer. See below. |
+| `content_repos` | array | ✓ | Git repos. Format: `github://org/repo`, `gitlab://group/project`, `gitlab://host/group/project` |
 | `categories` | array | | Content categories for homepage and listing pages |
+| `features` | object | | Optional features. See below. |
+| `template` | string | | Template: built-in (`default`, `academic`), GitHub (`org/repo[@ref]`), or local (`./templates/...`) |
+| `home` | array | | Homepage section layout. See [templates.md](templates.md). |
 
-## Brand Hue
+## Branding
 
-The `brand_hue` value sets the oklch hue for the entire color palette. All brand colors, surfaces, borders, and accents derive from this single value.
+```yaml
+branding:
+  tagline:
+    de: "Freie juristische Fachliteratur"
+    en: "Free legal scholarship"
+  brand_hue: 150
+  footer:
+    - text: "© JuraOpen"
+    - license:
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `tagline` | object | Per-locale tagline (`{locale: text}`) |
+| `brand_hue` | number | oklch color hue (0–360). Default: `265` (indigo). Drives the entire color palette. |
+| `footer` | array | Footer items — flat list, displayed left to right, separated by `·` |
+
+### Brand Hue
 
 | Hue | Color |
 |---|---|
@@ -73,75 +95,7 @@ The `brand_hue` value sets the oklch hue for the entire color palette. All brand
 | 300 | Purple |
 | 340 | Pink |
 
-## Categories
-
-Categories control how content is grouped on the homepage and on `/category/[key]` listing pages.
-
-Each content item declares its category via the `category` field in `meta.yaml` (books/journals) or `sync.yaml` (laws). If omitted, items default to their type name (`book`, `journal`, or `law`).
-
-```yaml
-categories:
-  - key: textbooks
-    label: { de: "Lehrbücher", en: "Textbooks" }
-  - key: commentaries
-    label: { de: "Kommentare", en: "Commentaries" }
-  - key: ai-journals
-    label: { de: "Zeitschriften für KI", en: "AI Journals" }
-  - key: laws
-    label: { de: "Gesetze", en: "Laws" }
-```
-
-- `key` — matches the `category` value in content metadata
-- `label` — per-locale display name
-- Order in the array = order on the homepage
-- Categories with zero items are hidden automatically
-
-If `categories` is omitted entirely, the homepage falls back to three default sections: books, journals, laws.
-
-## Rebranding Example
-
-```yaml
-name: "JuraOpen"
-tagline:
-  de: "Freie juristische Fachliteratur"
-  en: "Free legal scholarship"
-default_locale: "de"
-brand_hue: 150
-
-footer:
-  - text: "© JuraOpen"
-
-categories:
-  - key: commentaries
-    label: { de: "Kommentare", en: "Commentaries" }
-  - key: textbooks
-    label: { de: "Lehrbücher", en: "Textbooks" }
-  - key: law
-    label: { de: "Gesetze", en: "Laws" }
-```
-
-## Hosting
-
-```yaml
-hosting:
-  provider: vercel          # required — vercel (more providers planned)
-  analytics: true           # optional, default: true
-  speed_insights: true      # optional, default: true
-```
-
-Setting `provider` enables all features by default. Disable individually:
-
-```yaml
-hosting:
-  provider: vercel
-  speed_insights: false     # analytics only, no speed insights
-```
-
-Omit `hosting` entirely to disable all provider-specific features.
-
-## Footer
-
-The `footer` is a flat array of items, displayed left to right, separated by `·`. Order in the array = order in the footer.
+### Footer
 
 ```yaml
 footer:
@@ -149,27 +103,99 @@ footer:
   - license:
   - slug: impressum
     label: { de: "Impressum", en: "Imprint" }
-  - slug: datenschutz
-    label: { de: "Datenschutz", en: "Privacy Policy" }
   - href: "https://github.com/openlex-project/openlex"
     label: { de: "GitHub", en: "GitHub" }
 ```
 
-Each item is one of four types:
-
 | Key | Description |
 |---|---|
-| `text` | Plain text, shown as-is (e.g. copyright notice) |
-| `license` | CC license badge with link (from current page's content license). No value needed — presence of key suffices. |
+| `text` | Plain text (e.g. copyright notice) |
+| `license` | CC license badge (from current page's content license). No value needed. |
 | `slug` | Local markdown page — renders `footer/{slug}.md` at `/{slug}` |
 | `href` | External link, opens in a new tab |
 
 `slug` and `href` items require a `label` object with per-locale display text.
 
-Markdown files live in the `footer/` directory in the project root (not in content repos).
+## Features
+
+All features are optional — omit the key to disable.
+
+```yaml
+features:
+  sharing: [copy, email, x, linkedin, whatsapp]
+  export:
+    formats: [md, docx]
+    require_auth: true
+  related_content_display: badge
+  analytics:
+    provider: vercel
+  revalidate: false
+```
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `sharing` | string[] | | Social sharing targets. Order = dropdown order. Options: `copy`, `email`, `x`, `linkedin`, `whatsapp`. |
+| `export` | object | | Export settings. `formats`: `md`, `docx`. `require_auth`: require login to export. |
+| `related_content_display` | string | `badge` | How to show related content links on content pages: `badge` (compact card) or `sidebar` (right column). |
+| `analytics` | object | | Analytics provider config. See below. |
+| `revalidate` | number \| false | `3600` | ISR cache duration in seconds. `false` = deploy hooks only. |
+
+### Analytics
+
+```yaml
+analytics:
+  provider: vercel
+```
+
+| Provider | Extra fields | Description |
+|---|---|---|
+| `vercel` | — | Vercel Analytics + Speed Insights (dynamic import) |
+| `plausible` | `domain` | Plausible Analytics (script tag) |
+| `matomo` | `url`, `site_id` | Matomo (script tag) |
+| `umami` | `url`, `site_id` | Umami (script tag) |
+| `goatcounter` | `url` | GoatCounter (script tag) |
+
+Examples:
+
+```yaml
+# Plausible
+analytics:
+  provider: plausible
+  domain: "openlex.example.com"
+
+# Matomo (self-hosted)
+analytics:
+  provider: matomo
+  url: "https://matomo.uni-berlin.de"
+  site_id: "3"
+
+# Umami
+analytics:
+  provider: umami
+  url: "https://umami.example.com"
+  site_id: "abc-123"
+```
+
+## Categories
+
+Categories control how content is grouped on the homepage and on `/category/[key]` listing pages.
+
+```yaml
+categories:
+  - key: commentaries
+    label: { de: "Kommentare", en: "Commentaries" }
+  - key: textbooks
+    label: { de: "Lehrbücher", en: "Textbooks" }
+```
+
+- `key` — matches the `category` value in content metadata
+- `label` — per-locale display name
+- Order in the array = order on the homepage
+- Categories with zero items are hidden automatically
+- If omitted, falls back to three default sections: books, journals, laws
 
 ## Notes
 
 - `site.yaml` is committed to the repo — it's public configuration, not secrets.
-- Secrets (PAT, OAuth) stay in `.env.local` / Vercel environment variables.
+- Secrets (PAT, OAuth, Redis) stay in `.env.local` / Vercel environment variables.
 - The code-level fallback locale is `en`. The `default_locale` in `site.yaml` overrides it.

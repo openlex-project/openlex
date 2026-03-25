@@ -31,22 +31,23 @@ Edit `site.yaml` in the project root to rebrand the platform:
 
 ```yaml
 name: "OpenLex"
-tagline:
-  de: "Open-Access-Plattform für juristische Fachliteratur"
-  en: "Open-access platform for legal literature"
 default_locale: "de"
-brand_hue: 265
+
+branding:
+  tagline:
+    de: "Open-Access-Plattform für juristische Fachliteratur"
+    en: "Open-access platform for legal literature"
+  brand_hue: 265
+  footer:
+    - text: "© OpenLex"
+    - license:
+    - slug: impressum
+      label: { de: "Impressum", en: "Imprint" }
 
 content_repos:
   - github://openlex-project/oc-dsgvo
   - github://openlex-project/openlex-laws
   # - gitlab://uni-berlin/kommentar-stgb
-
-footer:
-  - text: "© OpenLex"
-  - license:
-  - slug: impressum
-    label: { de: "Impressum", en: "Imprint" }
 
 categories:
   - key: book

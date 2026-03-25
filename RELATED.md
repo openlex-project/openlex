@@ -30,7 +30,8 @@ Beispiele:
 ## site.yaml
 
 ```yaml
-commentary_display: badge   # "badge" (default) | "sidebar"
+features:
+  related_content_display: badge   # "badge" (default) | "sidebar"
 ```
 
 - `badge` — Kompakte Card unter der Überschrift
