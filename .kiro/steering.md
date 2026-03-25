@@ -48,6 +48,7 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 - Feature branches: `feat/description`, bugfixes: `fix/description`
 - Commit messages: Conventional Commits (`feat:`, `fix:`, `docs:`)
 - **Vercel CLI** is installed locally for deployment status, logs, and env management.
+- **GitHub CLI (`gh`)** is installed locally for repo management, secrets, and Actions.
 - Env vars (secrets only — everything else in `site.yaml`):
   - `GITHUB_PAT` — GitHub Personal Access Token (content repos)
   - `GITLAB_PAT` — GitLab Personal Access Token (optional, for GitLab repos)
