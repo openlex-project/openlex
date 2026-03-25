@@ -7,6 +7,7 @@ import { SiteAnalytics } from "@/components/site-analytics";
 import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate } from "@/lib/template";
 import { defaultLocale, type Locale } from "@/lib/i18n";
+import { parseRepoUrl } from "@/lib/git-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,6 +21,11 @@ const geistMono = Geist_Mono({
 });
 
 const site = loadSiteConfig();
+
+const apiHosts = [...new Set((site.content_repos ?? []).map((r) => {
+  const ref = parseRepoUrl(r);
+  return ref.provider === "github" ? "https://api.github.com" : `https://${ref.host}`;
+}))];
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
@@ -46,8 +52,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.branding?.brand_hue ?? 265 } as React.CSSProperties} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://api.github.com" />
-        <link rel="dns-prefetch" href="https://api.github.com" />
+        {apiHosts.map((h) => <link key={h} rel="preconnect" href={h} />)}
         {template.css && <style dangerouslySetInnerHTML={{ __html: template.css }} />}
       </head>
       <body className="antialiased">
