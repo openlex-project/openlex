@@ -52,7 +52,22 @@ Both read `sync.yaml` and only process laws matching their source type.
 
 ### GitHub Actions
 
-`.github/workflows/sync.yml` runs both scripts weekly (Monday 4am UTC) and on manual dispatch. Changes are committed and tagged with the date (`sync-YYYY-MM-DD`).
+`.github/workflows/sync.yml` runs both scripts daily (4am UTC) and on manual dispatch. Changes are committed and tagged with the date (`sync-YYYY-MM-DD`). After a successful sync with changes, the workflow triggers a Vercel Deploy Hook to rebuild the site.
+
+To set up the deploy hook:
+
+1. Create a [Vercel Deploy Hook](https://vercel.com/docs/deploy-hooks) for the OpenLex project
+2. Add it as a repository secret `VERCEL_DEPLOY_HOOK` in the openlex-laws repo settings
+
+```yaml
+# .github/workflows/sync.yml (excerpt)
+- name: Trigger deploy
+  if: success()
+  run: |
+    if [ -n "${{ secrets.VERCEL_DEPLOY_HOOK }}" ]; then
+      curl -s -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+    fi
+```
 
 ### Dependencies
 
