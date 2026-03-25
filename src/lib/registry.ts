@@ -278,7 +278,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
           const sourceLink: RelatedLink = { type: "book", path: sourcePath, name: `${book.title_short ?? book.title} – ${e.title}` };
           for (const target of e.related) {
             const targetLink = resolveLink(target);
-            if (targetLink) { addRelated(sourcePath, `/${target}`, targetLink); addRelated(`/${target}`, sourcePath, sourceLink); }
+            if (targetLink) { addRelated(sourcePath, `/${target}`, sourceLink); addRelated(`/${target}`, sourcePath, targetLink); }
           }
         }
         if (e.children) walkRelated(e.children);
@@ -295,7 +295,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
         const sourceLink: RelatedLink = { type: "journal", path: sourcePath, name: `${journal.title_short ?? journal.title} – ${art.title}` };
         for (const target of art.related) {
           const targetLink = resolveLink(target);
-          if (targetLink) { addRelated(sourcePath, `/${target}`, targetLink); addRelated(`/${target}`, sourcePath, sourceLink); }
+          if (targetLink) { addRelated(sourcePath, `/${target}`, sourceLink); addRelated(`/${target}`, sourcePath, targetLink); }
         }
       }
     }
