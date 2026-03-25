@@ -4,7 +4,6 @@ import { getProvider } from "@/lib/git-provider";
 import { loadSiteConfig } from "@/lib/site";
 import { requireAuth } from "@/lib/api-auth";
 import { exportMarkdown } from "@/lib/export-md";
-import { exportDocx } from "@/lib/export-docx";
 import { log } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
@@ -76,6 +75,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (format === "docx") {
+      const { exportDocx } = await import("@/lib/export-docx");
       const buf = await exportDocx(pages);
       return new NextResponse(new Uint8Array(buf), { headers: { "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Content-Disposition": `attachment; filename="${filename}"` } });
     }
