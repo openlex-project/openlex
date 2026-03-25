@@ -12,9 +12,9 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 - **Framework:** Next.js 16 (App Router) with TypeScript
 - **Hosting:** Vercel (Hobby tier, Serverless Functions, Edge)
 - **Styling:** Tailwind CSS v4 (CSS-first config, no `tailwind.config.js`)
-- **Auth:** NextAuth.js — social login only (GitHub, Google, Apple)
-- **Database:** Upstash Redis (via Vercel Marketplace) — user preferences, bookmarks, history only
-- **Content Source:** Private GitHub repos via PAT (server-side only, never client-side)
+- **Auth:** NextAuth.js — flexible OAuth (GitHub, Google, Apple, Azure AD, GitLab, Keycloak, Okta, Auth0, Cognito, generic OIDC)
+- **Database:** Upstash Redis — user preferences, bookmarks, history, ETag cache
+- **Content Source:** Private GitHub/GitLab repos via PAT (server-side only, never client-side)
 - **Content Format:** Markdown (Pandoc flavor) + YAML metadata
 - **Testing:** Vitest
 - **Package Manager:** pnpm
@@ -33,9 +33,10 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 
 ## Code Conventions
 
-- Language in code: **English** (variables, functions, comments).
+- Language in code: **English** (variables, functions, comments) — always, even when the user writes in German.
 - Language in UI text: configurable via `site.yaml` `default_locale` (default: `de`), English via i18n.
 - Language in documentation (`/docs/`): **English**.
+- Language in commit messages: **English**.
 - File names: kebab-case (`citation-bar.tsx`, `footnote-drawer.tsx`).
 - Components: PascalCase (`CitationBar`, `FootnoteDrawer`).
 - No `any` types; strict TypeScript configuration.
@@ -44,10 +45,18 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 ## Deployment Conventions
 
 - `main` = Production (auto-deploy on Vercel)
-- `develop` = Preview deployments
 - Feature branches: `feat/description`, bugfixes: `fix/description`
 - Commit messages: Conventional Commits (`feat:`, `fix:`, `docs:`)
-- Env vars: `GITHUB_PAT`, `CONTENT_REPOS` (comma-separated repo paths), `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `OAUTH_GITHUB_ID`, `OAUTH_GITHUB_SECRET`, `OAUTH_GOOGLE_ID`, `OAUTH_GOOGLE_SECRET`, `OAUTH_APPLE_ID`, `OAUTH_APPLE_SECRET`
+- **Vercel CLI** is installed locally for deployment status, logs, and env management.
+- Env vars (secrets only — everything else in `site.yaml`):
+  - `GITHUB_PAT` — GitHub Personal Access Token (content repos)
+  - `GITLAB_PAT` — GitLab Personal Access Token (optional, for GitLab repos)
+  - `NEXTAUTH_SECRET` — NextAuth.js session secret
+  - `REDIS_REST_URL` — Upstash Redis REST URL
+  - `REDIS_REST_TOKEN` — Upstash Redis REST token
+  - `OAUTH_{n}_PROVIDER`, `OAUTH_{n}_ID`, `OAUTH_{n}_SECRET` — OAuth providers (n=1,2,...)
+- Local development: all secrets in `.env.local` (gitignored via `.env*` pattern)
+- `content_repos` belongs in `site.yaml`, NOT in env vars
 
 ## Site Configuration
 
@@ -56,10 +65,11 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 
 ## Content Repo Discovery
 
-- The portal is open source; configuration is done entirely via env vars on Vercel + `site.yaml` in the repo.
-- `CONTENT_REPOS` contains GitHub repo paths (e.g., `"openlex-project/oc-dsgvo,openlex-project/openlex-laws"`).
-- Each content repo describes itself via a `meta.yaml` (slug, type, title, abbreviation, etc.).
+- The portal is open source; configuration is done via `site.yaml` in the repo + env vars for secrets on Vercel.
+- `content_repos` in `site.yaml` lists repos with explicit protocol prefix: `github://org/repo` or `gitlab://group/project`.
+- Each content repo describes itself via a `meta.yaml` (slug, type, title, etc.).
 - At `next build`, the app fetches `meta.yaml` from each repo and builds an internal registry. Repos are the single source of truth.
+- Registry is cached in-memory (5min TTL) and GitHub API responses are cached via ETags in Redis (persists across deploys, conditional requests don't consume rate limit).
 
 ## Markdown Pipeline (Web Rendering)
 
@@ -232,8 +242,10 @@ New variants are added centrally as needed.
 
 ## Accessibility
 
-- WCAG 2.1 AA as minimum standard.
+- WCAG 2.2 AA as minimum standard.
 - Semantic HTML, ARIA attributes, keyboard navigation, sufficient contrast.
+- Accessible dropdown menus via shared `useDropdownMenu` hook (role=menu, Escape, arrow keys, focus management).
+- Minimum target size 24×24px for interactive elements.
 
 ## Internationalization (i18n)
 
@@ -250,8 +262,9 @@ New variants are added centrally as needed.
 | Key | Type | Description |
 |---|---|---|
 | `user:settings:[ID]` | JSON | Privacy options (history duration, status) |
-| `user:bookmarks:[ID]` | List | Objects with URLs and titles |
+| `user:bookmarks:[ID]` | Hash | Bookmarks with paths and titles |
 | `user:history:[ID]` | List | Visited URLs with timestamps (pruning logic) |
+| `etag:gh:*` | JSON | GitHub API ETag cache (persists across deploys) |
 
 ## Versions
 
