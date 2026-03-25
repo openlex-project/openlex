@@ -41,7 +41,7 @@ export function BookmarkButton({ title }: { title?: string }) {
     <button
       onClick={toggle}
       disabled={pending}
-      className="inline-flex items-center gap-1 text-sm transition-colors"
+      className="inline-flex items-center gap-1 text-sm transition-colors p-1"
       style={{ color: bookmarked ? "var(--color-brand-600)" : "var(--text-tertiary)" }}
       aria-label={bookmarked ? t("bookmark.remove") : t("bookmark.add")}
       aria-pressed={bookmarked}

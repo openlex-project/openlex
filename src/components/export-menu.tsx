@@ -33,7 +33,7 @@ export function ExportMenu({ formats, requireAuth, contentType }: { formats: str
 
   return (
     <div className="relative">
-      <button {...triggerProps} className="inline-flex items-center text-sm transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={t("export.title")}>
+      <button {...triggerProps} className="inline-flex items-center text-sm transition-colors p-1" style={{ color: "var(--text-tertiary)" }} aria-label={t("export.title")}>
         <Download className="w-5 h-5" />
       </button>
       {open && (

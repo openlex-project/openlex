@@ -40,7 +40,7 @@ export function ShareMenu({ title, siteName, targets }: { title: string; siteNam
 
   return (
     <div className="relative">
-      <button {...triggerProps} className="inline-flex items-center text-sm transition-colors" style={{ color: "var(--text-tertiary)" }} aria-label={t("share.title")}>
+      <button {...triggerProps} className="inline-flex items-center text-sm transition-colors p-1" style={{ color: "var(--text-tertiary)" }} aria-label={t("share.title")}>
         <Share2 className="w-5 h-5" />
       </button>
       {open && (
