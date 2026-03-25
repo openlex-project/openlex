@@ -46,6 +46,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.branding?.brand_hue ?? 265 } as React.CSSProperties} suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://api.github.com" />
         <link rel="dns-prefetch" href="https://api.github.com" />
         {template.css && <style dangerouslySetInnerHTML={{ __html: template.css }} />}
       </head>

@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { headers } from "next/headers";
+import dynamic from "next/dynamic";
 import UserButton from "@/components/user-button";
-import { SearchBox } from "@/components/search-box";
 import { LogoFull } from "@/components/logo";
 import { LicenseProvider, LicenseDisplay } from "@/components/license-context";
 import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate } from "@/lib/template";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
+
+const SearchBox = dynamic(() => import("@/components/search-box").then((m) => m.SearchBox));
 
 export default async function ReaderLayout({
   children,
