@@ -95,8 +95,18 @@ async function fetchRemoteTemplate(repoSpec: string, ref: string): Promise<Templ
     name: cfg.name ?? repo,
     variants: { ...DEFAULT_VARIANTS, ...cfg.variants },
     home: cfg.home,
-    css: css ?? undefined,
+    css: css ? sanitizeCss(css) : undefined,
   };
+}
+
+/** Strip dangerous constructs from remote CSS. */
+function sanitizeCss(raw: string): string {
+  return raw
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/@import\s+[^;]+;/gi, "")
+    .replace(/expression\s*\(/gi, "")
+    .replace(/javascript\s*:/gi, "");
 }
 
 /**
