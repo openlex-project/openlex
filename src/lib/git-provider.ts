@@ -1,8 +1,8 @@
 import { log } from "@/lib/logger";
 import { loadSiteConfig } from "@/lib/site";
+import { getETag, setETag } from "./etag-cache";
 
-/** ISR revalidate value from site.yaml (default: 3600) */
-export function getRevalidate(): number | false {
+function getRevalidate(): number | false {
   return loadSiteConfig().features?.revalidate ?? 3600;
 }
 
@@ -51,14 +51,27 @@ function gitlabProvider(host: string): ContentProvider {
     ? process.env.GITLAB_PAT ?? ""
     : process.env[`GITLAB_${host.replace(/[.-]/g, "_").toUpperCase()}_PAT`] ?? process.env.GITLAB_PAT ?? "";
 
-  async function glFetch(url: string): Promise<Response | null> {
+  async function glFetch(url: string, cacheKey?: string): Promise<Response | null> {
     try {
-      const res = await fetch(url, {
-        headers: { "PRIVATE-TOKEN": token },
-        next: { revalidate: getRevalidate() },
-      });
-      if (!res.ok) log.warn("GitLab API %d: %s", res.status, url);
-      return res;
+      const headers: Record<string, string> = { "PRIVATE-TOKEN": token };
+      const cached = cacheKey ? await getETag(cacheKey) : null;
+      if (cached?.etag) headers["If-None-Match"] = cached.etag;
+
+      const res = await fetch(url, { headers, next: { revalidate: getRevalidate() } });
+
+      if (res.status === 304 && cached) return new Response(cached.body, { status: 304 });
+
+      if (!res.ok) {
+        log.warn("GitLab API %d: %s", res.status, url);
+        if (res.status === 429 && cached) return new Response(cached.body, { status: 429 });
+        return null;
+      }
+
+      const body = await res.text();
+      const etag = res.headers.get("etag");
+      if (cacheKey && etag) await setETag(cacheKey, { etag, body });
+
+      return new Response(body, { status: 200 });
     } catch (err) {
       log.error(err, "GitLab fetch failed: %s", url);
       return null;
@@ -69,7 +82,7 @@ function gitlabProvider(host: string): ContentProvider {
 
   return {
     async fetchFile(repo, path, ref = "main") {
-      const res = await glFetch(`${base}/projects/${pid(repo)}/repository/files/${encodeURIComponent(path)}?ref=${ref}`);
+      const res = await glFetch(`${base}/projects/${pid(repo)}/repository/files/${encodeURIComponent(path)}?ref=${ref}`, `etag:gl:${host}:${repo}:${path}:${ref}`);
       if (!res?.ok) return null;
       const data = (await res.json()) as { content?: string; encoding?: string };
       if (!data.content || data.encoding !== "base64") return null;
@@ -77,7 +90,7 @@ function gitlabProvider(host: string): ContentProvider {
     },
 
     async listFiles(repo, path, ref = "main") {
-      const res = await glFetch(`${base}/projects/${pid(repo)}/repository/tree?path=${encodeURIComponent(path)}&ref=${ref}&per_page=100`);
+      const res = await glFetch(`${base}/projects/${pid(repo)}/repository/tree?path=${encodeURIComponent(path)}&ref=${ref}&per_page=100`, `etag:gl:${host}:${repo}:${path}:${ref}:list`);
       if (!res?.ok) return [];
       const data = (await res.json()) as { name: string; type: string }[];
       if (!Array.isArray(data)) return [];
@@ -85,7 +98,7 @@ function gitlabProvider(host: string): ContentProvider {
     },
 
     async listDirs(repo, path, ref = "main") {
-      const res = await glFetch(`${base}/projects/${pid(repo)}/repository/tree?path=${encodeURIComponent(path)}&ref=${ref}&per_page=100`);
+      const res = await glFetch(`${base}/projects/${pid(repo)}/repository/tree?path=${encodeURIComponent(path)}&ref=${ref}&per_page=100`, `etag:gl:${host}:${repo}:${path}:${ref}:dirs`);
       if (!res?.ok) return [];
       const data = (await res.json()) as { name: string; type: string }[];
       if (!Array.isArray(data)) return [];
