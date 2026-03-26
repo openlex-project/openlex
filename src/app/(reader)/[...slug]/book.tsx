@@ -8,7 +8,7 @@ import { findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterS
 import { SetLicense } from "@/components/license-context";
 import { getProvider } from "@/lib/git-provider";
 import { renderMarkdown } from "@/lib/markdown";
-import { createCitationEngine, parseReferencesYaml } from "@/lib/citeproc";
+import { renderBackmatter } from "@/lib/backmatter";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { SidebarBook } from "@/components/sidebar-book";
 import { ContentActions } from "@/components/content-actions";
@@ -55,62 +55,6 @@ const BACKMATTER_SLUGS = new Set(["literaturverzeichnis", "rechtsprechungsverzei
 function parseSlug(rest: string[]): { fileSlug: string; ref: string } | null {
   if (rest.length === 1) return { fileSlug: rest[0]!, ref: "main" };
   if (rest.length === 2 && /^\d+ed$/.test(rest[0]!)) return { fileSlug: rest[1]!, ref: rest[0]! };
-  return null;
-}
-
-function flatFiles(toc: TocEntry[]): string[] {
-  const result: string[] = [];
-  for (const e of toc) { result.push(e.file); if (e.children) result.push(...flatFiles(e.children)); }
-  return result;
-}
-
-async function collectCitations(repo: string, toc: TocEntry[]): Promise<Set<string>> {
-  const keys = new Set<string>();
-  const contents = await Promise.all(flatFiles(toc).map((f) => getBookContent(repo, f.replace(/\.md$/, ""))));
-  const re = /@([a-zA-Z0-9_-]+)/g;
-  for (const md of contents) { if (!md) continue; for (const m of md.matchAll(re)) keys.add(m[1]!); }
-  return keys;
-}
-
-function collectAuthors(toc: TocEntry[]): { name: string; orcid?: string }[] {
-  const seen = new Set<string>();
-  const authors: { name: string; orcid?: string }[] = [];
-  for (const e of toc) {
-    if (e.author) {
-      const name = typeof e.author === "string" ? e.author : e.author.name;
-      if (!seen.has(name)) { seen.add(name); authors.push({ name, orcid: typeof e.author === "object" ? e.author.orcid : undefined }); }
-    }
-    if (e.children) for (const a of collectAuthors(e.children)) { if (!seen.has(a.name)) { seen.add(a.name); authors.push(a); } }
-  }
-  return authors.sort((a, b) => a.name.localeCompare(b.name));
-}
-
-async function renderBackmatter(section: string, meta: BookEntry): Promise<{ title: string; html: string } | null> {
-  if ((section === "literaturverzeichnis" || section === "rechtsprechungsverzeichnis") && meta.csl && meta.bibliography) {
-    const { provider: p, repo } = getProvider(meta.repo);
-    const [cslXml, refsYaml] = await Promise.all([p.fetchFile(repo, meta.csl), p.fetchFile(repo, meta.bibliography)]);
-    if (!cslXml || !refsYaml) return null;
-    const refs = parseReferencesYaml(refsYaml);
-    const cited = await collectCitations(meta.repo, meta.toc);
-    const isCase = section === "rechtsprechungsverzeichnis";
-    const filtered = refs.filter((r) => cited.has(r.id) && (isCase ? r.type === "legal_case" : r.type !== "legal_case"));
-    if (filtered.length === 0) return null;
-    const engine = createCitationEngine(cslXml, filtered);
-    for (const r of filtered) engine.cite(r.id);
-    let bib = engine.bibliography() || "";
-    const urlMap = new Map(filtered.filter((r) => r.URL).map((r) => [r.title as string, r.URL as string]));
-    bib = bib.replace(/<div class="csl-entry">(.*?)<\/div>/gs, (match, inner: string) => {
-      for (const [title, url] of urlMap) { if (inner.includes(title)) return `<div class="csl-entry"><a href="${url}" target="_blank" rel="noopener">${inner}</a></div>`; }
-      return match;
-    });
-    return { title: isCase ? "Rechtsprechungsverzeichnis" : "Literaturverzeichnis", html: bib };
-  }
-  if (section === "autorenverzeichnis") {
-    const authors = collectAuthors(meta.toc);
-    if (authors.length === 0) return null;
-    const html = "<dl>" + authors.map((a) => `<dt><strong>${a.name}</strong></dt>${a.orcid ? `<dd>ORCID: <a href="https://orcid.org/${a.orcid}">${a.orcid}</a></dd>` : ""}`).join("") + "</dl>";
-    return { title: "Autorenverzeichnis", html };
-  }
   return null;
 }
 
