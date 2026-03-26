@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { log } from "@/lib/logger";
+import type { z } from "zod";
 
 type Handler = (req: NextRequest, email: string) => Promise<NextResponse>;
 type SessionHandler = (req: NextRequest, email: string | null) => Promise<NextResponse>;
@@ -31,4 +32,11 @@ export function withSession(label: string, handler: SessionHandler) {
       return NextResponse.json({ error: "Internal error" }, { status: 500 });
     }
   };
+}
+
+/** Parse and validate request JSON body with a zod schema. Returns parsed data or a 400 NextResponse. */
+export async function parseBody<T extends z.ZodType>(req: NextRequest, schema: T): Promise<z.infer<T> | NextResponse> {
+  const result = schema.safeParse(await req.json());
+  if (!result.success) return NextResponse.json({ error: "Validation failed", issues: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) }, { status: 400 });
+  return result.data;
 }

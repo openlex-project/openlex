@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { buildRegistry, type TocEntry } from "@/lib/registry";
 import { getBookContent, getLawContent } from "@/lib/content";
 import { getProvider } from "@/lib/git-provider";
@@ -7,19 +8,17 @@ import { withSession } from "@/lib/api-utils";
 import { exportMarkdown } from "@/lib/export-md";
 import { log } from "@/lib/logger";
 
+const exportParams = z.object({ path: z.string().min(1), format: z.enum(["md", "docx"]).default("md"), scope: z.enum(["page", "chapter", "law"]).default("page") });
+
 export const GET = withSession("export GET", async (req, email) => {
     const site = loadSiteConfig();
     const exportConfig = site.features?.export;
     if (!exportConfig) return NextResponse.json({ error: "Export disabled" }, { status: 404 });
-
     if (exportConfig.require_auth && !email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { searchParams: sp } = req.nextUrl;
-    const path = sp.get("path");
-    const format = sp.get("format") ?? "md";
-    const scope = sp.get("scope") ?? "page";
-
-    if (!path) return NextResponse.json({ error: "Missing path" }, { status: 400 });
+    const parsed = exportParams.safeParse(Object.fromEntries(req.nextUrl.searchParams));
+    if (!parsed.success) return NextResponse.json({ error: "Invalid parameters", issues: parsed.error.issues }, { status: 400 });
+    const { path, format, scope } = parsed.data;
     if (!exportConfig.formats.includes(format)) return NextResponse.json({ error: "Unsupported format" }, { status: 400 });
 
     const segments = path.replace(/^\//, "").split("/");

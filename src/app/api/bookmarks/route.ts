@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { withAuth, withSession } from "@/lib/api-utils";
+import { z } from "zod";
+import { withAuth, withSession, parseBody } from "@/lib/api-utils";
 import { getBookmarks, toggleBookmark, isBookmarked } from "@/lib/redis";
+
+const toggleSchema = z.object({ path: z.string().min(1), title: z.string().optional() });
 
 export const GET = withSession("bookmarks GET", async (req, email) => {
   if (!email) return NextResponse.json({ bookmarks: [] });
@@ -10,6 +13,7 @@ export const GET = withSession("bookmarks GET", async (req, email) => {
 });
 
 export const POST = withAuth("bookmarks POST", async (req, email) => {
-  const { path, title } = (await req.json()) as { path: string; title?: string };
-  return NextResponse.json({ bookmarked: await toggleBookmark(email, path, title) });
+  const data = await parseBody(req, toggleSchema);
+  if (data instanceof NextResponse) return data;
+  return NextResponse.json({ bookmarked: await toggleBookmark(email, data.path, data.title) });
 });
