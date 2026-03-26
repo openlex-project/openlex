@@ -35,6 +35,7 @@ export interface FeaturesConfig {
   analytics?: AnalyticsConfig;
   revalidate?: number | false;
   rate_limit?: number;
+  error_tracking?: { provider: "sentry"; dsn_env?: string };
 }
 
 export interface SiteConfig {
