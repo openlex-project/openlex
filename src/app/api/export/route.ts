@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { buildRegistry, getBookContent, getLawContent, type TocEntry } from "@/lib/registry";
+import { buildRegistry, type TocEntry } from "@/lib/registry";
+import { getBookContent, getLawContent } from "@/lib/content";
 import { getProvider } from "@/lib/git-provider";
 import { loadSiteConfig } from "@/lib/site";
 import { withSession } from "@/lib/api-utils";

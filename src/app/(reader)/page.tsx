@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { buildRegistry, getLawProvisions } from "@/lib/registry";
+import { buildRegistry } from "@/lib/registry";
+import { getLawProvisions } from "@/lib/content";
 import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate, type HomeSection } from "@/lib/template";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";

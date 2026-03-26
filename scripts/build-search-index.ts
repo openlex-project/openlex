@@ -17,7 +17,8 @@ for (const envFile of [".env.local", ".env"]) {
 }
 
 async function main() {
-  const { buildRegistry, getBookContent, getLawContent, getJournalArticleContent } = await import("../src/lib/registry");
+  const { buildRegistry } = await import("../src/lib/registry");
+  const { getBookContent, getLawContent, getJournalArticleContent } = await import("../src/lib/content");
   const pagefind = await import("pagefind");
   const { index } = await pagefind.createIndex({ forceLanguage: "de" });
   if (!index) throw new Error("Failed to create pagefind index");

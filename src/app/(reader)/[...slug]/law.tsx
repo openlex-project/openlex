@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
-import { getLawContent, getLawProvisions, findLawBreadcrumb, type ContentRegistry, type LawMeta } from "@/lib/registry";
+import { type ContentRegistry, type LawMeta } from "@/lib/registry";
+import { getLawContent, getLawProvisions } from "@/lib/content";
+import { findLawBreadcrumb } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
 import { ContentActions } from "@/components/content-actions";

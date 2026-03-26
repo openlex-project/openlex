@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { getJournalArticleContent, type ContentRegistry, type JournalEntry, type JournalArticle } from "@/lib/registry";
+import { type ContentRegistry, type JournalEntry, type JournalArticle } from "@/lib/registry";
+import { getJournalArticleContent } from "@/lib/content";
 import { SetLicense } from "@/components/license-context";
 import { renderMarkdown } from "@/lib/markdown";
 import { SidebarJournal } from "@/components/sidebar-journal";
