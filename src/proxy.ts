@@ -21,9 +21,9 @@ export function proxy(request: NextRequest) {
 
   // Default locale: no prefix needed, just pass through
   if (!pathnameLocale && !locales.some((l) => pathname.startsWith(`/${l}`))) {
-    // Set locale header for server components
     const response = NextResponse.next();
     response.headers.set("x-locale", defaultLocale);
+    setCsp(response);
     return response;
   }
 
@@ -31,10 +31,26 @@ export function proxy(request: NextRequest) {
   if (pathnameLocale) {
     const response = NextResponse.next();
     response.headers.set("x-locale", pathnameLocale);
+    setCsp(response);
     return response;
   }
 
   return NextResponse.next();
+}
+
+function setCsp(res: NextResponse) {
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://plausible.io https://gc.zgo.at",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https:",
+    "font-src 'self' https://fonts.gstatic.com",
+    "connect-src 'self' https://api.github.com https://*.upstash.io https://plausible.io https://vitals.vercel-insights.com",
+    "frame-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+  ].join("; ");
+  res.headers.set("Content-Security-Policy", csp);
 }
 
 export const config = {
