@@ -9,11 +9,9 @@ import { renderMarkdown } from "@/lib/markdown";
 import { createCitationEngine, parseReferencesYaml } from "@/lib/citeproc";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { SidebarBook } from "@/components/sidebar-book";
-import { BookmarkButton } from "@/components/bookmark-button";
-import { ShareMenu } from "@/components/share-menu";
-import { ExportMenu } from "@/components/export-menu";
+import { ContentActions } from "@/components/content-actions";
 import { RelatedContent } from "@/components/related-content";
-import { loadSiteConfig } from "@/lib/site";
+import { PrevNextNav } from "@/components/prev-next-nav";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
 
@@ -166,27 +164,16 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   const authorName = tocEntry?.author ? (typeof tocEntry.author === "string" ? tocEntry.author : tocEntry.author.name) : null;
   const authorOrcid = tocEntry?.author && typeof tocEntry.author === "object" ? tocEntry.author.orcid : null;
   const authorLast = authorName?.split(" ").pop();
-  const site = loadSiteConfig();
 
-  const navBar = (pos: "top" | "bottom") => (
-    <nav aria-label={pos === "top" ? "Kapitelnavigation" : "Kapitelnavigation unten"} className={`flex flex-wrap items-center justify-between gap-2 text-sm ${pos === "top" ? "mb-6 pb-3 border-b" : "mt-12 pt-6 border-t"}`} style={{ borderColor: "var(--border)" }}>
-      {prev ? <Link href={prevHref!} className="hover:underline shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>← {prev.title}</Link> : <span />}
-      {pos === "top" && authorName && (
-        <span className="hidden sm:block mx-4 truncate" style={{ color: "var(--text-secondary)" }}>
-          {authorOrcid ? (
-            <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">{authorName}</a>
-          ) : authorName}
-        </span>
-      )}
-      {next ? <Link href={nextHref!} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{next.title} →</Link> : <span />}
-    </nav>
+  const authorCenter = authorName && (
+    authorOrcid ? <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">{authorName}</a> : authorName
   );
 
   return (
     <div className="flex">
       <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
       <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
-        {navBar("top")}
+        <PrevNextNav position="top" prev={prev ? { href: prevHref!, label: prev.title } : null} next={next ? { href: nextHref!, label: next.title } : null} center={authorCenter} ariaLabel="Kapitelnavigation" />
         <div className="mb-6 text-sm flex items-center gap-2" style={{ color: "var(--text-secondary)" }}>
           <span>
             {displayName} – {tocEntry?.title ?? fileSlug}
@@ -195,13 +182,11 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
               <> · <Link href={`/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</Link></>
             )}
           </span>
-          <BookmarkButton title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
-          {site.features?.sharing?.length && <ShareMenu title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} siteName={site.name} targets={site.features?.sharing} />}
-          {site.features?.export && <ExportMenu formats={site.features!.export!.formats} requireAuth={site.features!.export!.require_auth} contentType="book" />}
+          <ContentActions title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} contentType="book" />
         </div>
         <RelatedContent links={registry.relatedIndex.get(`/${meta.slug}/${fileSlug}`) ?? []} />
         <div className="content-prose prose-rn" dangerouslySetInnerHTML={{ __html: html }} />
-        {navBar("bottom")}
+        <PrevNextNav position="bottom" prev={prev ? { href: prevHref!, label: prev.title } : null} next={next ? { href: nextHref!, label: next.title } : null} ariaLabel="Kapitelnavigation" />
         <SetLicense value={meta.license} />
         <FeedbackButton repo={meta.repo} />
         <FootnoteTooltips />

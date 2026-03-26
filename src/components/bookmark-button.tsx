@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { Bookmark } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
+import { fetchJson } from "@/lib/fetch-json";
 
 export function BookmarkButton({ title }: { title?: string }) {
   const { data: session } = useSession();
@@ -15,8 +16,7 @@ export function BookmarkButton({ title }: { title?: string }) {
 
   useEffect(() => {
     if (!session) return;
-    fetch(`/api/bookmarks?path=${encodeURIComponent(pathname)}`)
-      .then((r) => r.ok ? r.json() : null)
+    fetchJson<{ bookmarked: boolean }>(`/api/bookmarks?path=${encodeURIComponent(pathname)}`)
       .then((d) => { if (d) setBookmarked(d.bookmarked); });
   }, [session, pathname]);
 

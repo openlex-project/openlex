@@ -8,9 +8,8 @@ import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
-import { ShareMenu } from "@/components/share-menu";
-import { ExportMenu } from "@/components/export-menu";
-import { loadSiteConfig } from "@/lib/site";
+import { ContentActions } from "@/components/content-actions";
+import { PrevNextNav } from "@/components/prev-next-nav";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
 
@@ -175,7 +174,6 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
     const md = await getJournalArticleContent(journal.repo, year!, issueNr!, articleSlug!);
     if (!md) notFound();
     const html = await renderMarkdown(md, article.numbering ? { numbering: { schema: article.numbering } } : undefined);
-    const site = loadSiteConfig();
 
     const idx = issue.articles.indexOf(article);
     const prev = issue.articles[idx - 1];
@@ -186,14 +184,9 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
       <div className="flex">
         <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
-          <nav aria-label="Article navigation" className="flex flex-wrap items-center justify-between gap-2 text-sm mb-6 pb-3 border-b" style={{ borderColor: "var(--border)" }}>
-            {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>← {authorLastNames(prev)}</Link> : <span />}
-            <span className="hidden sm:block truncate mx-4" style={{ color: "var(--text-secondary)" }}><AuthorLine article={article} /></span>
-            {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right shrink-0 max-w-[45%] truncate" style={{ color: "var(--active-text)" }}>{authorLastNames(next)} →</Link> : <span />}
-          </nav>
-          <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title} <BookmarkButton title={`${article.title} – ${journal.title_short ?? journal.title}`} />
-            {site.features?.sharing?.length && <ShareMenu title={article.title} siteName={site.name} targets={site.features?.sharing} />}
-            {site.features?.export && <ExportMenu formats={site.features!.export!.formats} requireAuth={site.features!.export!.require_auth} contentType="journal" />}
+          <PrevNextNav position="top" prev={prev ? { href: `${articleBase}/${prev.slug}`, label: authorLastNames(prev) } : null} next={next ? { href: `${articleBase}/${next.slug}`, label: authorLastNames(next) } : null} center={<AuthorLine article={article} />} ariaLabel="Article navigation" />
+          <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title}
+            <ContentActions title={`${article.title} – ${journal.title_short ?? journal.title}`} contentType="journal" />
           </h1>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
             <AuthorLine article={article} />
@@ -204,10 +197,7 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
             )}
           </p>
           <div className="content-prose" dangerouslySetInnerHTML={{ __html: html }} />
-          <nav aria-label="Article navigation" className="flex justify-between text-sm mt-12 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
-            {prev ? <Link href={`${articleBase}/${prev.slug}`} className="hover:underline" style={{ color: "var(--active-text)" }}>← {prev.title}</Link> : <span />}
-            {next ? <Link href={`${articleBase}/${next.slug}`} className="hover:underline text-right" style={{ color: "var(--active-text)" }}>{next.title} →</Link> : <span />}
-          </nav>
+          <PrevNextNav position="bottom" prev={prev ? { href: `${articleBase}/${prev.slug}`, label: prev.title } : null} next={next ? { href: `${articleBase}/${next.slug}`, label: next.title } : null} ariaLabel="Article navigation" />
           <SetLicense value={journal.license} />
           <HistoryTracker title={article.title} />
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: articleJsonLd(journal, article, year!, issueNr!, `${base}/${year}/${issueNr}/${articleSlug}`) }} />

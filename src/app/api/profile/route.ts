@@ -1,43 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/api-auth";
+import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/api-utils";
 import { exportUserData, deleteAllUserData, getUserSettings, setUserSetting } from "@/lib/redis";
-import { log } from "@/lib/logger";
 
-export async function GET(req: NextRequest) {
-  try {
-    const auth = await requireAuth();
-    if (auth instanceof NextResponse) return auth;
-    if (req.nextUrl.searchParams.has("settings")) {
-      return NextResponse.json({ settings: await getUserSettings(auth) });
-    }
-    return NextResponse.json(await exportUserData(auth));
-  } catch (err) {
-    log.error(err, "profile GET failed");
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
-  }
-}
+export const GET = withAuth("profile GET", async (req, email) => {
+  if (req.nextUrl.searchParams.has("settings")) return NextResponse.json({ settings: await getUserSettings(email) });
+  return NextResponse.json(await exportUserData(email));
+});
 
-export async function PATCH(req: NextRequest) {
-  try {
-    const auth = await requireAuth();
-    if (auth instanceof NextResponse) return auth;
-    const { key, value } = (await req.json()) as { key: string; value: string };
-    await setUserSetting(auth, key, value);
-    return NextResponse.json({ settings: await getUserSettings(auth) });
-  } catch (err) {
-    log.error(err, "profile PATCH failed");
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
-  }
-}
+export const PATCH = withAuth("profile PATCH", async (req, email) => {
+  const { key, value } = (await req.json()) as { key: string; value: string };
+  await setUserSetting(email, key, value);
+  return NextResponse.json({ settings: await getUserSettings(email) });
+});
 
-export async function DELETE() {
-  try {
-    const auth = await requireAuth();
-    if (auth instanceof NextResponse) return auth;
-    await deleteAllUserData(auth);
-    return NextResponse.json({ deleted: true });
-  } catch (err) {
-    log.error(err, "profile DELETE failed");
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
-  }
-}
+export const DELETE = withAuth("profile DELETE", async (_req, email) => {
+  await deleteAllUserData(email);
+  return NextResponse.json({ deleted: true });
+});

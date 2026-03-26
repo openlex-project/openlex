@@ -2,20 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { buildRegistry, getBookContent, getLawContent, type TocEntry } from "@/lib/registry";
 import { getProvider } from "@/lib/git-provider";
 import { loadSiteConfig } from "@/lib/site";
-import { requireAuth } from "@/lib/api-auth";
+import { withSession } from "@/lib/api-utils";
 import { exportMarkdown } from "@/lib/export-md";
 import { log } from "@/lib/logger";
 
-export async function GET(req: NextRequest) {
-  try {
+export const GET = withSession("export GET", async (req, email) => {
     const site = loadSiteConfig();
     const exportConfig = site.features?.export;
     if (!exportConfig) return NextResponse.json({ error: "Export disabled" }, { status: 404 });
 
-    if (exportConfig.require_auth) {
-      const auth = await requireAuth();
-      if (auth instanceof NextResponse) return auth;
-    }
+    if (exportConfig.require_auth && !email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { searchParams: sp } = req.nextUrl;
     const path = sp.get("path");
@@ -81,11 +77,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ error: "Unsupported format" }, { status: 400 });
-  } catch (err) {
-    log.error(err, "Export failed");
-    return NextResponse.json({ error: "Export failed" }, { status: 500 });
-  }
-}
+});
 
 async function collectBookChapter(repo: string, toc: TocEntry[], rootSlug?: string): Promise<{ title: string; markdown: string }[]> {
   const pages: { title: string; markdown: string }[] = [];

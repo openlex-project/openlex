@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { ChevronRight } from "lucide-react";
 import { SidebarShell } from "./sidebar-shell";
+import { useExpandable } from "./use-expandable";
 import type { LawTocNode } from "@/lib/registry";
 
 interface Props {
@@ -70,27 +71,8 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
 
 export function SidebarLaw({ law, title, unitLabel, toc, provisions, activeNr }: Props) {
   const pathname = usePathname();
-
-  const initialExpanded = useMemo(() => {
-    if (!activeNr) return new Set<string>();
-    return new Set(findExpandedKeys(toc, activeNr));
-  }, [toc, activeNr]);
-
-  const [expanded, setExpanded] = useState(initialExpanded);
-
-  useEffect(() => {
-    if (activeNr) {
-      setExpanded((prev) => {
-        const keys = findExpandedKeys(toc, activeNr);
-        if (keys.every((k) => prev.has(k))) return prev;
-        const next = new Set(prev);
-        keys.forEach((k) => next.add(k));
-        return next;
-      });
-    }
-  }, [activeNr, toc]);
-
-  const onToggle = (key: string) => setExpanded((s) => { const n = new Set(s); n.has(key) ? n.delete(key) : n.add(key); return n; });
+  const activeKeys = useMemo(() => activeNr ? findExpandedKeys(toc, activeNr) : [], [toc, activeNr]);
+  const { expanded, toggle: onToggle } = useExpandable(activeKeys);
 
   return (
     <SidebarShell>

@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useMemo } from "react";
 import { ChevronRight } from "lucide-react";
 import { SidebarShell } from "./sidebar-shell";
+import { useExpandable } from "./use-expandable";
 import type { JournalIssue } from "@/lib/registry";
 
 interface Props {
@@ -19,13 +20,8 @@ interface Props {
 
 export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle }: Props) {
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState<Set<string>>(() => {
-    const s = new Set<string>();
-    if (activeYear && activeIssue) s.add(`${activeYear}-${activeIssue}`);
-    return s;
-  });
-
-  const toggleIssue = (key: string) => setExpanded((s) => { const n = new Set(s); n.has(key) ? n.delete(key) : n.add(key); return n; });
+  const activeKeys = useMemo(() => activeYear && activeIssue ? [`${activeYear}-${activeIssue}`] : [], [activeYear, activeIssue]);
+  const { expanded, toggle: toggleIssue } = useExpandable(activeKeys);
   const base = `/${journal}`;
 
   return (
