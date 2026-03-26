@@ -8,7 +8,6 @@ import OktaProvider from "next-auth/providers/okta";
 import Auth0Provider from "next-auth/providers/auth0";
 import GitLabProvider from "next-auth/providers/gitlab";
 import CognitoProvider from "next-auth/providers/cognito";
-import { storeUserEmail } from "@/lib/redis";
 import { log } from "@/lib/logger";
 
 /* ─── Provider factories ─── */
@@ -85,11 +84,4 @@ for (let i = 1; i <= 10; i++) {
 export const authOptions: AuthOptions = {
   providers,
   pages: { signIn: "/login" },
-  events: {
-    async signIn({ user }) {
-      if (user.email) {
-        await storeUserEmail(user.email, user.name ?? undefined).catch((err) => log.error(err, "Failed to store user email"));
-      }
-    },
-  },
 };

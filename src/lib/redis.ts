@@ -1,116 +1,90 @@
 import { Redis } from "@upstash/redis";
 import { log } from "@/lib/logger";
 
-const redis = new Redis({
-  url: process.env.REDIS_REST_URL ?? "",
-  token: process.env.REDIS_REST_TOKEN ?? "",
-});
+const redis = (process.env.REDIS_REST_URL && process.env.REDIS_REST_TOKEN)
+  ? new Redis({ url: process.env.REDIS_REST_URL, token: process.env.REDIS_REST_TOKEN })
+  : null;
 
-/** Delete key if wrong type (legacy migration) */
-async function ensureHash(key: string): Promise<void> {
-  const type = await redis.type(key);
-  if (type !== "hash" && type !== "none") {
-    log.warn("Deleting key %s with wrong type %s (expected hash)", key, type);
-    await redis.del(key);
-  }
+if (!redis) log.warn("Redis not configured — bookmarks, history, and profile will be unavailable");
+
+const HISTORY_TTL = 90 * 24 * 60 * 60; // 90 days
+
+async function safe<T>(fn: (r: Redis) => Promise<T>, fallback: T): Promise<T> {
+  if (!redis) return fallback;
+  try { return await fn(redis); } catch (err) { log.error(err, "Redis operation failed"); return fallback; }
 }
 
-/** Get user bookmarks */
+/* ─── Bookmarks (Hash: path → title) ─── */
+
 export async function getBookmarks(userId: string): Promise<{ path: string; title: string }[]> {
-  const key = `bookmarks:${userId}`;
-  try {
-    const data = (await redis.hgetall(key)) ?? {};
+  return safe(async (r) => {
+    const data = (await r.hgetall(`bookmarks:${userId}`)) ?? {};
     return Object.entries(data).map(([path, title]) => ({ path, title: title as string }));
-  } catch (err) {
-    if (err instanceof Error && err.message.includes("WRONGTYPE")) {
-      await ensureHash(key);
-      return [];
-    }
-    throw err;
-  }
+  }, []);
 }
 
-/** Store user email + name on sign-in */
-export async function storeUserEmail(email: string, name?: string): Promise<void> {
-  await redis.hset(`user:${email}`, { email, name: name ?? "", ts: Date.now() });
-}
-
-/** Check if a path is bookmarked */
 export async function isBookmarked(userId: string, path: string): Promise<boolean> {
-  return !!(await redis.hexists(`bookmarks:${userId}`, path));
+  return safe(async (r) => !!(await r.hexists(`bookmarks:${userId}`, path)), false);
 }
 
-/** Toggle a bookmark, returns new state */
 export async function toggleBookmark(userId: string, path: string, title?: string): Promise<boolean> {
-  const key = `bookmarks:${userId}`;
-  const exists = await redis.hexists(key, path);
-  if (exists) {
-    await redis.hdel(key, path);
-    return false;
-  }
-  await redis.hset(key, { [path]: title ?? path });
-  return true;
+  return safe(async (r) => {
+    const key = `bookmarks:${userId}`;
+    if (await r.hexists(key, path)) { await r.hdel(key, path); return false; }
+    await r.hset(key, { [path]: title ?? path });
+    return true;
+  }, false);
 }
 
-export interface HistoryEntry {
-  path: string;
-  title: string;
-  ts: number;
-}
+/* ─── History (Sorted Set with dedup hash) ─── */
 
-/** Add a page visit to history (sorted set, max 50) */
+export interface HistoryEntry { path: string; title: string; ts: number }
+
 export async function addHistory(userId: string, path: string, title: string): Promise<void> {
-  const key = `history:${userId}`;
-  // Remove old entry for same path, then add with current timestamp
-  const existing = await redis.zrange<string[]>(key, 0, -1);
-  for (const e of existing) {
-    try {
-      const parsed = typeof e === "string" ? JSON.parse(e) : e;
-      if (parsed.path === path) await redis.zrem(key, e);
-    } catch (err) { log.error(err, "Failed to parse history entry"); }
-  }
-  await redis.zadd(key, { score: Date.now(), member: JSON.stringify({ path, title, ts: Date.now() }) });
-  // Trim to 50 entries
-  const count = await redis.zcard(key);
-  if (count > 50) {
-    await redis.zremrangebyrank(key, 0, count - 51);
-  }
+  await safe(async (r) => {
+    const setKey = `history:${userId}`;
+    const dedupKey = `history-dedup:${userId}`;
+    // Remove previous entry for same path via dedup hash
+    const prev = await r.hget<string>(dedupKey, path);
+    if (prev) await r.zrem(setKey, prev);
+    // Add new entry
+    const member = JSON.stringify({ path, title, ts: Date.now() });
+    await r.zadd(setKey, { score: Date.now(), member });
+    await r.hset(dedupKey, { [path]: member });
+    // Trim to 50 + set TTL
+    const count = await r.zcard(setKey);
+    if (count > 50) await r.zremrangebyrank(setKey, 0, count - 51);
+    await r.expire(setKey, HISTORY_TTL);
+    await r.expire(dedupKey, HISTORY_TTL);
+  }, undefined);
 }
 
-/** Get recent history entries (newest first) */
 export async function getHistory(userId: string, limit = 50): Promise<HistoryEntry[]> {
-  const raw = await redis.zrange<string[]>(`history:${userId}`, 0, limit - 1, { rev: true });
-  return raw.map((s) => (typeof s === "string" ? JSON.parse(s) : s) as HistoryEntry);
+  return safe(async (r) => {
+    const raw = await r.zrange<string[]>(`history:${userId}`, 0, limit - 1, { rev: true });
+    return raw.map((s) => (typeof s === "string" ? JSON.parse(s) : s) as HistoryEntry);
+  }, []);
 }
 
-/** User settings */
+/* ─── Settings (Hash) ─── */
+
 export async function getUserSettings(userId: string): Promise<Record<string, string>> {
-  return (await redis.hgetall(`settings:${userId}`)) ?? {};
+  return safe(async (r) => (await r.hgetall(`settings:${userId}`)) ?? {}, {});
 }
 
 export async function setUserSetting(userId: string, key: string, value: string): Promise<void> {
-  await redis.hset(`settings:${userId}`, { [key]: value });
+  await safe((r) => r.hset(`settings:${userId}`, { [key]: value }), 0);
 }
 
-/** Export all user data (GDPR Art. 15) */
+/* ─── GDPR ─── */
+
 export async function exportUserData(userId: string): Promise<Record<string, unknown>> {
-  const email = userId; // userId is the email
-  const [user, bookmarks, history, settings] = await Promise.all([
-    redis.hgetall(`user:${email}`),
-    getBookmarks(userId),
-    getHistory(userId),
-    getUserSettings(userId),
-  ]);
-  return { user, bookmarks, history, settings };
+  const [bookmarks, history, settings] = await Promise.all([getBookmarks(userId), getHistory(userId), getUserSettings(userId)]);
+  return { bookmarks, history, settings };
 }
 
-/** Delete all user data (GDPR Art. 17) */
 export async function deleteAllUserData(userId: string): Promise<void> {
-  const email = userId;
-  await Promise.all([
-    redis.del(`user:${email}`),
-    redis.del(`bookmarks:${userId}`),
-    redis.del(`history:${userId}`),
-    redis.del(`settings:${userId}`),
-  ]);
+  await safe(async (r) => {
+    await Promise.all([r.del(`bookmarks:${userId}`), r.del(`history:${userId}`), r.del(`history-dedup:${userId}`), r.del(`settings:${userId}`)]);
+  }, undefined);
 }
