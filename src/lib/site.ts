@@ -34,6 +34,7 @@ export interface FeaturesConfig {
   related_content_display?: "badge" | "sidebar";
   analytics?: AnalyticsConfig;
   revalidate?: number | false;
+  rate_limit?: number;
 }
 
 export interface SiteConfig {

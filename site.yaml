@@ -64,3 +64,6 @@ features:
   # ISR revalidation interval in seconds (default: 3600).
   # Set to false to disable periodic refetch (use deploy hooks instead).
   revalidate: false
+
+  # Rate limit for export API (requests per minute per user, default: 60).
+  rate_limit: 30

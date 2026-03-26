@@ -6,6 +6,7 @@ import { getProvider } from "@/lib/git-provider";
 import { loadSiteConfig } from "@/lib/site";
 import { withSession } from "@/lib/api-utils";
 import { exportMarkdown } from "@/lib/export-md";
+import { rateLimit } from "@/lib/rate-limit";
 import { log } from "@/lib/logger";
 
 const exportParams = z.object({ path: z.string().min(1), format: z.enum(["md", "docx"]).default("md"), scope: z.enum(["page", "chapter", "law"]).default("page") });
@@ -15,6 +16,10 @@ export const GET = withSession("export GET", async (req, email) => {
     const exportConfig = site.features?.export;
     if (!exportConfig) return NextResponse.json({ error: "Export disabled" }, { status: 404 });
     if (exportConfig.require_auth && !email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const limit = site.features?.rate_limit ?? 60;
+    const limited = rateLimit(email ?? req.headers.get("x-forwarded-for") ?? "anon", limit);
+    if (limited) return limited;
 
     const parsed = exportParams.safeParse(Object.fromEntries(req.nextUrl.searchParams));
     if (!parsed.success) return NextResponse.json({ error: "Invalid parameters", issues: parsed.error.issues }, { status: 400 });
