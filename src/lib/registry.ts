@@ -157,7 +157,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
   const laws = new Map<string, LawMeta>();
   const journals = new Map<string, JournalEntry>();
 
-  for (const repoUrl of getContentRepos()) {
+  await Promise.all(getContentRepos().map(async (repoUrl) => {
     try {
     const { provider: p, repo } = getProvider(repoUrl);
     const metaRaw = await p.fetchFile(repo, "meta.yaml");
@@ -168,7 +168,7 @@ export async function buildRegistry(): Promise<ContentRegistry> {
         const jmeta = meta as BookMeta & { doi_prefix?: string };
         const issues = await discoverJournal(repoUrl, jmeta.doi_prefix);
         journals.set(meta.slug, { ...meta, repo: repoUrl, doi_prefix: jmeta.doi_prefix, issues });
-        continue;
+        return;
       }
 
       const tocRaw = await p.fetchFile(repo, "toc.yaml");
@@ -184,13 +184,13 @@ export async function buildRegistry(): Promise<ContentRegistry> {
           .map((f) => ({ file: f, title: f.replace(/\.md$/, "") }));
       }
       books.set(meta.slug, { ...meta, repo: repoUrl, toc });
-      continue;
+      return;
     }
 
     const syncRaw = await p.fetchFile(repo, "sync.yaml");
     if (syncRaw) {
       const sync = parse(syncRaw) as SyncYaml;
-      for (const [slug, law] of Object.entries(sync.laws)) {
+      await Promise.all(Object.entries(sync.laws).map(async ([slug, law]) => {
         const tocRaw = await p.fetchFile(repo, `${slug}/toc.yaml`);
         const toc: LawTocNode[] = tocRaw ? (parse(tocRaw) as LawTocNode[]) : [];
         laws.set(slug, {
@@ -204,12 +204,12 @@ export async function buildRegistry(): Promise<ContentRegistry> {
           repo: repoUrl,
           toc,
         });
-      }
+      }));
     }
     } catch (err) {
       log.error(err, "Failed to load content repo: %s", repoUrl);
     }
-  }
+  }));
 
   const slugMap = new Map<string, ContentEntry>();
   const reserved = new Set(["category", "login", "search", "api", "favicon.svg", "bookmarks", "history", "profile", "feedback"]);

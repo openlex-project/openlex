@@ -1,23 +1,25 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
+import dynamic from "next/dynamic";
 import { getBookContent, findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterSections, type TocEntry, type BookEntry, type ContentRegistry } from "@/lib/registry";
 import { SetLicense } from "@/components/license-context";
 import { getProvider } from "@/lib/git-provider";
 import { renderMarkdown } from "@/lib/markdown";
 import { createCitationEngine, parseReferencesYaml } from "@/lib/citeproc";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
-import { FeedbackButton } from "@/components/feedback-button";
 import { SidebarBook } from "@/components/sidebar-book";
-import { FootnoteTooltips } from "@/components/footnote-tooltips";
 import { BookmarkButton } from "@/components/bookmark-button";
-import { HistoryTracker } from "@/components/history-tracker";
 import { ShareMenu } from "@/components/share-menu";
 import { ExportMenu } from "@/components/export-menu";
 import { RelatedContent } from "@/components/related-content";
 import { loadSiteConfig } from "@/lib/site";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
+
+const FeedbackButton = dynamic(() => import("@/components/feedback-button").then((m) => m.FeedbackButton));
+const FootnoteTooltips = dynamic(() => import("@/components/footnote-tooltips").then((m) => m.FootnoteTooltips));
+const HistoryTracker = dynamic(() => import("@/components/history-tracker").then((m) => m.HistoryTracker));
 
 function bookChapterJsonLd(meta: BookEntry, chapter: { title: string; author?: string | { name: string; orcid?: string } }, url: string): string {
   const authors = chapter.author
