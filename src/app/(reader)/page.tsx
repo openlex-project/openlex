@@ -3,13 +3,14 @@ import { headers } from "next/headers";
 import { buildRegistry } from "@/lib/registry";
 import { getLawProvisions } from "@/lib/content";
 import { loadSiteConfig } from "@/lib/site";
+import { safeJsonLd } from "@/lib/escape-html";
 import { loadTemplate, type HomeSection } from "@/lib/template";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { Logo } from "@/components/logo";
 
 function websiteJsonLd(url: string): string {
   const site = loadSiteConfig();
-  return JSON.stringify({
+  return safeJsonLd({
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: site.name,

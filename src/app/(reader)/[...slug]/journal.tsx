@@ -12,10 +12,11 @@ import { HistoryTracker } from "@/components/history-tracker";
 import { ContentActions } from "@/components/content-actions";
 import { PrevNextNav } from "@/components/prev-next-nav";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
+import { safeJsonLd } from "@/lib/escape-html";
 import type { Metadata } from "next";
 
 function articleJsonLd(journal: JournalEntry, article: JournalArticle, year: string, issue: string, url: string): string {
-  return JSON.stringify({
+  return safeJsonLd({
     "@context": "https://schema.org",
     "@type": "ScholarlyArticle",
     headline: article.title,

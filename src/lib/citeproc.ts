@@ -6,6 +6,7 @@
 const CSL = require("citeproc");
 import { parse } from "yaml";
 import { log } from "@/lib/logger";
+import { escapeHtml } from "@/lib/escape-html";
 
 export interface CslReference {
   id: string;
@@ -89,7 +90,7 @@ export function createCitationEngine(
           const author = item.author?.[0]?.family ?? key;
           const title = item.title ?? "";
           const loc = locator ? `, ${locator}` : "";
-          return `<i>${author}</i>, ${title}${loc}`;
+          return `<i>${escapeHtml(author)}</i>, ${escapeHtml(title)}${escapeHtml(loc)}`;
         }
       }
       return key;

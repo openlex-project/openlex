@@ -15,6 +15,7 @@ import { ContentActions } from "@/components/content-actions";
 import { RelatedContent } from "@/components/related-content";
 import { PrevNextNav } from "@/components/prev-next-nav";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
+import { safeJsonLd } from "@/lib/escape-html";
 import type { Metadata } from "next";
 
 const FeedbackButton = dynamic(() => import("@/components/feedback-button").then((m) => m.FeedbackButton));
@@ -25,7 +26,7 @@ function bookChapterJsonLd(meta: BookEntry, chapter: { title: string; author?: s
   const authors = chapter.author
     ? [person(typeof chapter.author === "string" ? { name: chapter.author } : chapter.author)]
     : meta.editors.map(person);
-  return JSON.stringify({
+  return safeJsonLd({
     "@context": "https://schema.org",
     "@type": "Chapter",
     name: chapter.title,

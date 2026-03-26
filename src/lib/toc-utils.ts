@@ -6,7 +6,7 @@ export function findTocEntry(toc: TocEntry[], slug: string): TocEntry | undefine
     if (e.children) {
       const found = findTocEntry(e.children, slug);
       if (found) {
-        if (!found.author && e.author) found.author = e.author;
+        if (!found.author && e.author) return { ...found, author: e.author };
         return found;
       }
     }

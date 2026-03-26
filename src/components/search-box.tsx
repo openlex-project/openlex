@@ -5,6 +5,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
 import { search as pfSearch, type PagefindResult } from "@/lib/pagefind";
+import { sanitizeExcerpt } from "@/lib/escape-html";
 
 type SearchResult = PagefindResult;
 
@@ -27,6 +28,8 @@ export function SearchBox() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => () => { clearTimeout(timerRef.current ?? undefined); }, []);
 
   // Cmd+K shortcut
   useEffect(() => {
@@ -119,7 +122,7 @@ export function SearchBox() {
                     tabIndex={-1}
                   >
                     <div className="text-sm font-medium truncate">{r.meta.title ?? r.url}</div>
-                    <div className="text-xs mt-0.5 line-clamp-2" style={{ color: "var(--text-tertiary)" }} dangerouslySetInnerHTML={{ __html: r.excerpt }} />
+                    <div className="text-xs mt-0.5 line-clamp-2" style={{ color: "var(--text-tertiary)" }} dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(r.excerpt) }} />
                   </button>
                 </li>
               ))}

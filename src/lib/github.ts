@@ -37,27 +37,31 @@ async function ghFetch(url: string, cacheKey?: string): Promise<{ body: string; 
   }
 }
 
+function safeParse<T>(body: string): T | null {
+  try { return JSON.parse(body); } catch { return null; }
+}
+
 export const github: ContentProvider = {
   async fetchFile(repo, path, ref = "main") {
-    const result = await ghFetch(`${API}/repos/${repo}/contents/${path}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}`);
+    const result = await ghFetch(`${API}/repos/${repo}/contents/${encodeURIComponent(path)}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}`);
     if (!result) return null;
-    const data = JSON.parse(result.body) as { content?: string; encoding?: string };
-    if (!data.content || data.encoding !== "base64") return null;
+    const data = safeParse<{ content?: string; encoding?: string }>(result.body);
+    if (!data?.content || data.encoding !== "base64") return null;
     return Buffer.from(data.content, "base64").toString("utf-8");
   },
 
   async listFiles(repo, path, ref = "main") {
-    const result = await ghFetch(`${API}/repos/${repo}/contents/${path}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}:list`);
+    const result = await ghFetch(`${API}/repos/${repo}/contents/${encodeURIComponent(path)}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}:list`);
     if (!result) return [];
-    const data = JSON.parse(result.body) as { name: string; type: string }[];
+    const data = safeParse<{ name: string; type: string }[]>(result.body);
     if (!Array.isArray(data)) return [];
     return data.filter((f) => f.type === "file").map((f) => f.name);
   },
 
   async listDirs(repo, path, ref = "main") {
-    const result = await ghFetch(`${API}/repos/${repo}/contents/${path}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}:dirs`);
+    const result = await ghFetch(`${API}/repos/${repo}/contents/${encodeURIComponent(path)}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}:dirs`);
     if (!result) return [];
-    const data = JSON.parse(result.body) as { name: string; type: string }[];
+    const data = safeParse<{ name: string; type: string }[]>(result.body);
     if (!Array.isArray(data)) return [];
     return data.filter((f) => f.type === "dir").map((f) => f.name);
   },

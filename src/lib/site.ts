@@ -55,7 +55,11 @@ let cached: SiteConfig | null = null;
 
 export function loadSiteConfig(): SiteConfig {
   if (cached) return cached;
-  const raw = readFileSync(join(process.cwd(), "site.yaml"), "utf-8");
-  cached = parse(raw) as SiteConfig;
+  try {
+    const raw = readFileSync(join(process.cwd(), "site.yaml"), "utf-8");
+    cached = parse(raw) as SiteConfig;
+  } catch (err) {
+    throw new Error(`Failed to load site.yaml: ${err instanceof Error ? err.message : err}. Ensure site.yaml exists in the project root.`);
+  }
   return cached;
 }

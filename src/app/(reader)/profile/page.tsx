@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
-    if (session) fetch("/api/profile").then((r) => r.json()).then((d) => setSettings(d.settings ?? {}));
+    if (session) fetch("/api/profile").then((r) => r.ok ? r.json() : null).then((d) => { if (d) setSettings(d.settings ?? {}); }).catch(() => {});
   }, [session]);
 
   if (status === "loading") return <div className="max-w-xl mx-auto px-4 py-8"><p style={{ color: "var(--text-tertiary)" }}>…</p></div>;
@@ -33,7 +33,7 @@ export default function ProfilePage() {
     a.href = URL.createObjectURL(blob);
     a.download = "openlex-data.json";
     a.click();
-    URL.revokeObjectURL(a.href);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
 
   const deleteAccount = async () => {

@@ -106,10 +106,17 @@ async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<Jou
 /* ─── Build Registry ─── */
 
 let _cache: { data: ContentRegistry; ts: number } | null = null;
+let _pending: Promise<ContentRegistry> | null = null;
 const CACHE_TTL = 5 * 60_000;
 
 export async function buildRegistry(): Promise<ContentRegistry> {
   if (_cache && Date.now() - _cache.ts < CACHE_TTL) return _cache.data;
+  if (_pending) return _pending;
+  _pending = _buildRegistry().finally(() => { _pending = null; });
+  return _pending;
+}
+
+async function _buildRegistry(): Promise<ContentRegistry> {
 
   const books = new Map<string, BookEntry>();
   const laws = new Map<string, LawMeta>();

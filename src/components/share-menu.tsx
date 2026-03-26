@@ -18,10 +18,9 @@ export function ShareMenu({ title, siteName, targets }: { title: string; siteNam
   const [copied, setCopied] = useState(false);
   const { open, close, triggerProps, menuProps } = useDropdownMenu();
 
-  const url = typeof window !== "undefined" ? window.location.href : "";
-  const text = `${title} — ${siteName}`;
-
   const handle = (target: string) => {
+    const url = window.location.href;
+    const text = `${title} — ${siteName}`;
     if (target === "copy") {
       navigator.clipboard.writeText(url);
       setCopied(true);

@@ -1,6 +1,7 @@
 import { getProvider } from "./git-provider";
 import { getBookContent } from "./content";
 import { createCitationEngine, parseReferencesYaml } from "./citeproc";
+import { escapeHtml } from "./escape-html";
 import type { TocEntry, BookEntry } from "./registry";
 
 function flatFiles(toc: TocEntry[]): string[] {
@@ -45,7 +46,7 @@ export async function renderBackmatter(section: string, meta: BookEntry): Promis
     let bib = engine.bibliography() || "";
     const urlMap = new Map(filtered.filter((r) => r.URL).map((r) => [r.title as string, r.URL as string]));
     bib = bib.replace(/<div class="csl-entry">(.*?)<\/div>/gs, (match, inner: string) => {
-      for (const [title, url] of urlMap) { if (inner.includes(title)) return `<div class="csl-entry"><a href="${url}" target="_blank" rel="noopener">${inner}</a></div>`; }
+      for (const [title, url] of urlMap) { if (inner.includes(title)) return `<div class="csl-entry"><a href="${escapeHtml(url)}" target="_blank" rel="noopener">${inner}</a></div>`; }
       return match;
     });
     return { title: isCase ? "Rechtsprechungsverzeichnis" : "Literaturverzeichnis", html: bib };
@@ -53,7 +54,7 @@ export async function renderBackmatter(section: string, meta: BookEntry): Promis
   if (section === "autorenverzeichnis") {
     const authors = collectAuthors(meta.toc);
     if (authors.length === 0) return null;
-    const html = "<dl>" + authors.map((a) => `<dt><strong>${a.name}</strong></dt>${a.orcid ? `<dd>ORCID: <a href="https://orcid.org/${a.orcid}">${a.orcid}</a></dd>` : ""}`).join("") + "</dl>";
+    const html = "<dl>" + authors.map((a) => `<dt><strong>${escapeHtml(a.name)}</strong></dt>${a.orcid ? `<dd>ORCID: <a href="https://orcid.org/${escapeHtml(a.orcid)}">${escapeHtml(a.orcid)}</a></dd>` : ""}`).join("") + "</dl>";
     return { title: "Autorenverzeichnis", html };
   }
   return null;

@@ -7,6 +7,7 @@ const redis = (process.env.REDIS_REST_URL && process.env.REDIS_REST_TOKEN)
   : null;
 
 const mem = new Map<string, ETagEntry>();
+const MAX_MEM = 500;
 
 export async function getETag(key: string): Promise<ETagEntry | null> {
   if (redis) { try { return await redis.get<ETagEntry>(key); } catch { /* fall through */ } }
@@ -14,6 +15,7 @@ export async function getETag(key: string): Promise<ETagEntry | null> {
 }
 
 export async function setETag(key: string, entry: ETagEntry): Promise<void> {
+  if (mem.size >= MAX_MEM) { const first = mem.keys().next().value; if (first) mem.delete(first); }
   mem.set(key, entry);
   if (redis) { try { await redis.set(key, entry); } catch { /* ignore */ } }
 }

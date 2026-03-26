@@ -54,7 +54,8 @@ const BUILTIN: Record<string, Omit<TemplateConfig, "css"> & { cssFile: string }>
 
 /* ─── Loader ─── */
 
-let cached: TemplateConfig | null = null;
+let cached: { data: TemplateConfig; ts: number } | null = null;
+const TEMPLATE_TTL = 5 * 60_000;
 
 /** Parse template specifier from site.yaml `template` field. */
 function parseSpec(raw: string): { kind: "builtin"; id: string } | { kind: "local"; path: string } | { kind: "remote"; repo: string; ref: string } {
@@ -114,7 +115,7 @@ function sanitizeCss(raw: string): string {
  * Supports: built-in name, local path, or GitHub org/repo[@ref].
  */
 export async function loadTemplate(templateField?: string): Promise<TemplateConfig> {
-  if (cached) return cached;
+  if (cached && Date.now() - cached.ts < TEMPLATE_TTL) return cached.data;
 
   const raw = templateField ?? "default";
   const spec = parseSpec(raw);
@@ -136,7 +137,7 @@ export async function loadTemplate(templateField?: string): Promise<TemplateConf
     }
   }
 
-  cached = config;
-  return config;
+  cached = { data: config, ts: Date.now() };
+  return cached.data;
 }
 

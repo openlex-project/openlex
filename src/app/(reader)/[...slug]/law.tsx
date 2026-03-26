@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { safeJsonLd } from "@/lib/escape-html";
 import { type ContentRegistry, type LawMeta } from "@/lib/registry";
 import { getLawContent, getLawProvisions } from "@/lib/content";
 import { findLawBreadcrumb } from "@/lib/toc-utils";
@@ -12,7 +13,7 @@ import { licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
 
 function lawJsonLd(meta: LawMeta, nr: string, url: string): string {
-  return JSON.stringify({
+  return safeJsonLd({
     "@context": "https://schema.org",
     "@type": "Legislation",
     name: `${meta.unit_type === "article" ? "Art." : "§"} ${nr} ${meta.title}`,

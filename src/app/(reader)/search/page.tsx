@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/useT";
 import { search as pfSearch, filters as pfFilters, type PagefindResult } from "@/lib/pagefind";
+import { sanitizeExcerpt } from "@/lib/escape-html";
 
 const PAGE_SIZE = 20;
 
@@ -98,7 +99,7 @@ function SearchResults() {
                 <Link href={r.url} className="hover:underline font-medium" style={{ color: "var(--active-text)" }}>
                   {r.meta.title ?? r.url}
                 </Link>
-                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }} dangerouslySetInnerHTML={{ __html: r.excerpt }} />
+                <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }} dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(r.excerpt) }} />
               </li>
             ))}
           </ul>

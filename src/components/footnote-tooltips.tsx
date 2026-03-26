@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 export function FootnoteTooltips() {
   const pathname = usePathname();
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -48,21 +49,16 @@ export function FootnoteTooltips() {
       const handlers = new Map<HTMLAnchorElement, { enter: EventListener; leave: EventListener; focus: EventListener; blur: EventListener }>();
       refs.forEach((ref) => {
         const enter = () => show(ref);
-        const leave = (e: Event) => {
-          if (tooltip.contains((e as MouseEvent).relatedTarget as Node)) return;
-          hide();
-        };
-        const focus = () => show(ref);
-        const blur = () => hide();
+        const leave = (e: Event) => { if (tooltip.contains((e as MouseEvent).relatedTarget as Node)) return; hide(); };
         ref.addEventListener("mouseenter", enter);
         ref.addEventListener("mouseleave", leave);
-        ref.addEventListener("focus", focus);
-        ref.addEventListener("blur", blur);
-        handlers.set(ref, { enter, leave, focus, blur });
+        ref.addEventListener("focus", () => show(ref));
+        ref.addEventListener("blur", () => hide());
+        handlers.set(ref, { enter, leave, focus: enter, blur: hide });
       });
       tooltip.addEventListener("mouseleave", hide);
 
-      return () => {
+      cleanupRef.current = () => {
         document.removeEventListener("keydown", onKey);
         handlers.forEach(({ enter, leave, focus, blur }, ref) => {
           ref.removeEventListener("mouseenter", enter);
@@ -74,7 +70,7 @@ export function FootnoteTooltips() {
       };
     }, 100);
 
-    return () => clearTimeout(timer);
+    return () => { clearTimeout(timer); cleanupRef.current?.(); cleanupRef.current = null; };
   }, [pathname]);
 
   return null;
