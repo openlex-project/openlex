@@ -1,8 +1,12 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { safeJsonLd } from "@/lib/escape-html";
 import { type ContentRegistry, type LawMeta } from "@/lib/registry";
 import { getLawContent, getLawProvisions } from "@/lib/content";
 import { resolveLawVersion } from "@/lib/law-version";
+import { getProvider } from "@/lib/git-provider";
+import { t, defaultLocale, type Locale } from "@/lib/i18n";
+import { headers } from "next/headers";
 import { findLawBreadcrumb } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
@@ -60,7 +64,14 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   ]);
   if (!text) notFound();
 
+  const h = await headers();
+  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
   const unitLabel = meta.unit_type === "article" ? "Art." : "§";
+
+  // Fetch available versions for this law
+  const { provider: p, repo } = getProvider(meta.repo);
+  const tags = await p.listTags(repo, `law/${meta.slug}/`);
+  const versions = tags.map((tag) => tag.slice(`law/${meta.slug}/`.length));
 
   const related = registry.relatedIndex.get(`/${meta.slug}/${nr}`) ?? [];
 
@@ -84,6 +95,24 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
               <span key={i}><span className="mx-1" aria-hidden="true">›</span>{node.label}{node.title ? ` ${node.title}` : ""}</span>
             ))}
           </nav>
+        )}
+        {versionDate && (
+          <div className="mb-4 rounded-md border px-4 py-3 flex items-start gap-3" style={{ borderColor: "var(--color-brand-400)", background: "oklch(0.95 0.03 50)" }} role="alert">
+            <span className="text-lg shrink-0">⚠️</span>
+            <div className="text-sm">
+              <p className="font-medium" style={{ color: "var(--text-primary)" }}>{t(locale, "law.historicalVersion", { date: versionDate })}</p>
+              <Link href={`/${meta.slug}/${nr}`} className="text-xs hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.currentVersion")}</Link>
+            </div>
+          </div>
+        )}
+        {versions.length > 0 && (
+          <div className="mb-4 text-xs flex items-center gap-2" style={{ color: "var(--text-tertiary)" }}>
+            <span>{t(locale, "law.versions")}:</span>
+            {versions.map((v) => (
+              <Link key={v} href={`/${meta.slug}/@${v}/${nr}`} className={`px-1.5 py-0.5 rounded ${versionDate === v ? "font-semibold" : ""}`} style={{ color: versionDate === v ? "var(--active-text)" : "var(--text-tertiary)", background: versionDate === v ? "var(--active-bg)" : undefined }}>{v}</Link>
+            ))}
+            {versionDate && <Link href={`/${meta.slug}/${nr}`} className="px-1.5 py-0.5 rounded font-semibold" style={{ color: !versionDate ? "var(--active-text)" : "var(--text-tertiary)" }}>aktuell</Link>}
+          </div>
         )}
         <PrevNextNav position="top" prev={prevNav} next={nextNav} ariaLabel="Provision navigation" />
         <h1 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
