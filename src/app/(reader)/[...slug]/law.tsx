@@ -59,14 +59,16 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   }
   if (!nr) notFound();
 
-  const [text, provisions] = await Promise.all([
-    getLawContent(meta.repo, meta.slug, nr, ref),
-    getLawProvisions(meta.repo, meta.slug),
-  ]);
-  if (!text) notFound();
-
   const h = await headers();
   const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
+  const contentLocale = h.get("x-content-locale");
+
+  const [result, provisions] = await Promise.all([
+    getLawContent(meta.repo, meta.slug, nr, ref, contentLocale ?? undefined),
+    getLawProvisions(meta.repo, meta.slug),
+  ]);
+  if (!result) notFound();
+
   // Format date for display according to locale
   const fmtDate = (iso: string) => formatDate(iso, locale);
 
@@ -124,7 +126,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
           <ContentActions title={pageTitle} contentType="law" />
         </h1>
         <RelatedContent links={related} />
-        <div className="content-prose whitespace-pre-line">{text}</div>
+        <div className="content-prose whitespace-pre-line">{result.content}</div>
         <PrevNextNav position="bottom" prev={prevNav} next={nextNav} ariaLabel="Provision navigation" />
         {meta.license && <SetLicense value={meta.license} />}
         <HistoryTracker title={`${unitLabel} ${nr} ${meta.title_short ?? meta.title}`} />

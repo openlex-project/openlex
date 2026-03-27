@@ -254,7 +254,7 @@ New variants are added centrally as needed.
 
 - Multilingual from the start. Default locale configurable via `site.yaml`.
 - UI strings in `src/lib/i18n/` with one file per locale (`de.ts`, `en.ts`).
-- Code-level fallback locale: `en`.
+- Code-level fallback locale: always `en`. `default_locale` in `site.yaml` defaults to `en` if not set.
 - Translations live in the same repo. Root `content/` = default language (from `meta.yaml` `lang`). Translations in `content/{locale}/` subfolders.
 - `meta.yaml` lists available languages: `lang: "de"`, `translations: ["en"]`.
 - URL prefix for translations: `/en/oc-dsgvo/art-5`, `/fr/dsgvo/5`.

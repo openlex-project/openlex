@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const locales = ["de", "en"];
-const defaultLocale = "de";
+const locales = (process.env.NEXT_PUBLIC_LOCALES ?? "en").split(",");
+const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? "en";
 
 function parseAcceptLanguage(header: string | null): string {
   if (!header) return defaultLocale;

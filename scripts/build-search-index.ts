@@ -30,10 +30,10 @@ async function main() {
     const displayName = meta.title_short ?? meta.title;
     for (const entry of meta.toc) {
       const fileSlug = entry.file.replace(/\.md$/, "");
-      const content = await getBookContent(meta.repo, fileSlug);
-      if (!content) continue;
+      const result = await getBookContent(meta.repo, fileSlug);
+      if (!result) continue;
 
-      const plain = content
+      const plain = result.content
         .replace(/^---[\s\S]*?---\n?/, "")
         .replace(/^#+\s+/gm, "")
         .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
@@ -61,7 +61,7 @@ async function main() {
     const files = await p.listFiles(repo, slug);
     for (const file of files.filter((f) => f.endsWith(".md")).sort()) {
       const nr = file.replace(/\.md$/, "");
-      const content = await getLawContent(meta.repo, slug, nr);
+      const r = await getLawContent(meta.repo, slug, nr); const content = r?.content ?? null;
       if (!content) continue;
 
       await index.addCustomRecord({
@@ -79,7 +79,7 @@ async function main() {
     const displayName = journal.title_short ?? journal.title;
     for (const issue of journal.issues) {
       for (const article of issue.articles) {
-        const content = await getJournalArticleContent(journal.repo, issue.year, issue.issue, article.slug);
+        const r2 = await getJournalArticleContent(journal.repo, issue.year, issue.issue, article.slug); const content = r2?.content ?? null;
         if (!content) continue;
         await index.addCustomRecord({
           url: `/${slug}/${issue.year}/${issue.issue}/${article.slug}`,

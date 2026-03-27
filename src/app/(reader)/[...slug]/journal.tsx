@@ -173,9 +173,10 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
     const article = issue.articles.find((a) => a.slug === articleSlug);
     if (!article) notFound();
 
-    const md = await getJournalArticleContent(journal.repo, year!, issueNr!, articleSlug!);
-    if (!md) notFound();
-    const html = await renderMarkdown(md, article.numbering ? { numbering: { schema: article.numbering } } : undefined);
+    const contentLocale = h.get("x-content-locale");
+    const result = await getJournalArticleContent(journal.repo, year!, issueNr!, articleSlug!, contentLocale ?? undefined);
+    if (!result) notFound();
+    const html = await renderMarkdown(result.content, article.numbering ? { numbering: { schema: article.numbering } } : undefined);
 
     const idx = issue.articles.indexOf(article);
     const prev = issue.articles[idx - 1];

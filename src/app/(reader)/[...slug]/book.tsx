@@ -65,6 +65,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   const { fileSlug, ref } = parsed;
   const h = await headers();
   const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
+  const contentLocale = h.get("x-content-locale");
 
   const backmatter = getBackmatterSections(meta);
   const work = meta.slug;
@@ -88,14 +89,14 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   const { prev, next } = findTocNeighbors(meta.toc, fileSlug);
 
   const { provider: p, repo } = getProvider(meta.repo);
-  const [markdown, cslXml, referencesYaml] = await Promise.all([
-    getBookContent(meta.repo, fileSlug, ref),
+  const [result, cslXml, referencesYaml] = await Promise.all([
+    getBookContent(meta.repo, fileSlug, ref, contentLocale ?? undefined),
     meta.csl ? p.fetchFile(repo, meta.csl, ref) : null,
     meta.bibliography ? p.fetchFile(repo, meta.bibliography, ref) : null,
   ]);
-  if (!markdown) notFound();
+  if (!result) notFound();
 
-  const html = await renderMarkdown(markdown, {
+  const html = await renderMarkdown(result.content, {
     numbering: { schema: meta.numbering },
     ...(cslXml && referencesYaml ? { cslXml, referencesYaml } : {}),
     tocAuthor: tocEntry?.author,

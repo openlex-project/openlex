@@ -26,7 +26,11 @@ export const GET = withSession("export GET", async (req, email) => {
     const { path, format, scope } = parsed.data;
     if (!exportConfig.formats.includes(format)) return NextResponse.json({ error: "Unsupported format" }, { status: 400 });
 
-    const segments = path.replace(/^\//, "").split("/");
+    // Parse locale from path prefix: /en/oc-dsgvo/art-5 → locale=en, cleanPath=oc-dsgvo/art-5
+    const locales = (process.env.NEXT_PUBLIC_LOCALES ?? "en").split(",");
+    const rawSegments = path.replace(/^\//, "").split("/");
+    const contentLocale = locales.includes(rawSegments[0]!) ? rawSegments.shift()! : undefined;
+    const segments = rawSegments;
     const registry = await buildRegistry();
     const content = registry.slugMap.get(segments[0]!);
     if (!content) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -39,7 +43,7 @@ export const GET = withSession("export GET", async (req, email) => {
         pages = await collectBookChapter(entry.repo, entry.toc, segments[1]);
       } else {
         const fileSlug = segments.slice(1).join("/");
-        const raw = await getBookContent(entry.repo, fileSlug);
+        const r = await getBookContent(entry.repo, fileSlug, "main", contentLocale); const raw = r?.content ?? null;
         if (!raw) return NextResponse.json({ error: "Not found" }, { status: 404 });
         pages = [{ title: fileSlug, markdown: raw }];
       }
@@ -50,18 +54,18 @@ export const GET = withSession("export GET", async (req, email) => {
         const files = await p.listFiles(repo, entry.slug);
         const nrs = files.filter((f) => f.endsWith(".md")).sort((a, b) => parseInt(a) - parseInt(b));
         for (const f of nrs) {
-          const raw = await getLawContent(entry.repo, entry.slug, f.replace(/\.md$/, ""));
+          const r = await getLawContent(entry.repo, entry.slug, f.replace(/\.md$/, ""), undefined, contentLocale); const raw = r?.content ?? null;
           if (raw) pages.push({ title: f.replace(/\.md$/, ""), markdown: raw });
         }
       } else {
         const nr = segments[1];
-        const raw = await getLawContent(entry.repo, entry.slug, nr!);
+        const r2 = await getLawContent(entry.repo, entry.slug, nr!, undefined, contentLocale); const raw = r2?.content ?? null;
         if (!raw) return NextResponse.json({ error: "Not found" }, { status: 404 });
         pages = [{ title: nr!, markdown: raw }];
       }
     } else if (content.type === "journal") {
       const fileSlug = segments.slice(1).join("/");
-      const raw = await getBookContent(content.entry.repo, fileSlug);
+      const r3 = await getBookContent(content.entry.repo, fileSlug, "main", contentLocale); const raw = r3?.content ?? null;
       if (!raw) return NextResponse.json({ error: "Not found" }, { status: 404 });
       pages = [{ title: fileSlug, markdown: raw }];
     }
@@ -90,8 +94,8 @@ async function collectBookChapter(repo: string, toc: TocEntry[], rootSlug?: stri
     for (const e of entries) {
       const slug = e.file.replace(/\.md$/, "");
       if (rootSlug && slug !== rootSlug && !pages.length) { if (e.children) await collect(e.children); continue; }
-      const raw = await getBookContent(repo, slug);
-      if (raw) pages.push({ title: e.title, markdown: raw });
+      const r = await getBookContent(repo, slug);
+      if (r) pages.push({ title: e.title, markdown: r.content });
       if (e.children) await collect(e.children);
       if (rootSlug && pages.length && !e.children) break;
     }

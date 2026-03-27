@@ -12,9 +12,9 @@ function flatFiles(toc: TocEntry[]): string[] {
 
 export async function collectCitations(repo: string, toc: TocEntry[]): Promise<Set<string>> {
   const keys = new Set<string>();
-  const contents = await Promise.all(flatFiles(toc).map((f) => getBookContent(repo, f.replace(/\.md$/, ""))));
+  const results = await Promise.all(flatFiles(toc).map((f) => getBookContent(repo, f.replace(/\.md$/, ""))));
   const re = /@([a-zA-Z0-9_-]+)/g;
-  for (const md of contents) { if (!md) continue; for (const m of md.matchAll(re)) keys.add(m[1]!); }
+  for (const r of results) { if (!r) continue; for (const m of r.content.matchAll(re)) keys.add(m[1]!); }
   return keys;
 }
 

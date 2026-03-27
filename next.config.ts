@@ -1,11 +1,17 @@
 import type { NextConfig } from "next";
 import { resolve } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync } from "fs";
 import { parse } from "yaml";
+
+// Derive locales from i18n files at build time
+const i18nFiles = readdirSync("src/lib/i18n").filter((f) => f.endsWith(".ts") && f !== "index.ts" && f !== "useT.ts");
+const locales = i18nFiles.map((f) => f.replace(".ts", ""));
+const siteYaml = parse(readFileSync("site.yaml", "utf-8")) as { default_locale?: string };
+const defaultLocale = siteYaml.default_locale ?? "en";
 
 function buildCsp(): string {
   try {
-    const site = parse(readFileSync("site.yaml", "utf-8")) as { content_repos?: string[]; features?: { analytics?: { provider?: string; url?: string } } };
+    const site = parse(readFileSync("site.yaml", "utf-8")) as { content_repos?: string[]; features?: { analytics?: { provider?: string; url?: string } }; locales?: string[]; default_locale?: string };
     const apiHosts = [...new Set((site.content_repos ?? []).map((r) => {
       if (r.startsWith("github://")) return "https://api.github.com";
       const m = r.match(/^gitlab:\/\/([^/]+)/);
@@ -34,6 +40,10 @@ const csp = buildCsp();
 
 const nextConfig: NextConfig = {
   turbopack: { root: resolve(__dirname) },
+  env: {
+    NEXT_PUBLIC_LOCALES: locales.join(","),
+    NEXT_PUBLIC_DEFAULT_LOCALE: defaultLocale,
+  },
   ...(csp && {
     headers: async () => [{
       source: "/((?!api|_next/static|_next/image|favicon.ico).*)",
