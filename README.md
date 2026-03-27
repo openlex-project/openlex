@@ -50,7 +50,7 @@ branding:
 
 content_repos:
   - github://openlex-project/oc-dsgvo
-  - github://openlex-project/openlex-laws
+  - github://openlex-project/openlex-demo-law
   # - gitlab://uni-berlin/kommentar-stgb
 
 categories:

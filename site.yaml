@@ -27,7 +27,7 @@ branding:
 # Format: github://org/repo, gitlab://group/project, gitlab://host/group/project (self-hosted)
 content_repos:
   - github://openlex-project/oc-dsgvo
-  - github://openlex-project/openlex-laws
+  - github://openlex-project/openlex-demo-law
 
 # Content categories — controls homepage sections and /category/[key] pages.
 categories:
