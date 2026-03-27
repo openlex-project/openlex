@@ -66,6 +66,9 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
 
   const h = await headers();
   const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  // Format date for display according to locale
+  const fmtDate = (iso: string) => new Date(iso + "T00:00:00").toLocaleDateString(locale, { year: "numeric", month: "2-digit", day: "2-digit" });
+
   const unitLabel = meta.unit_type === "article" ? "Art." : "§";
 
   // Fetch available versions for this law
@@ -100,7 +103,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
           <div className="mb-4 rounded-md border px-4 py-3 flex items-start gap-3" style={{ borderColor: "var(--color-brand-400)", background: "oklch(0.95 0.03 50)" }} role="alert">
             <span className="text-lg shrink-0">⚠️</span>
             <div className="text-sm">
-              <p className="font-medium" style={{ color: "var(--text-primary)" }}>{t(locale, "law.historicalVersion", { date: versionDate })}</p>
+              <p className="font-medium" style={{ color: "var(--text-primary)" }}>{t(locale, "law.historicalVersion", { date: fmtDate(versionDate) })}</p>
               <Link href={`/${meta.slug}/${nr}`} className="text-xs hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.currentVersion")}</Link>
             </div>
           </div>
@@ -109,7 +112,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
           <div className="mb-4 text-xs flex items-center gap-2" style={{ color: "var(--text-tertiary)" }}>
             <span>{t(locale, "law.versions")}:</span>
             {versions.map((v) => (
-              <Link key={v} href={`/${meta.slug}/@${v}/${nr}`} className={`px-1.5 py-0.5 rounded ${versionDate === v ? "font-semibold" : ""}`} style={{ color: versionDate === v ? "var(--active-text)" : "var(--text-tertiary)", background: versionDate === v ? "var(--active-bg)" : undefined }}>{v}</Link>
+              <Link key={v} href={`/${meta.slug}/@${v}/${nr}`} className={`px-1.5 py-0.5 rounded ${versionDate === v ? "font-semibold" : ""}`} style={{ color: versionDate === v ? "var(--active-text)" : "var(--text-tertiary)", background: versionDate === v ? "var(--active-bg)" : undefined }}>{fmtDate(v)}</Link>
             ))}
             {versionDate && <Link href={`/${meta.slug}/${nr}`} className="px-1.5 py-0.5 rounded font-semibold" style={{ color: !versionDate ? "var(--active-text)" : "var(--text-tertiary)" }}>aktuell</Link>}
           </div>
