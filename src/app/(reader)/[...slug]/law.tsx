@@ -66,7 +66,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   if (!text) notFound();
 
   const h = await headers();
-  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
   // Format date for display according to locale
   const fmtDate = (iso: string) => formatDate(iso, locale);
 

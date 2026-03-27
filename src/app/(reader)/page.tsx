@@ -22,7 +22,7 @@ function websiteJsonLd(url: string): string {
 export default async function Home() {
   const { books, laws, journals, slugMap } = await buildRegistry();
   const h = await headers();
-  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
   const site = loadSiteConfig();
   const template = await loadTemplate(site.template);
 

@@ -18,7 +18,7 @@ export default async function ReaderLayout({
   children: React.ReactNode;
 }>) {
   const h = await headers();
-  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
   const site = loadSiteConfig();
   const template = await loadTemplate(site.template);
   const minimal = template.variants.header === "minimal";

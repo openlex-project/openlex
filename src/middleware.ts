@@ -3,6 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 const locales = ["de", "en"];
 const defaultLocale = "de";
 
+function parseAcceptLanguage(header: string | null): string {
+  if (!header) return defaultLocale;
+  for (const part of header.split(",")) {
+    const lang = part.trim().split(";")[0]!.split("-")[0]!.toLowerCase();
+    if (locales.includes(lang)) return lang;
+  }
+  return defaultLocale;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -11,20 +20,19 @@ export function middleware(request: NextRequest) {
   }
 
   const pathnameLocale = locales.find((l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`);
+  const uiLocale = parseAcceptLanguage(request.headers.get("accept-language"));
+  const contentLocale = pathnameLocale ?? defaultLocale;
 
-  if (!pathnameLocale && !locales.some((l) => pathname.startsWith(`/${l}`))) {
-    const response = NextResponse.next();
-    response.headers.set("x-locale", defaultLocale);
-    return response;
+  // Redirect default locale prefix: /de/... → /...
+  if (pathnameLocale === defaultLocale) {
+    const stripped = pathname.slice(`/${defaultLocale}`.length) || "/";
+    return NextResponse.redirect(new URL(stripped, request.url), 301);
   }
 
-  if (pathnameLocale) {
-    const response = NextResponse.next();
-    response.headers.set("x-locale", pathnameLocale);
-    return response;
-  }
-
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set("x-ui-locale", uiLocale);
+  response.headers.set("x-content-locale", contentLocale);
+  return response;
 }
 
 export const config = {

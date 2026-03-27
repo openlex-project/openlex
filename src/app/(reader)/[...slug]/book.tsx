@@ -64,7 +64,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   if (!parsed) notFound();
   const { fileSlug, ref } = parsed;
   const h = await headers();
-  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
 
   const backmatter = getBackmatterSections(meta);
   const work = meta.slug;

@@ -46,7 +46,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const h = await headers();
-  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
   const template = await loadTemplate(site.template);
 
   return (

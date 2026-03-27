@@ -78,7 +78,7 @@ function AuthorLine({ article }: { article: JournalArticle }) {
 
 export default async function JournalPage({ registry, entry: journal, rest }: Props) {
   const h = await headers();
-  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
   const base = `/${journal.slug}`;
   const issueWord = t(locale, "issue.word");
 

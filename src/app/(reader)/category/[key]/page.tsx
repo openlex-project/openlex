@@ -13,7 +13,7 @@ interface Props {
 export default async function CategoryPage({ params }: Props) {
   const { key } = await params;
   const h = await headers();
-  const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
+  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
   const site = loadSiteConfig();
   const cat = site.categories?.find((c) => c.key === key);
   if (!cat) notFound();
