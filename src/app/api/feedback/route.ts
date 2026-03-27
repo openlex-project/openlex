@@ -4,12 +4,14 @@ import { withAuth, parseBody } from "@/lib/api-utils";
 import { loadSiteConfig } from "@/lib/site";
 import { getProvider, parseRepoUrl } from "@/lib/git-provider";
 import { rateLimit } from "@/lib/rate-limit";
+import { hashUserId } from "@/lib/user-hash";
 
 export const GET = withAuth("feedback GET", async (_req, email) => {
   const repoUrls = loadSiteConfig().content_repos ?? [];
+  const tag = hashUserId(email);
   const all = await Promise.all(repoUrls.map(async (repoUrl) => {
     const { provider, repo } = getProvider(repoUrl);
-    return provider.listIssues(repo, email);
+    return provider.listIssues(repo, tag);
   }));
   const issues = all.flat().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   return NextResponse.json({ issues });
@@ -41,7 +43,7 @@ export const POST = withAuth("feedback POST", async (req, email) => {
   if (match) labels.push(`${match[1]}-${match[2]}`);
 
   const title = `[${data.category}] ${data.selectedText?.slice(0, 60) || data.comment.slice(0, 60)}`;
-  const body = [`**Kategorie:** ${data.category}`, `**Fundstelle:** ${data.location}`, data.selectedText ? `**Markierter Text:**\n> ${data.selectedText}` : "", `**Kommentar:**\n${data.comment}`, `\n<!-- openlex-user: ${email} -->`].filter(Boolean).join("\n\n");
+  const body = [`**Kategorie:** ${data.category}`, `**Fundstelle:** ${data.location}`, data.selectedText ? `**Markierter Text:**\n> ${data.selectedText}` : "", `**Kommentar:**\n${data.comment}`, `\n<!-- openlex-user: ${hashUserId(email)} -->`].filter(Boolean).join("\n\n");
 
   const result = await provider.createIssue(repo, title, body, labels);
   if (!result) return NextResponse.json({ error: "Failed to create issue" }, { status: 502 });
