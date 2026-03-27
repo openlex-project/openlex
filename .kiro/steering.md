@@ -38,6 +38,7 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 - Language in documentation (`/docs/`): **English**.
 - Language in commit messages: **English**.
 - File names: kebab-case (`citation-bar.tsx`, `footnote-drawer.tsx`).
+- Internal links: always `<Link>` from `next/link` (SPA navigation). Use `<a>` only for external links (`target="_blank"`) and anchor links (`#id`).
 - Components: PascalCase (`CitationBar`, `FootnoteDrawer`).
 - No `any` types; strict TypeScript configuration.
 - Imports: path aliases with `@/` for `src/`.
