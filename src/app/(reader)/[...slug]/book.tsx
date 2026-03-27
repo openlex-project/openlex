@@ -135,7 +135,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
         <div className="content-prose prose-rn" dangerouslySetInnerHTML={{ __html: html }} />
         <PrevNextNav position="bottom" prev={prev ? { href: prevHref!, label: prev.title } : null} next={next ? { href: nextHref!, label: next.title } : null} ariaLabel="Kapitelnavigation" />
         <SetLicense value={meta.license} />
-        <FeedbackButton repo={meta.repo} />
+        {meta.feedbackEnabled && <FeedbackButton repo={meta.repo} />}
         <FootnoteTooltips />
         <HistoryTracker title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: bookChapterJsonLd(meta, { title: tocEntry?.title ?? fileSlug, author: tocEntry?.author }, `${slugPrefix}/${fileSlug}`) }} />

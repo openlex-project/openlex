@@ -7,6 +7,7 @@ import { ContentNav } from "@/components/content-nav";
 import { LicenseProvider, LicenseDisplay } from "@/components/license-context";
 import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate } from "@/lib/template";
+import { buildRegistry } from "@/lib/registry";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 
 const SearchBox = dynamic(() => import("@/components/search-box").then((m) => m.SearchBox));
@@ -21,6 +22,10 @@ export default async function ReaderLayout({
   const site = loadSiteConfig();
   const template = await loadTemplate(site.template);
   const minimal = template.variants.header === "minimal";
+  const registry = await buildRegistry();
+  const hasFeedback = [...registry.books.values()].some((b) => b.feedbackEnabled)
+    || [...registry.laws.values()].some((l) => l.feedbackEnabled)
+    || [...registry.journals.values()].some((j) => j.feedbackEnabled);
 
   return (
     <LicenseProvider>
@@ -39,7 +44,7 @@ export default async function ReaderLayout({
             </div>
           )}
           <div className="shrink-0">
-            <UserButton />
+            <UserButton hasFeedback={hasFeedback} />
           </div>
         </header>
         <main id="main-content" className="flex-1">{children}</main>

@@ -2,14 +2,19 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withAuth, parseBody } from "@/lib/api-utils";
 import { loadSiteConfig } from "@/lib/site";
+import { buildRegistry } from "@/lib/registry";
 import { getProvider, parseRepoUrl } from "@/lib/git-provider";
 import { rateLimit } from "@/lib/rate-limit";
 import { hashUserId } from "@/lib/user-hash";
 
 export const GET = withAuth("feedback GET", async (_req, email) => {
-  const repoUrls = loadSiteConfig().content_repos ?? [];
+  const registry = await buildRegistry();
   const tag = hashUserId(email);
-  const all = await Promise.all(repoUrls.map(async (repoUrl) => {
+  const feedbackRepos = new Set<string>();
+  for (const b of registry.books.values()) if (b.feedbackEnabled) feedbackRepos.add(b.repo);
+  for (const l of registry.laws.values()) if (l.feedbackEnabled) feedbackRepos.add(l.repo);
+  for (const j of registry.journals.values()) if (j.feedbackEnabled) feedbackRepos.add(j.repo);
+  const all = await Promise.all([...feedbackRepos].map(async (repoUrl) => {
     const { provider, repo } = getProvider(repoUrl);
     const issues = await provider.listIssues(repo, tag);
     return issues.map((i) => ({ ...i, repo: parseRepoUrl(repoUrl).repo }));

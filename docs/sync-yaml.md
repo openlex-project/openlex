@@ -37,6 +37,7 @@ laws:
 | `lang` | string | ✓ | Language (ISO 639-1) |
 | `license` | string | | License identifier (e.g., "Gemeinfrei", "CC-BY-SA-4.0") |
 | `category` | string | | Category key for homepage grouping (defaults to `law`) |
+| `feedback` | boolean | | Enable feedback (GitHub/GitLab Issues). Default: `false`. |
 | `source` | `gii` \| `eurlex` | | Source for sync |
 | `gii_slug` | string | | Slug on gesetze-im-internet.de (when `source: gii`) |
 | `celex` | string | | CELEX number (when `source: eurlex`) |

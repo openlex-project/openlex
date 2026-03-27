@@ -42,6 +42,7 @@ function safeParse<T>(body: string): T | null {
 }
 
 export const github: ContentProvider = {
+  supportsIssues: true,
   async fetchFile(repo, path, ref = "main") {
     const result = await ghFetch(`${API}/repos/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}`);
     if (!result) return null;

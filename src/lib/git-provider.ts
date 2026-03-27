@@ -23,6 +23,7 @@ export interface IssueListItem {
 }
 
 export interface ContentProvider {
+  readonly supportsIssues: boolean;
   fetchFile(repo: string, path: string, ref?: string): Promise<string | null>;
   listFiles(repo: string, path: string, ref?: string): Promise<string[]>;
   listDirs(repo: string, path: string, ref?: string): Promise<string[]>;
@@ -100,6 +101,7 @@ function gitlabProvider(host: string): ContentProvider {
   const pid = (repo: string) => encodeURIComponent(repo);
 
   return {
+    supportsIssues: true,
     async fetchFile(repo, path, ref = "main") {
       const res = await glFetch(`${base}/projects/${pid(repo)}/repository/files/${encodeURIComponent(path)}?ref=${ref}`, `etag:gl:${host}:${repo}:${path}:${ref}`);
       if (!res?.ok) return null;

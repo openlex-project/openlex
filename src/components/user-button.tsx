@@ -9,7 +9,7 @@ import { User } from "lucide-react";
 
 type Provider = { id: string; name: string };
 
-export default function UserButton() {
+export default function UserButton({ hasFeedback }: { hasFeedback?: boolean }) {
   const { data: session } = useSession();
   const t = useT();
   const ref = useRef<HTMLDivElement>(null);
@@ -78,6 +78,7 @@ export default function UserButton() {
               {menuLink("/profile", t("nav.profile"))}
               {menuLink("/bookmarks", t("nav.bookmarks"))}
               {menuLink("/history", t("nav.history"))}
+              {hasFeedback && menuLink("/feedback", t("nav.feedback"))}
               <div className="border-t my-1" style={{ borderColor: "var(--border-subtle)" }} />
               <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-tertiary)" }} role="menuitem" tabIndex={-1}>
                 {t("nav.logout")}

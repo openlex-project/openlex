@@ -30,6 +30,7 @@ export interface BookMeta {
   csl?: string;
   bibliography?: string;
   issn?: string;
+  feedback?: boolean;
   editors: { name: string; orcid?: string }[];
 }
 
@@ -43,11 +44,12 @@ export interface LawMeta {
   category?: string;
   repo: string;
   toc: LawTocNode[];
+  feedbackEnabled: boolean;
 }
 
 export interface LawTocNode { label?: string; title: string; nr?: string; children?: LawTocNode[] }
 
-export interface BookEntry extends BookMeta { repo: string; toc: TocEntry[] }
+export interface BookEntry extends BookMeta { repo: string; toc: TocEntry[]; feedbackEnabled: boolean }
 
 export interface JournalArticle {
   slug: string;
@@ -62,7 +64,7 @@ export interface JournalArticle {
 
 export interface JournalIssue { year: string; issue: string; articles: JournalArticle[] }
 
-export interface JournalEntry extends BookMeta { repo: string; doi_prefix?: string; issues: JournalIssue[] }
+export interface JournalEntry extends BookMeta { repo: string; doi_prefix?: string; issues: JournalIssue[]; feedbackEnabled: boolean }
 
 export type ContentEntry =
   | { type: "book"; entry: BookEntry }
@@ -81,7 +83,7 @@ export interface ContentRegistry {
 
 /* ─── Internal ─── */
 
-interface SyncYaml { laws: Record<string, { title: string; title_short?: string; unit_type: string; lang: string; license?: string; category?: string }> }
+interface SyncYaml { laws: Record<string, { title: string; title_short?: string; unit_type: string; lang: string; license?: string; category?: string; feedback?: boolean }> }
 
 async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<JournalIssue[]> {
   const { provider: p, repo } = getProvider(repoUrl);
@@ -140,12 +142,12 @@ async function _buildRegistry(): Promise<ContentRegistry> {
         const meta = parse(metaRaw) as BookMeta;
         if (meta.type === "journal") {
           const jmeta = meta as BookMeta & { doi_prefix?: string };
-          journals.set(meta.slug, { ...meta, repo: repoUrl, doi_prefix: jmeta.doi_prefix, issues: await discoverJournal(repoUrl, jmeta.doi_prefix) });
+          journals.set(meta.slug, { ...meta, repo: repoUrl, doi_prefix: jmeta.doi_prefix, issues: await discoverJournal(repoUrl, jmeta.doi_prefix), feedbackEnabled: !!(p.supportsIssues && meta.feedback) });
           return;
         }
         const tocRaw = await p.fetchFile(repo, "toc.yaml");
         const toc: TocEntry[] = tocRaw ? (parse(tocRaw) as { contents: TocEntry[] }).contents : (await p.listFiles(repo, "content")).filter((f) => f.endsWith(".md")).sort().map((f) => ({ file: f, title: f.replace(/\.md$/, "") }));
-        books.set(meta.slug, { ...meta, repo: repoUrl, toc });
+        books.set(meta.slug, { ...meta, repo: repoUrl, toc, feedbackEnabled: !!(p.supportsIssues && meta.feedback) });
         return;
       }
       const syncRaw = await p.fetchFile(repo, "sync.yaml");
@@ -153,7 +155,7 @@ async function _buildRegistry(): Promise<ContentRegistry> {
         const sync = parse(syncRaw) as SyncYaml;
         await Promise.all(Object.entries(sync.laws).map(async ([slug, law]) => {
           const tocRaw = await p.fetchFile(repo, `${slug}/toc.yaml`);
-          laws.set(slug, { slug, title: law.title, title_short: law.title_short, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [] });
+          laws.set(slug, { slug, title: law.title, title_short: law.title_short, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback) });
         }));
       }
     } catch (err) { log.error(err, "Failed to load content repo: %s", repoUrl); }

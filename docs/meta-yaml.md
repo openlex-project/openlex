@@ -37,6 +37,7 @@ bibliography: "references.yaml"     # Path to references file in repo
 | `category` | string | | Category key for homepage grouping (defaults to `type`) |
 | `numbering` | string | books only | Numbering schema |
 | `comments_on` | string | | Slug of the commented law |
+| `feedback` | boolean | | Enable feedback (GitHub/GitLab Issues). Default: `false`. |
 | `csl` | string | | Path to CSL file |
 | `bibliography` | string | | Path to `references.yaml` |
 | `issn` | string | | ISSN (journals only) |
