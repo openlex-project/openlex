@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import dynamic from "next/dynamic";
 import { type TocEntry, type BookEntry, type ContentRegistry } from "@/lib/registry";
 import { getBookContent } from "@/lib/content";
-import { findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterSections } from "@/lib/toc-utils";
+import { findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterSections, resolveTocTitles } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
 import { getProvider } from "@/lib/git-provider";
 import { renderMarkdown } from "@/lib/markdown";
@@ -45,11 +45,13 @@ interface Props {
 
 export function bookMetadata(entry: BookEntry, rest: string[], siteName: string): Metadata {
   if (!rest.length) return { title: `${entry.title} – ${siteName}`, openGraph: { title: entry.title, images: [`/api/og?title=${encodeURIComponent(entry.title)}`] } };
-  const chapter = findTocEntry(entry.toc, rest.join("/"));
+  const resolved = resolveTocTitles(entry.toc, entry.lang);
+  const chapter = findTocEntry(resolved, rest.join("/"));
   if (!chapter) return {};
   const short = entry.title_short ?? entry.title;
-  const t = `${chapter.title} – ${short}`;
-  return { title: `${t} – ${siteName}`, openGraph: { title: t, images: [`/api/og?title=${encodeURIComponent(chapter.title)}&sub=${encodeURIComponent(short)}`] } };
+  const ct = chapter.title as string;
+  const t = `${ct} – ${short}`;
+  return { title: `${t} – ${siteName}`, openGraph: { title: t, images: [`/api/og?title=${encodeURIComponent(ct)}&sub=${encodeURIComponent(short)}`] } };
 }
 
 const BACKMATTER_SLUGS = new Set(["literaturverzeichnis", "rechtsprechungsverzeichnis", "autorenverzeichnis"]);
@@ -70,6 +72,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
 
   const backmatter = getBackmatterSections(meta);
   const work = meta.slug;
+  const resolvedToc = resolveTocTitles(meta.toc, contentLocale ?? meta.lang);
   const slugPrefix = ref === "main" ? `/${work}` : `/${work}/${ref}`;
 
   if (BACKMATTER_SLUGS.has(fileSlug)) {
@@ -77,7 +80,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
     if (!bm) notFound();
     return (
       <div className="flex">
-        <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
+        <SidebarBook work={work} toc={resolvedToc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <h1 className="text-2xl font-bold mb-8">{bm.title}</h1>
           <div className="content-prose" dangerouslySetInnerHTML={{ __html: bm.html }} />
@@ -86,8 +89,8 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
     );
   }
 
-  const tocEntry = findTocEntry(meta.toc, fileSlug);
-  const { prev, next } = findTocNeighbors(meta.toc, fileSlug);
+  const tocEntry = findTocEntry(resolvedToc, fileSlug);
+  const { prev, next } = findTocNeighbors(resolvedToc, fileSlug);
 
   const { provider: p, repo } = getProvider(meta.repo);
   const [result, cslXml, referencesYaml] = await Promise.all([
@@ -120,28 +123,28 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
 
   return (
     <div className="flex">
-      <SidebarBook work={work} toc={meta.toc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
+      <SidebarBook work={work} toc={resolvedToc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
       <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
-        <PrevNextNav position="top" prev={prev ? { href: prevHref!, label: prev.title } : null} next={next ? { href: nextHref!, label: next.title } : null} center={authorCenter} ariaLabel="Kapitelnavigation" />
+        <PrevNextNav position="top" prev={prev ? { href: prevHref!, label: prev.title as string } : null} next={next ? { href: nextHref!, label: next.title as string } : null} center={authorCenter} ariaLabel="Kapitelnavigation" />
         <div className="mb-6 text-sm flex items-center gap-2" style={{ color: "var(--text-secondary)" }}>
           <span>
-            {displayName} – {tocEntry?.title ?? fileSlug}
+            {displayName} – {tocEntry?.title as string ?? fileSlug}
             {edition && <span className="ml-2" style={{ color: "var(--color-accent-600)" }}>({edition})</span>}
             {meta.comments_on && tocEntry?.provisions?.[0] && (
               <> · <Link href={`/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</Link></>
             )}
             <ContentLanguageLinks translations={meta.translations} currentPath={`/${meta.slug}/${fileSlug}`} />
           </span>
-          <ContentActions title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} contentType="book" />
+          <ContentActions title={`${displayName} – ${tocEntry?.title as string ?? fileSlug}`} contentType="book" />
         </div>
         <RelatedContent links={registry.relatedIndex.get(`/${meta.slug}/${fileSlug}`) ?? []} />
         <div className="content-prose prose-rn" dangerouslySetInnerHTML={{ __html: html }} />
-        <PrevNextNav position="bottom" prev={prev ? { href: prevHref!, label: prev.title } : null} next={next ? { href: nextHref!, label: next.title } : null} ariaLabel="Kapitelnavigation" />
+        <PrevNextNav position="bottom" prev={prev ? { href: prevHref!, label: prev.title as string } : null} next={next ? { href: nextHref!, label: next.title as string } : null} ariaLabel="Kapitelnavigation" />
         <SetLicense value={meta.license} />
         {meta.feedbackEnabled && <FeedbackButton repo={meta.repo} />}
         <FootnoteTooltips />
-        <HistoryTracker title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: bookChapterJsonLd(meta, { title: tocEntry?.title ?? fileSlug, author: tocEntry?.author }, `${slugPrefix}/${fileSlug}`) }} />
+        <HistoryTracker title={`${displayName} – ${tocEntry?.title as string ?? fileSlug}`} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: bookChapterJsonLd(meta, { title: tocEntry?.title as string ?? fileSlug, author: tocEntry?.author }, `${slugPrefix}/${fileSlug}`) }} />
       </article>
     </div>
   );

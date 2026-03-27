@@ -9,7 +9,7 @@ import { normalizeI18n, resolveI18n, type I18nString } from "./i18n-utils";
 
 export interface TocEntry {
   file: string;
-  title: string;
+  title: string | I18nString;
   provisions?: number[];
   related?: string[];
   author?: string | { name: string; orcid: string };
@@ -51,7 +51,7 @@ export interface LawMeta {
   translations?: string[];
 }
 
-export interface LawTocNode { label?: string; title: string; nr?: string; children?: LawTocNode[] }
+export interface LawTocNode { label?: string; title: string | I18nString; nr?: string; children?: LawTocNode[] }
 
 export interface BookEntry extends BookMeta { repo: string; toc: TocEntry[]; feedbackEnabled: boolean }
 

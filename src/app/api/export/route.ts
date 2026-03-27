@@ -95,7 +95,7 @@ async function collectBookChapter(repo: string, toc: TocEntry[], rootSlug?: stri
       const slug = e.file.replace(/\.md$/, "");
       if (rootSlug && slug !== rootSlug && !pages.length) { if (e.children) await collect(e.children); continue; }
       const r = await getBookContent(repo, slug);
-      if (r) pages.push({ title: e.title, markdown: r.content });
+      if (r) pages.push({ title: e.title as string, markdown: r.content });
       if (e.children) await collect(e.children);
       if (rootSlug && pages.length && !e.children) break;
     }

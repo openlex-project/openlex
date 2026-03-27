@@ -21,7 +21,7 @@ function findExpandedKeys(toc: LawTocNode[], nr: string, path: string[] = []): s
   for (const node of toc) {
     if (node.nr === nr) return path;
     if (node.children) {
-      const key = path.length + "-" + (node.label ?? node.title);
+      const key = path.length + "-" + (node.label ?? (node.title as string));
       const found = findExpandedKeys(node.children, nr, [...path, key]);
       if (found.length) return found;
     }
@@ -42,13 +42,13 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
       <li>
         <Link href={href} className={`block px-4 py-1 text-sm truncate ${active ? "font-semibold" : ""}`}
           style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>
-          {unitLabel} {node.nr}{node.title ? ` ${node.title}` : ""}
+          {unitLabel} {node.nr}{node.title ? ` ${node.title as string}` : ""}
         </Link>
       </li>
     );
   }
 
-  const key = depth + "-" + (node.label ?? node.title);
+  const key = depth + "-" + (node.label ?? (node.title as string));
   const isExpanded = expanded.has(key);
 
   return (
@@ -58,7 +58,7 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
         style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: "var(--text-primary)" }}>
         <ChevronRight className={`w-3 h-3 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
         <span className="font-medium">{node.label}</span>
-        {node.title && <span className="truncate" style={{ color: "var(--text-tertiary)" }}>{node.title}</span>}
+        {node.title && <span className="truncate" style={{ color: "var(--text-tertiary)" }}>{node.title as string}</span>}
       </button>
       {isExpanded && node.children && (
         <ul>{node.children.map((child, i) => (

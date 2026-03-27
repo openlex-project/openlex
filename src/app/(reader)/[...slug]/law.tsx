@@ -8,7 +8,7 @@ import { formatDate } from "@/lib/format-date";
 import { getProvider } from "@/lib/git-provider";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { headers } from "next/headers";
-import { findLawBreadcrumb } from "@/lib/toc-utils";
+import { findLawBreadcrumb, resolveLawTocTitles } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
 import { ContentActions } from "@/components/content-actions";
@@ -82,7 +82,8 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
 
   const related = registry.relatedIndex.get(`/${meta.slug}/${nr}`) ?? [];
 
-  const breadcrumb = findLawBreadcrumb(meta.toc, nr);
+  const resolvedToc = resolveLawTocTitles(meta.toc, contentLocale ?? meta.lang);
+  const breadcrumb = findLawBreadcrumb(resolvedToc, nr);
   const idx = provisions.indexOf(parseInt(nr, 10));
   const prevNr = provisions[idx - 1];
   const nextNr = provisions[idx + 1];
@@ -93,7 +94,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
 
   return (
     <div className="flex">
-      <SidebarLaw law={meta.slug} title={meta.title_short ?? meta.title} unitLabel={unitLabel} toc={meta.toc} provisions={provisions} activeNr={nr} />
+      <SidebarLaw law={meta.slug} title={meta.title_short ?? meta.title} unitLabel={unitLabel} toc={resolvedToc} provisions={provisions} activeNr={nr} />
       <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
         {breadcrumb.length > 1 && (
           <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">

@@ -1,4 +1,28 @@
 import type { TocEntry, LawTocNode, BookEntry, Heading } from "./registry";
+import { resolveI18n, type I18nString } from "./i18n-utils";
+
+/** Resolve a title that may be string or I18nString */
+function rt(title: string | I18nString, lang: string): string {
+  return typeof title === "string" ? title : resolveI18n(title, lang);
+}
+
+/** Deep-resolve all i18n titles in a TocEntry tree for a given locale */
+export function resolveTocTitles(toc: TocEntry[], lang: string): TocEntry[] {
+  return toc.map((e) => ({
+    ...e,
+    title: rt(e.title, lang),
+    children: e.children ? resolveTocTitles(e.children, lang) : undefined,
+  }));
+}
+
+/** Deep-resolve all i18n titles in a LawTocNode tree */
+export function resolveLawTocTitles(toc: LawTocNode[], lang: string): LawTocNode[] {
+  return toc.map((n) => ({
+    ...n,
+    title: rt(n.title, lang),
+    children: n.children ? resolveLawTocTitles(n.children, lang) : undefined,
+  }));
+}
 
 export function findTocEntry(toc: TocEntry[], slug: string): TocEntry | undefined {
   for (const e of toc) {

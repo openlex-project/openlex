@@ -72,7 +72,7 @@ export function SidebarBook({ work, toc, edition, activeSlug, headings = [], bac
           ) : null}
           <Link href={href} className={`block py-1.5 truncate flex-1 ${active ? "font-semibold" : ""}`}
             style={{ paddingLeft: hasChildren ? "0.25rem" : `${1 + depth * 0.75}rem`, paddingRight: "1rem", color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>
-            {entry.title}
+            {entry.title as string}
           </Link>
         </div>
         {hasChildren && isExpanded && <ul>{entry.children!.map((c) => renderEntry(c, depth + 1))}</ul>}
