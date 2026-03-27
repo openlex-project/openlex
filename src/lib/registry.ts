@@ -3,6 +3,7 @@ import { getProvider } from "./git-provider";
 import { loadSiteConfig } from "./site";
 import { log } from "./logger";
 import { findTocEntry } from "./toc-utils";
+import { normalizeI18n, resolveI18n, type I18nString } from "./i18n-utils";
 
 /* ─── Types ─── */
 
@@ -22,6 +23,7 @@ export interface BookMeta {
   type: "book" | "journal";
   title: string;
   title_short?: string;
+  subtitle?: string;
   lang: string;
   license: string;
   category?: string;
@@ -83,14 +85,7 @@ export interface ContentRegistry {
 
 /* ─── Internal ─── */
 
-/** Resolve an i18n field: string or { de: "...", en: "..." } → string */
-function resolveI18n(val: string | Record<string, string> | undefined, lang: string): string {
-  if (!val) return "";
-  if (typeof val === "string") return val;
-  return val[lang] ?? val["en"] ?? Object.values(val)[0] ?? "";
-}
-
-interface SyncYaml { laws: Record<string, { title: string | Record<string, string>; title_short?: string | Record<string, string>; unit_type: string; lang: string; license?: string; category?: string; feedback?: boolean }> }
+interface SyncYaml { laws: Record<string, { title: unknown; title_short?: unknown; unit_type: string; lang: string; license?: string; category?: string; feedback?: boolean }> }
 
 async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<JournalIssue[]> {
   const { provider: p, repo } = getProvider(repoUrl);
@@ -101,11 +96,12 @@ async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<Jou
     for (const issueNr of nums) {
       const raw = await p.fetchFile(repo, `${year}/${issueNr}/issue.yaml`);
       if (!raw) continue;
-      const issueMeta = parse(raw) as { articles: { file: string; title: string; authors: { name: string; orcid?: string }[]; section: string; pages?: string; numbering?: string; doi?: string; related?: string[] }[] };
+      const issueMeta = parse(raw) as { articles: { file: string; title: unknown; authors: { name: string; orcid?: string }[]; section: unknown; pages?: string; numbering?: string; doi?: string; related?: string[] }[] };
       if (!issueMeta.articles?.length) continue;
+      const defaultLang = "de"; // journal lang comes from meta.yaml, not available here — resolved at render time
       issues.push({ year, issue: issueNr, articles: issueMeta.articles.map((a) => {
         const firstPage = a.pages?.split("-")[0];
-        return { slug: a.file.replace(/\.md$/, ""), title: a.title, authors: a.authors, section: a.section ?? "Other", pages: a.pages, numbering: a.numbering, doi: a.doi ?? (doiPrefix && firstPage ? `${doiPrefix}.${year}.${firstPage}` : undefined), related: a.related };
+        return { slug: a.file.replace(/\.md$/, ""), title: resolveI18n(normalizeI18n(a.title, defaultLang), defaultLang), authors: a.authors, section: resolveI18n(normalizeI18n(a.section, defaultLang), defaultLang) || "Other", pages: a.pages, numbering: a.numbering, doi: a.doi ?? (doiPrefix && firstPage ? `${doiPrefix}.${year}.${firstPage}` : undefined), related: a.related };
       }) });
     }
   }
@@ -146,7 +142,14 @@ async function _buildRegistry(): Promise<ContentRegistry> {
       const { provider: p, repo } = getProvider(repoUrl);
       const metaRaw = await p.fetchFile(repo, "meta.yaml");
       if (metaRaw) {
-        const meta = parse(metaRaw) as BookMeta;
+        const raw = parse(metaRaw) as Record<string, unknown>;
+        const lang = (raw.lang as string) ?? "en";
+        const meta: BookMeta = {
+          ...(raw as unknown as BookMeta),
+          title: resolveI18n(normalizeI18n(raw.title, lang), lang),
+          title_short: resolveI18n(normalizeI18n(raw.title_short, lang), lang) || undefined,
+          subtitle: resolveI18n(normalizeI18n(raw.subtitle, lang), lang) || undefined,
+        };
         if (meta.type === "journal") {
           const jmeta = meta as BookMeta & { doi_prefix?: string };
           journals.set(meta.slug, { ...meta, repo: repoUrl, doi_prefix: jmeta.doi_prefix, issues: await discoverJournal(repoUrl, jmeta.doi_prefix), feedbackEnabled: !!(p.supportsIssues && meta.feedback) });
@@ -162,7 +165,7 @@ async function _buildRegistry(): Promise<ContentRegistry> {
         const sync = parse(syncRaw) as SyncYaml;
         await Promise.all(Object.entries(sync.laws).map(async ([slug, law]) => {
           const tocRaw = await p.fetchFile(repo, `${slug}/toc.yaml`);
-          laws.set(slug, { slug, title: resolveI18n(law.title, law.lang), title_short: resolveI18n(law.title_short, law.lang) || undefined, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback) });
+          laws.set(slug, { slug, title: resolveI18n(normalizeI18n(law.title, law.lang), law.lang), title_short: resolveI18n(normalizeI18n(law.title_short, law.lang), law.lang) || undefined, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback) });
         }));
       }
     } catch (err) { log.error(err, "Failed to load content repo: %s", repoUrl); }
