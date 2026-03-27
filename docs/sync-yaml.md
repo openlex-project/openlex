@@ -31,8 +31,8 @@ laws:
 | Field | Type | Required | Description |
 |---|---|---|---|
 | (Key) | string | ✓ | Slug of the law (= directory name in repo) |
-| `title` | string | ✓ | Full title |
-| `title_short` | string | | Short title / abbreviation (e.g., "DSGVO") |
+| `title` | string | i18n | ✓ | Full title (string or { de: "...", en: "..." }) |
+| `title_short` | string | i18n | | Short title (string or { de: "DSGVO", en: "GDPR" }) |
 | `unit_type` | `article` \| `section` | ✓ | Unit type: `article` → "Art.", `section` → "§" |
 | `lang` | string | ✓ | Language (ISO 639-1) |
 | `license` | string | | License identifier (e.g., "Gemeinfrei", "CC-BY-SA-4.0") |

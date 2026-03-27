@@ -30,8 +30,8 @@ bibliography: "references.yaml"     # Path to references file in repo
 |---|---|---|---|
 | `slug` | string | ✓ | Unique URL slug |
 | `type` | `book` \| `journal` | ✓ | Type of work |
-| `title` | string | ✓ | Full title |
-| `title_short` | string | | Short title for navigation |
+| `title` | string | i18n | ✓ | Full title (string or { locale: string }) |
+| `title_short` | string | i18n | | Short title (string or { locale: string }) |
 | `lang` | string | ✓ | Language (ISO 639-1) |
 | `license` | string | ✓ | License identifier (shown in footer) |
 | `category` | string | | Category key for homepage grouping (defaults to `type`) |
@@ -104,7 +104,7 @@ articles:
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `file` | string | ✓ | Markdown filename |
-| `title` | string | ✓ | Article title |
+| `title` | string | i18n | ✓ | Article title (string or { locale: string }) |
 | `authors` | array | ✓ | Authors with optional `orcid` |
 | `section` | string | ✓ | Section/topic grouping (e.g., "Essays", "Case Law") |
 | `pages` | string | | Page range — enables citation redirect |
@@ -116,3 +116,18 @@ articles:
 - `title_short` is preferred in navigation. Falls back to `title`.
 - `comments_on` links a commentary to a law. The value must match a law's slug in `sync.yaml`.
 - `license` is shown in the page footer per content item.
+
+## i18n Convention
+
+All user-facing string fields (marked `string | i18n` above) accept either:
+
+- A plain string — treated as the default locale value
+- A locale object — `{ de: "Deutsch", en: "English" }`
+
+```yaml
+# Single language (shorthand)
+title: "OpenCommentary DSGVO"
+
+# Multilingual
+title: { de: "OpenCommentary DSGVO", en: "OpenCommentary GDPR" }
+```
