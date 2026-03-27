@@ -174,7 +174,8 @@ async function _buildRegistry(): Promise<ContentRegistry> {
   });
 
   const slugMap = new Map<string, ContentEntry>();
-  const reserved = new Set(["category", "login", "search", "api", "favicon.svg", "bookmarks", "history", "profile", "feedback"]);
+  const locales = (process.env.NEXT_PUBLIC_LOCALES ?? "en").split(",");
+  const reserved = new Set(["category", "login", "search", "api", "favicon.svg", "bookmarks", "history", "profile", "feedback", ...locales]);
   for (const [slug, entry] of books) { if (reserved.has(slug)) throw new Error(`Slug "${slug}" is reserved`); if (slugMap.has(slug)) throw new Error(`Slug collision: "${slug}"`); slugMap.set(slug, { type: "book", entry }); }
   for (const [slug, entry] of laws) { if (reserved.has(slug)) throw new Error(`Slug "${slug}" is reserved`); if (slugMap.has(slug)) throw new Error(`Slug collision: "${slug}"`); slugMap.set(slug, { type: "law", entry }); }
   for (const [slug, entry] of journals) { if (reserved.has(slug)) throw new Error(`Slug "${slug}" is reserved`); if (slugMap.has(slug)) throw new Error(`Slug collision: "${slug}"`); slugMap.set(slug, { type: "journal", entry }); }
