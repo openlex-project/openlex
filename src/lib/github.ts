@@ -127,4 +127,16 @@ export const github: ContentProvider = {
       return res.ok;
     } catch (err) { log.error(err, "GitHub closeIssue failed"); return false; }
   },
+
+  async listTags(repo, prefix) {
+    try {
+      const res = await fetch(`${API}/repos/${repo}/tags?per_page=100`, {
+        headers: { Authorization: `Bearer ${GITHUB_PAT}`, Accept: "application/vnd.github+json" },
+        cache: "no-store",
+      });
+      if (!res.ok) return [];
+      const tags = (await res.json()) as { name: string }[];
+      return tags.map((t) => t.name).filter((n) => n.startsWith(prefix)).sort().reverse();
+    } catch (err) { log.error(err, "GitHub listTags failed"); return []; }
+  },
 };

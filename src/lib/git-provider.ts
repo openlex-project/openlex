@@ -32,6 +32,8 @@ export interface ContentProvider {
   getIssueComments(repo: string, issueId: number): Promise<IssueComment[]>;
   addComment(repo: string, issueId: number, body: string): Promise<boolean>;
   closeIssue(repo: string, issueId: number): Promise<boolean>;
+  /** List tags matching a prefix (e.g., "law/dsgvo/"). Returns tag names sorted descending. */
+  listTags(repo: string, prefix: string): Promise<string[]>;
 }
 
 /* ─── URL parsing ─── */
@@ -185,6 +187,18 @@ function gitlabProvider(host: string): ContentProvider {
         });
         return !!res?.ok;
       } catch (err) { log.error(err, "GitLab closeIssue failed"); return false; }
+    },
+
+    async listTags(repo, prefix) {
+      try {
+        const res = await fetch(`${base}/projects/${pid(repo)}/repository/tags?per_page=100&search=${encodeURIComponent(prefix)}`, {
+          headers: { "PRIVATE-TOKEN": token },
+          cache: "no-store",
+        });
+        if (!res?.ok) return [];
+        const tags = (await res.json()) as { name: string }[];
+        return tags.map((t) => t.name).filter((n) => n.startsWith(prefix)).sort().reverse();
+      } catch (err) { log.error(err, "GitLab listTags failed"); return []; }
     },
   };
 }

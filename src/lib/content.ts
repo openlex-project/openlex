@@ -5,9 +5,9 @@ export async function getBookContent(repoUrl: string, fileSlug: string, ref = "m
   return p.fetchFile(repo, `content/${fileSlug}.md`, ref);
 }
 
-export async function getLawContent(repoUrl: string, slug: string, nr: string): Promise<string | null> {
+export async function getLawContent(repoUrl: string, slug: string, nr: string, ref?: string): Promise<string | null> {
   const { provider: p, repo } = getProvider(repoUrl);
-  return p.fetchFile(repo, `${slug}/${nr}.md`);
+  return p.fetchFile(repo, `${slug}/${nr}.md`, ref);
 }
 
 export async function getLawProvisions(repoUrl: string, slug: string): Promise<number[]> {

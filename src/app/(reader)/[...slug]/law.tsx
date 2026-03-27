@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { safeJsonLd } from "@/lib/escape-html";
 import { type ContentRegistry, type LawMeta } from "@/lib/registry";
 import { getLawContent, getLawProvisions } from "@/lib/content";
+import { resolveLawVersion } from "@/lib/law-version";
 import { findLawBreadcrumb } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
@@ -38,11 +39,23 @@ export function lawMetadata(entry: LawMeta, rest: string[], siteName: string): M
 }
 
 export default async function LawPage({ registry, entry: meta, rest }: Props) {
-  const nr = rest[0];
+  // Parse @{date} prefix for historical versions: /{law}/@2025-01-15/{nr}
+  let nr: string | undefined;
+  let ref: string | undefined;
+  let versionDate: string | undefined;
+  if (rest[0]?.startsWith("@")) {
+    versionDate = rest[0].slice(1);
+    nr = rest[1];
+    const tag = await resolveLawVersion(meta.repo, meta.slug, versionDate);
+    if (tag) ref = tag;
+    else notFound(); // no version found for this date
+  } else {
+    nr = rest[0];
+  }
   if (!nr) notFound();
 
   const [text, provisions] = await Promise.all([
-    getLawContent(meta.repo, meta.slug, nr),
+    getLawContent(meta.repo, meta.slug, nr, ref),
     getLawProvisions(meta.repo, meta.slug),
   ]);
   if (!text) notFound();
