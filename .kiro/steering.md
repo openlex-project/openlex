@@ -37,7 +37,7 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 - Language in UI text: configurable via `site.yaml` `default_locale` (default: `de`), English via i18n.
 - Language in documentation (`/docs/`): **English**.
 - Language in commit messages: **English**.
-- i18n in YAML: All user-facing string fields accept either a plain string (shorthand for `default_locale`) or a locale object (`{ de: "...", en: "..." }`). Use `normalizeI18n()` at parse time, `resolveI18n()` at render time. Helper: `lib/i18n-utils.ts`.
+- i18n in YAML: All user-facing string fields accept either a plain string (shorthand for `default_locale`) or a locale object (`{ de: "...", en: "..." }`). Use `normalizeI18n()` at parse time, `resolveI18n()` at render time. Helper: `lib/i18n-utils.ts`. Note: `openlex-lawsync` has an identical copy of this file — keep both in sync when changing the i18n convention.
 - File names: kebab-case (`citation-bar.tsx`, `footnote-drawer.tsx`).
 - Internal links: always `<Link>` from `next/link` (SPA navigation). Use `<a>` only for external links (`target="_blank"`) and anchor links (`#id`).
 - Components: PascalCase (`CitationBar`, `FootnoteDrawer`).
