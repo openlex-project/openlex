@@ -107,7 +107,9 @@ function sanitizeCss(raw: string): string {
     .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/@import\s+[^;]+;/gi, "")
     .replace(/expression\s*\(/gi, "")
-    .replace(/javascript\s*:/gi, "");
+    .replace(/javascript\s*:/gi, "")
+    .replace(/behavior\s*:/gi, "")
+    .replace(/-moz-binding\s*:/gi, "");
 }
 
 /**

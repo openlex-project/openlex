@@ -43,7 +43,7 @@ function safeParse<T>(body: string): T | null {
 
 export const github: ContentProvider = {
   async fetchFile(repo, path, ref = "main") {
-    const result = await ghFetch(`${API}/repos/${repo}/contents/${encodeURIComponent(path)}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}`);
+    const result = await ghFetch(`${API}/repos/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}`);
     if (!result) return null;
     const data = safeParse<{ content?: string; encoding?: string }>(result.body);
     if (!data?.content || data.encoding !== "base64") return null;
@@ -51,7 +51,7 @@ export const github: ContentProvider = {
   },
 
   async listFiles(repo, path, ref = "main") {
-    const result = await ghFetch(`${API}/repos/${repo}/contents/${encodeURIComponent(path)}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}:list`);
+    const result = await ghFetch(`${API}/repos/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}:list`);
     if (!result) return [];
     const data = safeParse<{ name: string; type: string }[]>(result.body);
     if (!Array.isArray(data)) return [];
@@ -59,7 +59,7 @@ export const github: ContentProvider = {
   },
 
   async listDirs(repo, path, ref = "main") {
-    const result = await ghFetch(`${API}/repos/${repo}/contents/${encodeURIComponent(path)}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}:dirs`);
+    const result = await ghFetch(`${API}/repos/${repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${ref}`, `etag:gh:${repo}:${path}:${ref}:dirs`);
     if (!result) return [];
     const data = safeParse<{ name: string; type: string }[]>(result.body);
     if (!Array.isArray(data)) return [];

@@ -23,7 +23,7 @@ export function SiteAnalytics({ config }: { config?: AnalyticsConfig }) {
     case "umami":
       return <Script defer src={`${safeUrl}/script.js`} data-website-id={safeId} />;
     case "goatcounter":
-      return <Script data-goatcounter={config.url} async src="//gc.zgo.at/count.js" />;
+      return <Script data-goatcounter={config.url} async src="https://gc.zgo.at/count.js" />;
     default:
       return null;
   }

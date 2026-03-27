@@ -36,7 +36,9 @@ export function withSession(label: string, handler: SessionHandler) {
 
 /** Parse and validate request JSON body with a zod schema. Returns parsed data or a 400 NextResponse. */
 export async function parseBody<T extends z.ZodType>(req: NextRequest, schema: T): Promise<z.infer<T> | NextResponse> {
-  const result = schema.safeParse(await req.json());
+  let raw: unknown;
+  try { raw = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  const result = schema.safeParse(raw);
   if (!result.success) return NextResponse.json({ error: "Validation failed", issues: result.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) }, { status: 400 });
   return result.data;
 }

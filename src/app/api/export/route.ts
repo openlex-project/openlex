@@ -72,13 +72,13 @@ export const GET = withSession("export GET", async (req, email) => {
 
     if (format === "md") {
       const body = pages.map((p) => exportMarkdown(p.markdown)).join("\n\n---\n\n");
-      return new NextResponse(body, { headers: { "Content-Type": "text/markdown; charset=utf-8", "Content-Disposition": `attachment; filename="${filename}"` } });
+      return new NextResponse(body, { headers: { "Content-Type": "text/markdown; charset=utf-8", "Cache-Control": "no-store", "Content-Disposition": `attachment; filename="${filename}"` } });
     }
 
     if (format === "docx") {
       const { exportDocx } = await import("@/lib/export-docx");
       const buf = await exportDocx(pages);
-      return new NextResponse(new Uint8Array(buf), { headers: { "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Content-Disposition": `attachment; filename="${filename}"` } });
+      return new NextResponse(new Uint8Array(buf), { headers: { "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Cache-Control": "no-store", "Content-Disposition": `attachment; filename="${filename}"` } });
     }
 
     return NextResponse.json({ error: "Unsupported format" }, { status: 400 });

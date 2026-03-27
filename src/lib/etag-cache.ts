@@ -11,7 +11,9 @@ const MAX_MEM = 500;
 
 export async function getETag(key: string): Promise<ETagEntry | null> {
   if (redis) { try { return await redis.get<ETagEntry>(key); } catch { /* fall through */ } }
-  return mem.get(key) ?? null;
+  const entry = mem.get(key) ?? null;
+  if (entry) { mem.delete(key); mem.set(key, entry); } // move to end (LRU)
+  return entry;
 }
 
 export async function setETag(key: string, entry: ETagEntry): Promise<void> {
