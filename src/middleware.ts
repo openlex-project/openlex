@@ -29,6 +29,15 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(stripped, request.url), 301);
   }
 
+  // Rewrite non-default locale: /en/... → /... (strip prefix, keep header)
+  if (pathnameLocale && pathnameLocale !== defaultLocale) {
+    const stripped = pathname.slice(`/${pathnameLocale}`.length) || "/";
+    const response = NextResponse.rewrite(new URL(stripped, request.url));
+    response.headers.set("x-ui-locale", uiLocale);
+    response.headers.set("x-content-locale", contentLocale);
+    return response;
+  }
+
   const response = NextResponse.next();
   response.headers.set("x-ui-locale", uiLocale);
   response.headers.set("x-content-locale", contentLocale);
