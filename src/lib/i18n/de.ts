@@ -34,6 +34,7 @@ const de: Record<string, string> = {
   "law.historicalVersion": "Sie sehen den Stand vom {date}. Dies ist nicht die aktuelle Fassung.",
   "law.currentVersion": "Aktuelle Fassung anzeigen",
   "law.versions": "Fassungen",
+  "content.availableIn": "Auch verfügbar in:",
   "feedback.addition": "Ergänzung",
   "feedback.question": "Frage",
   "section.books": "Kommentare & Bücher",

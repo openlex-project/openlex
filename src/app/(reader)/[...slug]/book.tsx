@@ -12,6 +12,7 @@ import { renderBackmatter } from "@/lib/backmatter";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { SidebarBook } from "@/components/sidebar-book";
 import { ContentActions } from "@/components/content-actions";
+import { ContentLanguageSwitcher } from "@/components/content-language-switcher";
 import { RelatedContent } from "@/components/related-content";
 import { PrevNextNav } from "@/components/prev-next-nav";
 import { person, licenseUrl } from "@/lib/jsonld-utils";
@@ -132,6 +133,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
           </span>
           <ContentActions title={`${displayName} – ${tocEntry?.title ?? fileSlug}`} contentType="book" />
         </div>
+        <ContentLanguageSwitcher translations={meta.translations} currentPath={`/${meta.slug}/${fileSlug}`} locale={locale} />
         <RelatedContent links={registry.relatedIndex.get(`/${meta.slug}/${fileSlug}`) ?? []} />
         <div className="content-prose prose-rn" dangerouslySetInnerHTML={{ __html: html }} />
         <PrevNextNav position="bottom" prev={prev ? { href: prevHref!, label: prev.title } : null} next={next ? { href: nextHref!, label: next.title } : null} ariaLabel="Kapitelnavigation" />

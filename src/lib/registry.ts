@@ -33,6 +33,7 @@ export interface BookMeta {
   bibliography?: string;
   issn?: string;
   feedback?: boolean;
+  translations?: string[];
   editors: { name: string; orcid?: string }[];
 }
 
@@ -47,6 +48,7 @@ export interface LawMeta {
   repo: string;
   toc: LawTocNode[];
   feedbackEnabled: boolean;
+  translations?: string[];
 }
 
 export interface LawTocNode { label?: string; title: string; nr?: string; children?: LawTocNode[] }
@@ -85,7 +87,7 @@ export interface ContentRegistry {
 
 /* ─── Internal ─── */
 
-interface SyncYaml { laws: Record<string, { title: unknown; title_short?: unknown; unit_type: string; lang: string; license?: string; category?: string; feedback?: boolean }> }
+interface SyncYaml { laws: Record<string, { title: unknown; title_short?: unknown; unit_type: string; lang: string; license?: string; category?: string; feedback?: boolean; translations?: string[] }> }
 
 async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<JournalIssue[]> {
   const { provider: p, repo } = getProvider(repoUrl);
@@ -165,7 +167,7 @@ async function _buildRegistry(): Promise<ContentRegistry> {
         const sync = parse(syncRaw) as SyncYaml;
         await Promise.all(Object.entries(sync.laws).map(async ([slug, law]) => {
           const tocRaw = await p.fetchFile(repo, `${slug}/toc.yaml`);
-          laws.set(slug, { slug, title: resolveI18n(normalizeI18n(law.title, law.lang), law.lang), title_short: resolveI18n(normalizeI18n(law.title_short, law.lang), law.lang) || undefined, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback) });
+          laws.set(slug, { slug, title: resolveI18n(normalizeI18n(law.title, law.lang), law.lang), title_short: resolveI18n(normalizeI18n(law.title_short, law.lang), law.lang) || undefined, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback), translations: law.translations });
         }));
       }
     } catch (err) { log.error(err, "Failed to load content repo: %s", repoUrl); }

@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import UserButton from "@/components/user-button";
 import { LogoFull } from "@/components/logo";
 import { ContentNav } from "@/components/content-nav";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { LicenseProvider, LicenseDisplay } from "@/components/license-context";
 import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate } from "@/lib/template";
@@ -45,7 +44,6 @@ export default async function ReaderLayout({
             </div>
           )}
           <div className="shrink-0 flex items-center gap-2">
-            <LanguageSwitcher />
             <UserButton hasFeedback={hasFeedback} />
           </div>
         </header>

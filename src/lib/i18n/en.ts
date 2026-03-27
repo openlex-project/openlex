@@ -34,6 +34,7 @@ const en: Record<string, string> = {
   "law.historicalVersion": "You are viewing the version from {date}. This is not the current version.",
   "law.currentVersion": "View current version",
   "law.versions": "Versions",
+  "content.availableIn": "Also available in:",
   "feedback.addition": "Suggestion",
   "feedback.question": "Question",
   "section.books": "Commentaries & Books",
