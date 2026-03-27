@@ -4,6 +4,7 @@ import { safeJsonLd } from "@/lib/escape-html";
 import { type ContentRegistry, type LawMeta } from "@/lib/registry";
 import { getLawContent, getLawProvisions } from "@/lib/content";
 import { resolveLawVersion } from "@/lib/law-version";
+import { formatDate } from "@/lib/format-date";
 import { getProvider } from "@/lib/git-provider";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import { headers } from "next/headers";
@@ -67,7 +68,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   const h = await headers();
   const locale = (h.get("x-locale") ?? defaultLocale) as Locale;
   // Format date for display according to locale
-  const fmtDate = (iso: string) => new Date(iso + "T00:00:00").toLocaleDateString(locale, { year: "numeric", month: "2-digit", day: "2-digit" });
+  const fmtDate = (iso: string) => formatDate(iso, locale);
 
   const unitLabel = meta.unit_type === "article" ? "Art." : "§";
 

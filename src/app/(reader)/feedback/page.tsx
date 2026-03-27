@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ChevronRight } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
+import { useLocale } from "@/components/locale-provider";
+import { formatDate } from "@/lib/format-date";
 import { fetchJson } from "@/lib/fetch-json";
 
 interface Issue { id: number; title: string; state: "open" | "closed"; created_at: string; comments: number; closedByUser: boolean; repo: string }
@@ -11,6 +13,7 @@ interface Comment { author: string; body: string; created_at: string }
 
 function IssueCard({ issue }: { issue: Issue }) {
   const t = useT();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [reply, setReply] = useState("");
@@ -47,7 +50,7 @@ function IssueCard({ issue }: { issue: Issue }) {
         <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${open ? "rotate-90" : ""}`} style={{ color: "var(--text-tertiary)" }} />
         <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${state === "open" ? "bg-green-500" : "bg-gray-400"}`} />
         <span className="text-sm font-medium flex-1 truncate" style={{ color: "var(--text-primary)" }}>{issue.title}</span>
-        <span className="text-xs shrink-0" style={{ color: "var(--text-tertiary)" }}>{new Date(issue.created_at).toLocaleDateString()}</span>
+        <span className="text-xs shrink-0" style={{ color: "var(--text-tertiary)" }}>{formatDate(issue.created_at, locale)}</span>
       </button>
       {open && (
         <div className="px-4 pb-4 border-t" style={{ borderColor: "var(--border-subtle)" }}>
@@ -57,7 +60,7 @@ function IssueCard({ issue }: { issue: Issue }) {
             <ul className="py-2 space-y-3">
               {comments.map((c, i) => (
                 <li key={i}>
-                  <div className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>{c.author} · {new Date(c.created_at).toLocaleDateString()}</div>
+                  <div className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>{c.author} · {formatDate(c.created_at, locale)}</div>
                   <div className="text-sm mt-0.5 whitespace-pre-line" style={{ color: "var(--text-primary)" }}>{c.body}</div>
                 </li>
               ))}

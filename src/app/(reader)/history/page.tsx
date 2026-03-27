@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/useT";
+import { formatDateTime } from "@/lib/format-date";
 import { useLocale } from "@/components/locale-provider";
 
 interface HistoryEntry {
@@ -36,7 +37,7 @@ export default function HistoryPage() {
     );
   }
 
-  const fmt = (ts: number) => new Date(ts).toLocaleDateString(locale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  const fmt = (ts: number) => formatDateTime(ts, locale);
 
   return (
     <div className="page-container">
