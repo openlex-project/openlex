@@ -3,7 +3,7 @@ import Link from "next/link";
 const locales = (process.env.NEXT_PUBLIC_LOCALES ?? "en").split(",");
 const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? "en";
 
-/** Inline language links for the meta line: " · EN · FR" */
+/** Inline language links for the meta line: " · EN · FR". Uses <a> for full page load (middleware rewrite). */
 export function ContentLanguageLinks({ translations, currentPath }: {
   translations?: string[];
   currentPath: string;
@@ -22,7 +22,7 @@ export function ContentLanguageLinks({ translations, currentPath }: {
   return (
     <>
       {others.map((l) => (
-        <span key={l}> · <Link href={buildHref(l)} className="uppercase hover:underline" style={{ color: "var(--active-text)" }}>{l}</Link></span>
+        <span key={l}> · <a href={buildHref(l)} className="uppercase hover:underline" style={{ color: "var(--active-text)" }}>{l}</a></span>
       ))}
     </>
   );
