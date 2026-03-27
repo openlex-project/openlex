@@ -38,7 +38,8 @@ export const POST = withAuth("feedback comments POST", async (req, email) => {
   if (!p) return NextResponse.json({ error: "Invalid repo" }, { status: 403 });
 
   if (data.action === "comment") {
-    const ok = await p.provider.addComment(p.repo, data.issueId, data.body);
+    const prefixed = `> 🤖 *Reply via OpenLex feedback system*\n\n${data.body}`;
+    const ok = await p.provider.addComment(p.repo, data.issueId, prefixed);
     return ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: "Failed" }, { status: 502 });
   }
 
