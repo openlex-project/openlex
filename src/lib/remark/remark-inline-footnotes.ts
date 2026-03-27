@@ -5,6 +5,7 @@
 import type { Root, PhrasingContent } from "mdast";
 import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
+import { escapeHtml } from "../escape-html";
 
 const FN_PATTERN = /\^\[([^\]]+)\]/g;
 
@@ -44,7 +45,7 @@ const remarkInlineFootnotes: Plugin<[], Root> = () => {
       const items = footnotes
         .map(
           (text, i) =>
-            `<li id="fn-${i + 1}"><p>${text} <a href="#fnref-${i + 1}" class="fn-back">↩</a></p></li>`,
+            `<li id="fn-${i + 1}"><p>${escapeHtml(text)} <a href="#fnref-${i + 1}" class="fn-back">↩</a></p></li>`,
         )
         .join("\n");
 

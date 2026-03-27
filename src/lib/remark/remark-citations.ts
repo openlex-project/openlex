@@ -31,6 +31,7 @@ const remarkCitations: Plugin<[CitationPluginOptions], Root> = (opts) => {
     function walk(node: { type: string; value?: string; children?: unknown[] }) {
       if (node.type === "text" && node.value && CITE_RE.test(node.value)) {
         CITE_RE.lastIndex = 0;
+        node.type = "html";
         node.value = resolveCitations(node.value, engine);
       }
       if (node.type === "html" && node.value && CITE_RE.test(node.value)) {

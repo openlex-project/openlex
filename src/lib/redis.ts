@@ -62,7 +62,7 @@ export async function addHistory(userId: string, path: string, title: string): P
 export async function getHistory(userId: string, limit = 50): Promise<HistoryEntry[]> {
   return safe(async (r) => {
     const raw = await r.zrange<string[]>(`history:${userId}`, 0, limit - 1, { rev: true });
-    return raw.map((s) => (typeof s === "string" ? JSON.parse(s) : s) as HistoryEntry);
+    return raw.flatMap((s) => { try { return [typeof s === "string" ? JSON.parse(s) : s] as HistoryEntry[]; } catch { return []; } });
   }, []);
 }
 

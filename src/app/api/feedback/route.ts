@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withAuth, parseBody } from "@/lib/api-utils";
+import { loadSiteConfig } from "@/lib/site";
+import { parseRepoUrl } from "@/lib/git-provider";
+import { rateLimit } from "@/lib/rate-limit";
 import { log } from "@/lib/logger";
 
 const feedbackSchema = z.object({
@@ -14,6 +17,14 @@ const feedbackSchema = z.object({
 export const POST = withAuth("feedback POST", async (req, email) => {
   const data = await parseBody(req, feedbackSchema);
   if (data instanceof NextResponse) return data;
+
+  // #2 SSRF prevention: validate repo against configured content_repos
+  const allowedRepos = new Set((loadSiteConfig().content_repos ?? []).map((r) => parseRepoUrl(r).repo));
+  if (!allowedRepos.has(data.repo)) return NextResponse.json({ error: "Invalid repo" }, { status: 403 });
+
+  // #6 Rate limit: 10 feedback per minute
+  const limited = rateLimit(email, 10);
+  if (limited) return limited;
 
   const pat = process.env.GITHUB_PAT;
   if (!pat) { log.error("GITHUB_PAT not configured"); return NextResponse.json({ error: "Server configuration error" }, { status: 500 }); }
