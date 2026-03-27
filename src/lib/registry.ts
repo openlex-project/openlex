@@ -83,7 +83,14 @@ export interface ContentRegistry {
 
 /* ─── Internal ─── */
 
-interface SyncYaml { laws: Record<string, { title: string; title_short?: string; unit_type: string; lang: string; license?: string; category?: string; feedback?: boolean }> }
+/** Resolve an i18n field: string or { de: "...", en: "..." } → string */
+function resolveI18n(val: string | Record<string, string> | undefined, lang: string): string {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  return val[lang] ?? val["en"] ?? Object.values(val)[0] ?? "";
+}
+
+interface SyncYaml { laws: Record<string, { title: string | Record<string, string>; title_short?: string | Record<string, string>; unit_type: string; lang: string; license?: string; category?: string; feedback?: boolean }> }
 
 async function discoverJournal(repoUrl: string, doiPrefix?: string): Promise<JournalIssue[]> {
   const { provider: p, repo } = getProvider(repoUrl);
@@ -155,7 +162,7 @@ async function _buildRegistry(): Promise<ContentRegistry> {
         const sync = parse(syncRaw) as SyncYaml;
         await Promise.all(Object.entries(sync.laws).map(async ([slug, law]) => {
           const tocRaw = await p.fetchFile(repo, `${slug}/toc.yaml`);
-          laws.set(slug, { slug, title: law.title, title_short: law.title_short, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback) });
+          laws.set(slug, { slug, title: resolveI18n(law.title, law.lang), title_short: resolveI18n(law.title_short, law.lang) || undefined, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback) });
         }));
       }
     } catch (err) { log.error(err, "Failed to load content repo: %s", repoUrl); }
