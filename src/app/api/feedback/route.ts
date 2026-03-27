@@ -5,6 +5,16 @@ import { loadSiteConfig } from "@/lib/site";
 import { getProvider, parseRepoUrl } from "@/lib/git-provider";
 import { rateLimit } from "@/lib/rate-limit";
 
+export const GET = withAuth("feedback GET", async (_req, email) => {
+  const repoUrls = loadSiteConfig().content_repos ?? [];
+  const all = await Promise.all(repoUrls.map(async (repoUrl) => {
+    const { provider, repo } = getProvider(repoUrl);
+    return provider.listIssues(repo, email);
+  }));
+  const issues = all.flat().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  return NextResponse.json({ issues });
+});
+
 const feedbackSchema = z.object({
   repo: z.string().min(1),
   category: z.string().min(1).max(50),

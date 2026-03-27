@@ -10,11 +10,20 @@ function getRevalidate(): number | false {
 
 export interface IssueResult { url: string }
 
+export interface IssueListItem {
+  title: string;
+  url: string;
+  state: "open" | "closed";
+  created_at: string;
+  comments: number;
+}
+
 export interface ContentProvider {
   fetchFile(repo: string, path: string, ref?: string): Promise<string | null>;
   listFiles(repo: string, path: string, ref?: string): Promise<string[]>;
   listDirs(repo: string, path: string, ref?: string): Promise<string[]>;
   createIssue(repo: string, title: string, body: string, labels: string[]): Promise<IssueResult | null>;
+  listIssues(repo: string, userTag: string): Promise<IssueListItem[]>;
 }
 
 /* ─── URL parsing ─── */
@@ -119,6 +128,20 @@ function gitlabProvider(host: string): ContentProvider {
         const data = await res.json();
         return { url: data.web_url };
       } catch (err) { log.error(err, "GitLab createIssue failed"); return null; }
+    },
+
+    async listIssues(repo, userTag) {
+      try {
+        const res = await fetch(`${base}/projects/${pid(repo)}/issues?labels=feedback&state=all&per_page=100`, {
+          headers: { "PRIVATE-TOKEN": token },
+          cache: "no-store",
+        });
+        if (!res?.ok) return [];
+        const issues = (await res.json()) as { title: string; web_url: string; state: string; created_at: string; user_notes_count: number; description?: string }[];
+        return issues
+          .filter((i) => i.description?.includes(`<!-- openlex-user: ${userTag} -->`))
+          .map((i) => ({ title: i.title, url: i.web_url, state: (i.state === "closed" ? "closed" : "open") as "open" | "closed", created_at: i.created_at, comments: i.user_notes_count }));
+      } catch (err) { log.error(err, "GitLab listIssues failed"); return []; }
     },
   };
 }

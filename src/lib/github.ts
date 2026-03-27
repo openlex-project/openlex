@@ -78,4 +78,18 @@ export const github: ContentProvider = {
       return { url: data.html_url };
     } catch (err) { log.error(err, "GitHub createIssue failed"); return null; }
   },
+
+  async listIssues(repo, userTag) {
+    try {
+      const res = await fetch(`${API}/repos/${repo}/issues?labels=feedback&state=all&per_page=100`, {
+        headers: { Authorization: `Bearer ${GITHUB_PAT}`, Accept: "application/vnd.github+json" },
+        cache: "no-store",
+      });
+      if (!res.ok) return [];
+      const issues = (await res.json()) as { title: string; html_url: string; state: string; created_at: string; comments: number; body?: string }[];
+      return issues
+        .filter((i) => i.body?.includes(`<!-- openlex-user: ${userTag} -->`))
+        .map((i) => ({ title: i.title, url: i.html_url, state: i.state as "open" | "closed", created_at: i.created_at, comments: i.comments }));
+    } catch (err) { log.error(err, "GitHub listIssues failed"); return []; }
+  },
 };
