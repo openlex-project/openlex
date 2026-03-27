@@ -86,10 +86,44 @@ export const github: ContentProvider = {
         cache: "no-store",
       });
       if (!res.ok) return [];
-      const issues = (await res.json()) as { title: string; html_url: string; state: string; created_at: string; comments: number; body?: string }[];
+      const issues = (await res.json()) as { number: number; title: string; html_url: string; state: string; created_at: string; comments: number; body?: string; closed_by?: { login: string }; user?: { login: string } }[];
       return issues
         .filter((i) => i.body?.includes(`<!-- openlex-user: ${userTag} -->`))
-        .map((i) => ({ title: i.title, url: i.html_url, state: i.state as "open" | "closed", created_at: i.created_at, comments: i.comments }));
+        .map((i) => ({ id: i.number, title: i.title, url: i.html_url, state: i.state as "open" | "closed", created_at: i.created_at, comments: i.comments, closedByUser: i.state === "closed" && i.closed_by?.login === i.user?.login }));
     } catch (err) { log.error(err, "GitHub listIssues failed"); return []; }
+  },
+
+  async getIssueComments(repo, issueId) {
+    try {
+      const res = await fetch(`${API}/repos/${repo}/issues/${issueId}/comments?per_page=100`, {
+        headers: { Authorization: `Bearer ${GITHUB_PAT}`, Accept: "application/vnd.github+json" },
+        cache: "no-store",
+      });
+      if (!res.ok) return [];
+      const comments = (await res.json()) as { user?: { login: string }; body: string; created_at: string }[];
+      return comments.map((c) => ({ author: c.user?.login ?? "unknown", body: c.body, created_at: c.created_at }));
+    } catch (err) { log.error(err, "GitHub getIssueComments failed"); return []; }
+  },
+
+  async addComment(repo, issueId, body) {
+    try {
+      const res = await fetch(`${API}/repos/${repo}/issues/${issueId}/comments`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${GITHUB_PAT}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+        body: JSON.stringify({ body }),
+      });
+      return res.ok;
+    } catch (err) { log.error(err, "GitHub addComment failed"); return false; }
+  },
+
+  async closeIssue(repo, issueId) {
+    try {
+      const res = await fetch(`${API}/repos/${repo}/issues/${issueId}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${GITHUB_PAT}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+        body: JSON.stringify({ state: "closed" }),
+      });
+      return res.ok;
+    } catch (err) { log.error(err, "GitHub closeIssue failed"); return false; }
   },
 };

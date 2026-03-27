@@ -11,7 +11,8 @@ export const GET = withAuth("feedback GET", async (_req, email) => {
   const tag = hashUserId(email);
   const all = await Promise.all(repoUrls.map(async (repoUrl) => {
     const { provider, repo } = getProvider(repoUrl);
-    return provider.listIssues(repo, tag);
+    const issues = await provider.listIssues(repo, tag);
+    return issues.map((i) => ({ ...i, repo: parseRepoUrl(repoUrl).repo }));
   }));
   const issues = all.flat().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   return NextResponse.json({ issues });
