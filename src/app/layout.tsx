@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "@/components/providers";
 import { LocaleProvider } from "@/components/locale-provider";
+import { HreflangTags } from "@/components/hreflang-tags";
 import { SiteAnalytics } from "@/components/site-analytics";
 import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate } from "@/lib/template";
@@ -53,6 +54,7 @@ export default async function RootLayout({
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`} style={{ "--brand-hue": site.branding?.brand_hue ?? 265 } as React.CSSProperties} suppressHydrationWarning>
       <head>
         {apiHosts.map((h) => <link key={h} rel="preconnect" href={h} />)}
+        <HreflangTags />
         {template.css && <style dangerouslySetInnerHTML={{ __html: template.css }} />}
       </head>
       <body className="antialiased">
