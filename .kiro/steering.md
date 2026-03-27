@@ -255,9 +255,9 @@ New variants are added centrally as needed.
 - Multilingual from the start. Default locale configurable via `site.yaml`.
 - UI strings in `src/lib/i18n/` with one file per locale (`de.ts`, `en.ts`).
 - Code-level fallback locale: `en`.
-- Translations live in the same repo under language folders (`content/de/`, `content/en/`).
+- Translations live in the same repo. Root `content/` = default language (from `meta.yaml` `lang`). Translations in `content/{locale}/` subfolders.
 - `meta.yaml` lists available languages: `lang: "de"`, `translations: ["en"]`.
-- URL prefix for translations: `/en/book/oc-dsgvo/5#rn-3`, `/fr/law/dsgvo/5#abs-1`.
+- URL prefix for translations: `/en/oc-dsgvo/art-5`, `/fr/dsgvo/5`.
 - No prefix = default locale (canonical URL). `/de/...` → redirect to `/...`.
 
 ## KV Data Model (Vercel KV)

@@ -122,3 +122,30 @@ The [Term One]{.gls} is important here.
 The sidebar shows the full table of contents from `toc.yaml`. For the active chapter, `##` and `###` headings appear as anchor links for in-page navigation. Children entries are shown indented under their parent.
 
 Backmatter sections (Literaturverzeichnis, Rechtsprechungsverzeichnis, Autorenverzeichnis) appear at the bottom of the sidebar when content exists. They are accessible as direct URLs: `/book/{werk}/literaturverzeichnis`.
+
+## Translations
+
+Content repos are single-language by default. The primary language is declared in `meta.yaml` (`lang: "de"`).
+
+To add translations, place translated files in `content/{locale}/` subfolders mirroring the root structure:
+
+```
+content/
+  art-5.md              # de (default, from meta.yaml lang)
+  art-6.md
+  en/
+    art-5.md            # English translation of art-5
+    art-6.md
+```
+
+Declare available translations in `meta.yaml`:
+
+```yaml
+lang: "de"
+translations: ["en"]
+```
+
+- Root `content/` = default language (no subfolder needed)
+- `content/{locale}/` = translations
+- Only translated files need to exist — missing translations fall back to the default language
+- URLs: `/oc-dsgvo/art-5` (default), `/en/oc-dsgvo/art-5` (English)
