@@ -18,12 +18,23 @@ Edit `site.yaml` in the project root to configure name, tagline, branding, and c
 
 | Variable | Description | Example |
 |---|---|---|
-| `GITHUB_PAT` | GitHub PAT with access to content repos | `ghp_...` |
+| `GITHUB_PAT` | GitHub PAT with access to content repos (see below) | `ghp_...` |
 | `NEXTAUTH_SECRET` | Secret for NextAuth.js session encryption | `openssl rand -base64 32` |
 | `REDIS_REST_URL` | Upstash Redis URL (bookmarks, history, users) | `https://...upstash.io` |
 | `REDIS_REST_TOKEN` | Upstash Redis token | |
 | `GITLAB_PAT` | GitLab PAT for content repos (if using `gitlab://` repos) | `glpat-...` |
 | `LOG_LEVEL` | Log level: `fatal`, `error`, `warn`, `info` (default), `debug`, `trace` | `info` |
+
+#### Bot Account for Feedback
+
+The `GITHUB_PAT` / `GITLAB_PAT` is used to create feedback issues on behalf of users. Issues and comments appear under the PAT owner's identity. **Use a dedicated bot account** to avoid confusion:
+
+1. Create a GitHub account (e.g., `yourproject-bot`) or GitLab user
+2. Invite the bot account as a collaborator to all content repos (write access)
+3. Generate a PAT for the bot account with `repo` scope
+4. Use this PAT as `GITHUB_PAT` / `GITLAB_PAT`
+
+This way, feedback issues appear as `yourproject-bot` instead of a personal account. The bot account also isolates content repo access from personal credentials.
 
 Content repos are configured in `site.yaml` under `content_repos` (not as env var). See [site-yaml.md](site-yaml.md).
 
