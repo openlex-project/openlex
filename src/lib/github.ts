@@ -65,4 +65,17 @@ export const github: ContentProvider = {
     if (!Array.isArray(data)) return [];
     return data.filter((f) => f.type === "dir").map((f) => f.name);
   },
+
+  async createIssue(repo, title, body, labels) {
+    try {
+      const res = await fetch(`${API}/repos/${repo}/issues`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${GITHUB_PAT}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+        body: JSON.stringify({ title, body, labels }),
+      });
+      if (!res.ok) { log.error("GitHub issue creation failed: %d", res.status); return null; }
+      const data = await res.json();
+      return { url: data.html_url };
+    } catch (err) { log.error(err, "GitHub createIssue failed"); return null; }
+  },
 };

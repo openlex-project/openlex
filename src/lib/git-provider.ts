@@ -8,10 +8,13 @@ function getRevalidate(): number | false {
 
 /* ─── Interface ─── */
 
+export interface IssueResult { url: string }
+
 export interface ContentProvider {
   fetchFile(repo: string, path: string, ref?: string): Promise<string | null>;
   listFiles(repo: string, path: string, ref?: string): Promise<string[]>;
   listDirs(repo: string, path: string, ref?: string): Promise<string[]>;
+  createIssue(repo: string, title: string, body: string, labels: string[]): Promise<IssueResult | null>;
 }
 
 /* ─── URL parsing ─── */
@@ -103,6 +106,19 @@ function gitlabProvider(host: string): ContentProvider {
       const data = (await res.json()) as { name: string; type: string }[];
       if (!Array.isArray(data)) return [];
       return data.filter((f) => f.type === "tree").map((f) => f.name);
+    },
+
+    async createIssue(repo, title, body, labels) {
+      try {
+        const res = await fetch(`${base}/projects/${pid(repo)}/issues`, {
+          method: "POST",
+          headers: { "PRIVATE-TOKEN": token, "Content-Type": "application/json" },
+          body: JSON.stringify({ title, description: body, labels: labels.join(",") }),
+        });
+        if (!res?.ok) { log.error("GitLab issue creation failed: %d", res?.status); return null; }
+        const data = await res.json();
+        return { url: data.web_url };
+      } catch (err) { log.error(err, "GitLab createIssue failed"); return null; }
     },
   };
 }
