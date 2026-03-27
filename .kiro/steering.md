@@ -48,7 +48,7 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 - `main` = Production (auto-deploy on Vercel)
 - Feature branches: `feat/description`, bugfixes: `fix/description`
 - Commit messages: Conventional Commits (`feat:`, `fix:`, `docs:`)
-- AI may `git commit` freely but must NOT `git push` without explicit user consent.
+- AI may `git commit` freely but must NOT `git push` without explicit user consent. This applies to ALL repos in the openlex-project organization, not just the main repo.
 - **Vercel CLI** is installed locally for deployment status, logs, and env management.
 - **GitHub CLI (`gh`)** is installed locally for repo management, secrets, and Actions.
 - Env vars (secrets only — everything else in `site.yaml`):
