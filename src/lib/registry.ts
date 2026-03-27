@@ -116,13 +116,23 @@ export async function buildRegistry(): Promise<ContentRegistry> {
   return _pending;
 }
 
+const CONCURRENCY = 5;
+
+async function pooled<T>(items: T[], fn: (item: T) => Promise<void>): Promise<void> {
+  const queue = [...items];
+  const workers = Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
+    while (queue.length) await fn(queue.shift()!);
+  });
+  await Promise.all(workers);
+}
+
 async function _buildRegistry(): Promise<ContentRegistry> {
 
   const books = new Map<string, BookEntry>();
   const laws = new Map<string, LawMeta>();
   const journals = new Map<string, JournalEntry>();
 
-  await Promise.all((loadSiteConfig().content_repos ?? []).map(async (repoUrl) => {
+  await pooled(loadSiteConfig().content_repos ?? [], async (repoUrl) => {
     try {
       const { provider: p, repo } = getProvider(repoUrl);
       const metaRaw = await p.fetchFile(repo, "meta.yaml");
@@ -147,7 +157,7 @@ async function _buildRegistry(): Promise<ContentRegistry> {
         }));
       }
     } catch (err) { log.error(err, "Failed to load content repo: %s", repoUrl); }
-  }));
+  });
 
   const slugMap = new Map<string, ContentEntry>();
   const reserved = new Set(["category", "login", "search", "api", "favicon.svg", "bookmarks", "history", "profile", "feedback"]);
