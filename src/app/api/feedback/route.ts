@@ -14,6 +14,7 @@ export const GET = withAuth("feedback GET", async (_req, email) => {
   for (const b of registry.books.values()) if (b.feedbackEnabled) feedbackRepos.add(b.repo);
   for (const l of registry.laws.values()) if (l.feedbackEnabled) feedbackRepos.add(l.repo);
   for (const j of registry.journals.values()) if (j.feedbackEnabled) feedbackRepos.add(j.repo);
+  if (!feedbackRepos.size) return NextResponse.json({ error: "Feedback disabled" }, { status: 404 });
   const all = await Promise.all([...feedbackRepos].map(async (repoUrl) => {
     const { provider, repo } = getProvider(repoUrl);
     const issues = await provider.listIssues(repo, tag);

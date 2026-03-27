@@ -85,13 +85,17 @@ export default function FeedbackPage() {
   const t = useT();
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     if (!session) { setLoading(false); return; }
-    fetchJson<{ issues: Issue[] }>("/api/feedback")
-      .then((d) => setIssues(d?.issues ?? []))
-      .finally(() => setLoading(false));
+    fetch("/api/feedback").then((r) => {
+      if (r.status === 404) { setDisabled(true); setLoading(false); return null; }
+      return r.ok ? r.json() : null;
+    }).then((d) => { if (d) setIssues(d.issues ?? []); }).finally(() => setLoading(false));
   }, [session]);
+
+  if (disabled) return <div className="page-container"><h1 className="text-xl sm:text-2xl font-bold mb-4">404</h1><p style={{ color: "var(--text-secondary)" }}>Page not found.</p></div>;
 
   if (!session) return <div className="page-container"><h1 className="text-xl sm:text-2xl font-bold mb-4">{t("feedback.title")}</h1><p style={{ color: "var(--text-secondary)" }}>{t("feedback.login")}</p></div>;
 
