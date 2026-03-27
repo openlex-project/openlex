@@ -24,7 +24,7 @@ export function ShareMenu({ title, siteName, targets }: { title: string; siteNam
     if (target === "copy") {
       navigator.clipboard.writeText(url);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => { setCopied(false); close(); }, 1500);
       return;
     }
     const urls: Record<string, string> = {
