@@ -3,7 +3,7 @@ import { z } from "zod";
 import { withAuth, parseBody } from "@/lib/api-utils";
 import { exportUserData, deleteAllUserData, getUserSettings, setUserSetting } from "@/lib/redis";
 
-const settingSchema = z.object({ key: z.string().min(1), value: z.string() });
+const settingSchema = z.object({ key: z.string().min(1).max(100), value: z.string().max(1000) });
 
 export const GET = withAuth("profile GET", async (req, email) => {
   if (req.nextUrl.searchParams.has("settings")) return NextResponse.json({ settings: await getUserSettings(email) });

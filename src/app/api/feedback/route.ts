@@ -7,10 +7,10 @@ import { rateLimit } from "@/lib/rate-limit";
 
 const feedbackSchema = z.object({
   repo: z.string().min(1),
-  category: z.string().min(1),
-  location: z.string().min(1),
-  selectedText: z.string().optional(),
-  comment: z.string().min(1),
+  category: z.string().min(1).max(50),
+  location: z.string().min(1).max(2000).refine((v) => v.startsWith("/"), "Must be a relative path"),
+  selectedText: z.string().max(500).optional(),
+  comment: z.string().min(1).max(5000),
 });
 
 export const POST = withAuth("feedback POST", async (req, email) => {

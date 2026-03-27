@@ -3,7 +3,7 @@ import { z } from "zod";
 import { withAuth, withSession, parseBody } from "@/lib/api-utils";
 import { addHistory, getHistory } from "@/lib/redis";
 
-const addSchema = z.object({ path: z.string().min(1), title: z.string().min(1) });
+const addSchema = z.object({ path: z.string().min(1).max(500), title: z.string().min(1).max(300) });
 
 export const GET = withSession("history GET", async (_req, email) => {
   if (!email) return NextResponse.json({ history: [] });

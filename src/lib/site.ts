@@ -51,15 +51,16 @@ export interface SiteConfig {
   home?: import("@/lib/template").HomeSection[];
 }
 
-let cached: SiteConfig | null = null;
+let cached: { data: SiteConfig; ts: number } | null = null;
+const SITE_TTL = 5 * 60_000;
 
 export function loadSiteConfig(): SiteConfig {
-  if (cached) return cached;
+  if (cached && Date.now() - cached.ts < SITE_TTL) return cached.data;
   try {
     const raw = readFileSync(join(process.cwd(), "site.yaml"), "utf-8");
-    cached = parse(raw) as SiteConfig;
+    cached = { data: parse(raw) as SiteConfig, ts: Date.now() };
   } catch (err) {
     throw new Error(`Failed to load site.yaml: ${err instanceof Error ? err.message : err}. Ensure site.yaml exists in the project root.`);
   }
-  return cached;
+  return cached.data;
 }

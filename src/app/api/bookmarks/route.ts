@@ -3,7 +3,7 @@ import { z } from "zod";
 import { withAuth, withSession, parseBody } from "@/lib/api-utils";
 import { getBookmarks, toggleBookmark, isBookmarked } from "@/lib/redis";
 
-const toggleSchema = z.object({ path: z.string().min(1), title: z.string().optional() });
+const toggleSchema = z.object({ path: z.string().min(1).max(500), title: z.string().max(300).optional() });
 
 export const GET = withSession("bookmarks GET", async (req, email) => {
   if (!email) return NextResponse.json({ bookmarks: [] });
