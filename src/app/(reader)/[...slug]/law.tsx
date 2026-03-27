@@ -12,7 +12,7 @@ import { findLawBreadcrumb } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
 import { ContentActions } from "@/components/content-actions";
-import { ContentLanguageSwitcher } from "@/components/content-language-switcher";
+import { ContentLanguageLinks } from "@/components/content-language-switcher";
 import { HistoryTracker } from "@/components/history-tracker";
 import { RelatedContent } from "@/components/related-content";
 import { PrevNextNav } from "@/components/prev-next-nav";
@@ -125,8 +125,8 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         <h1 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
           {pageTitle}
           <ContentActions title={pageTitle} contentType="law" />
+          <span className="text-sm font-normal"><ContentLanguageLinks translations={meta.translations} currentPath={`/${meta.slug}/${nr}`} /></span>
         </h1>
-        <ContentLanguageSwitcher translations={meta.translations} currentPath={`/${meta.slug}/${nr}`} locale={locale} />
         <RelatedContent links={related} />
         <div className="content-prose whitespace-pre-line">{result.content}</div>
         <PrevNextNav position="bottom" prev={prevNav} next={nextNav} ariaLabel="Provision navigation" />
