@@ -40,16 +40,16 @@ export default function FeedbackPage() {
         <ul className="space-y-2">
           {issues.map((issue) => (
             <li key={issue.url}>
-              <a href={issue.url} target="_blank" rel="noopener" className="block card px-4 py-3 hover:border-[var(--color-brand-300)] transition-colors">
+              <div className="card px-4 py-3">
                 <div className="flex items-center gap-2">
                   <span className={`inline-block w-2 h-2 rounded-full ${issue.state === "open" ? "bg-green-500" : "bg-gray-400"}`} />
-                  <span className="text-sm font-medium" style={{ color: "var(--active-text)" }}>{issue.title}</span>
+                  <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{issue.title}</span>
                 </div>
                 <div className="text-xs mt-1 flex gap-3" style={{ color: "var(--text-tertiary)" }}>
                   <span>{new Date(issue.created_at).toLocaleDateString()}</span>
                   {issue.comments > 0 && <span>{issue.comments} {issue.comments === 1 ? t("feedback.reply") : t("feedback.replies")}</span>}
                 </div>
-              </a>
+              </div>
             </li>
           ))}
         </ul>
