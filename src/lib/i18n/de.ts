@@ -82,5 +82,6 @@ const de: Record<string, string> = {
   "export.law": "Ganzes Gesetz",
   "export.login": "Bitte anmelden, um zu exportieren.",
   "commentary.title": "Kommentierungen",
+  "nav.content": "Inhalte",
 };
 export default de;

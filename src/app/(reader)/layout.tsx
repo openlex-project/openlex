@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import dynamic from "next/dynamic";
 import UserButton from "@/components/user-button";
 import { LogoFull } from "@/components/logo";
+import { ContentNav } from "@/components/content-nav";
 import { LicenseProvider, LicenseDisplay } from "@/components/license-context";
 import { loadSiteConfig } from "@/lib/site";
 import { loadTemplate } from "@/lib/template";
@@ -31,6 +32,7 @@ export default async function ReaderLayout({
           <Link href="/" className="shrink-0" aria-label={t(locale, "home.aria")}>
             <LogoFull name={site.logo_text !== false ? site.name : undefined} className="text-[var(--color-brand-600)] dark:text-[var(--color-brand-300)]" />
           </Link>
+          <ContentNav locale={locale} />
           {!minimal && (
             <div className="flex-1 max-w-lg mx-auto">
               <SearchBox />

@@ -82,5 +82,6 @@ const en: Record<string, string> = {
   "export.law": "Full law",
   "export.login": "Please sign in to export.",
   "commentary.title": "Commentaries",
+  "nav.content": "Content",
 };
 export default en;
