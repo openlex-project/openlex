@@ -53,7 +53,10 @@ export interface LawMeta {
 
 export { resolveDisplay } from "./i18n-utils";
 
-export interface LawTocNode { label?: string; title: string | I18nString; nr?: string; children?: LawTocNode[] }
+export interface LawTocNode { label?: string | I18nString; title: string | I18nString; nr?: string; children?: LawTocNode[] }
+
+/** LawTocNode after i18n resolution — all fields are plain strings. */
+export interface ResolvedLawTocNode { label?: string; title: string; nr?: string; children?: ResolvedLawTocNode[] }
 
 export interface BookEntry extends BookMeta { repo: string; toc: TocEntry[]; feedbackEnabled: boolean }
 

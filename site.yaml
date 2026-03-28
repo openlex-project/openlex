@@ -15,7 +15,6 @@ branding:
   # Footer — flat list of items, displayed left to right, separated by ·
   # Types: text (plain text), license (CC badge), slug (local markdown page), href (external link)
   footer:
-    - text: "© OpenLex"
     - license
     - slug: impressum
       label: { de: "Impressum", en: "Imprint" }

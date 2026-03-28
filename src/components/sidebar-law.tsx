@@ -6,19 +6,19 @@ import { useMemo } from "react";
 import { ChevronRight } from "lucide-react";
 import { SidebarShell } from "./sidebar-shell";
 import { useExpandable } from "./use-expandable";
-import type { LawTocNode } from "@/lib/registry";
+import type { ResolvedLawTocNode } from "@/lib/registry";
 
 interface Props {
   law: string;
   title: string;
   unitLabel: string;
-  toc: LawTocNode[];
+  toc: ResolvedLawTocNode[];
   provisions: number[];
   activeNr?: string;
   localePrefix?: string;
 }
 
-function findExpandedKeys(toc: LawTocNode[], nr: string, path: string[] = []): string[] {
+function findExpandedKeys(toc: ResolvedLawTocNode[], nr: string, path: string[] = []): string[] {
   for (const node of toc) {
     if (node.nr === nr) return path;
     if (node.children) {
@@ -31,7 +31,7 @@ function findExpandedKeys(toc: LawTocNode[], nr: string, path: string[] = []): s
 }
 
 function TocNode({ node, law, unitLabel, depth, expanded, onToggle, localePrefix }: {
-  node: LawTocNode; law: string; unitLabel: string;
+  node: ResolvedLawTocNode; law: string; unitLabel: string;
   depth: number; expanded: Set<string>; onToggle: (key: string) => void; localePrefix: string;
 }) {
   const pathname = usePathname();

@@ -1,4 +1,4 @@
-import type { TocEntry, LawTocNode, BookEntry, Heading } from "./registry";
+import type { TocEntry, LawTocNode, ResolvedLawTocNode, BookEntry, Heading } from "./registry";
 import { resolveI18n, type I18nString } from "./i18n-utils";
 
 /** Resolve a title that may be string or I18nString */
@@ -16,9 +16,10 @@ export function resolveTocTitles(toc: TocEntry[], lang: string): TocEntry[] {
 }
 
 /** Deep-resolve all i18n titles in a LawTocNode tree */
-export function resolveLawTocTitles(toc: LawTocNode[], lang: string): LawTocNode[] {
+export function resolveLawTocTitles(toc: LawTocNode[], lang: string): ResolvedLawTocNode[] {
   return toc.map((n) => ({
     ...n,
+    label: n.label ? rt(n.label, lang) : undefined,
     title: rt(n.title, lang),
     children: n.children ? resolveLawTocTitles(n.children, lang) : undefined,
   }));
@@ -83,7 +84,7 @@ export function findByProvision(toc: TocEntry[], provision: number): TocEntry[] 
   return toc.filter((e) => e.provisions?.includes(provision));
 }
 
-export function findLawBreadcrumb(toc: LawTocNode[], nr: string): LawTocNode[] {
+export function findLawBreadcrumb(toc: ResolvedLawTocNode[], nr: string): ResolvedLawTocNode[] {
   for (const node of toc) {
     if (node.nr === nr) return [node];
     if (node.children) { const path = findLawBreadcrumb(node.children, nr); if (path.length) return [node, ...path]; }
