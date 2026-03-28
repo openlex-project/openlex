@@ -8,13 +8,15 @@ const categorySchema = z.object({
   label: z.record(z.string(), z.string()),
 });
 
-const footerItemSchema = z.object({
-  text: z.string().optional(),
-  license: z.union([z.boolean(), z.null()]).optional(),
-  slug: z.string().optional(),
-  href: z.string().optional(),
-  label: z.record(z.string(), z.string()).optional(),
-});
+const footerItemSchema = z.union([
+  z.string(),
+  z.object({
+    text: z.string().optional(),
+    slug: z.string().optional(),
+    href: z.string().optional(),
+    label: z.record(z.string(), z.string()).optional(),
+  }),
+]);
 
 const analyticsSchema = z.object({
   provider: z.enum(["vercel", "plausible", "matomo", "umami", "goatcounter"]),

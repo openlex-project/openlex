@@ -16,7 +16,7 @@ branding:
   # Types: text (plain text), license (CC badge), slug (local markdown page), href (external link)
   footer:
     - text: "© OpenLex"
-    - license:
+    - license
     - slug: impressum
       label: { de: "Impressum", en: "Imprint" }
     - slug: datenschutz

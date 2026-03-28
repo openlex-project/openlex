@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const site = loadSiteConfig();
 
   // Footer page
-  const fp = site.branding?.footer?.find((p) => p.slug === slug[0] && slug.length === 1);
+  const fp = site.branding?.footer?.filter((p): p is Exclude<typeof p, string> => typeof p !== "string").find((p) => p.slug === slug[0] && slug.length === 1);
   if (fp) {
     const label = fp.label?.[site.default_locale] ?? fp.slug ?? "";
     return { title: `${label} – ${site.name}`, openGraph: { title: label, images: [`/api/og?title=${encodeURIComponent(label)}`] } };
@@ -47,7 +47,7 @@ export default async function CatchAllPage({ params }: Props) {
 
   // Footer pages: single slug, matches site.yaml footer_pages with slug
   const site = loadSiteConfig();
-  const footerPage = site.branding?.footer?.find((p) => p.slug === slug[0] && slug.length === 1);
+  const footerPage = site.branding?.footer?.filter((p): p is Exclude<typeof p, string> => typeof p !== "string").find((p) => p.slug === slug[0] && slug.length === 1);
   if (footerPage) {
     const file = join(process.cwd(), "footer", `${footerPage.slug}.md`);
     if (!existsSync(file)) notFound();
