@@ -20,12 +20,11 @@ import { PrevNextNav } from "@/components/prev-next-nav";
 import { licenseUrl } from "@/lib/jsonld-utils";
 import type { Metadata } from "next";
 
-function lawJsonLd(meta: LawMeta, nr: string, url: string, locale?: string): string {
-  const { display } = resolveDisplay(meta, locale);
+function lawJsonLd(meta: LawMeta, nr: string, url: string, name: string, locale?: string): string {
   return safeJsonLd({
     "@context": "https://schema.org",
     "@type": "Legislation",
-    name: `${meta.unit_type === "article" ? "Art." : "§"} ${nr} ${display}`,
+    name,
     legislationIdentifier: `${meta.slug}/${nr}`,
     inLanguage: locale ?? meta.lang,
     url,
@@ -43,7 +42,10 @@ export function lawMetadata(entry: LawMeta, rest: string[], siteName: string, co
   const { title, display } = resolveDisplay(entry, contentLocale);
   if (!rest.length) return { title: `${title} – ${siteName}`, openGraph: { title, images: [`/api/og?title=${encodeURIComponent(title)}`] } };
   const nr = rest[0]!;
-  const label = `${entry.unit_type === "article" ? "Art." : "§"} ${nr} ${display}`;
+  const resolvedToc = resolveLawTocTitles(entry.toc, contentLocale ?? entry.lang);
+  const tocPath = findLawBreadcrumb(resolvedToc, nr);
+  const tocEntry = tocPath.length ? tocPath[tocPath.length - 1] : undefined;
+  const label = tocEntry?.title ? `${tocEntry.title} ${display}` : `${entry.unit_type === "article" ? "Art." : "§"} ${nr} ${display}`;
   return { title: `${label} – ${siteName}`, openGraph: { title: label, images: [`/api/og?title=${encodeURIComponent(label)}`] } };
 }
 
@@ -90,9 +92,12 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   const prevNr = provisions[idx - 1];
   const nextNr = provisions[idx + 1];
 
+  const tocEntry = breadcrumb.length ? breadcrumb[breadcrumb.length - 1] : undefined;
+  const itemTitle = tocEntry?.title ? `${tocEntry.title} ${displayTitle}` : `${unitLabel} ${nr} ${displayTitle}`;
+
   const prevNav = prevNr !== undefined ? { href: `/${meta.slug}/${prevNr}`, label: `${unitLabel} ${prevNr}` } : null;
   const nextNav = nextNr !== undefined ? { href: `/${meta.slug}/${nextNr}`, label: `${unitLabel} ${nextNr}` } : null;
-  const pageTitle = `${unitLabel} ${nr} ${displayTitle}`;
+  const pageTitle = itemTitle;
 
   return (
     <ContentArticle sidebar={<SidebarLaw law={meta.slug} title={displayTitle} unitLabel={unitLabel} toc={resolvedToc} provisions={provisions} activeNr={nr} localePrefix={localePrefix} />}>
@@ -132,8 +137,8 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         <div className="content-prose whitespace-pre-line">{result.content}</div>
         <PrevNextNav position="bottom" prev={prevNav} next={nextNav} ariaLabel="Provision navigation" />
         {meta.license && <SetLicense value={meta.license} />}
-        <HistoryTracker title={`${unitLabel} ${nr} ${displayTitle}`} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: lawJsonLd(meta, nr, `/${meta.slug}/${nr}`, contentLocale) }} />
+        <HistoryTracker title={pageTitle} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: lawJsonLd(meta, nr, `/${meta.slug}/${nr}`, pageTitle, contentLocale) }} />
     </ContentArticle>
   );
 }
