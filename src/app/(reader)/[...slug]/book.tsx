@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import dynamic from "next/dynamic";
 import { type BookEntry, type ContentRegistry, resolveDisplay } from "@/lib/registry";
 import { getBookContent } from "@/lib/content";
@@ -9,7 +8,9 @@ import { SetLicense } from "@/components/license-context";
 import { getProvider } from "@/lib/git-provider";
 import { renderMarkdown } from "@/lib/markdown";
 import { renderBackmatter } from "@/lib/backmatter";
-import { t, defaultLocale, type Locale } from "@/lib/i18n";
+import { t, defaultLocale } from "@/lib/i18n";
+import { getContentLocale } from "@/lib/content-locale";
+import { ContentArticle } from "@/components/content-article";
 import { SidebarBook } from "@/components/sidebar-book";
 import { ContentActions } from "@/components/content-actions";
 import { ContentLanguageLinks } from "@/components/content-language-switcher";
@@ -67,27 +68,21 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   const parsed = parseSlug(rest);
   if (!parsed) notFound();
   const { fileSlug, ref } = parsed;
-  const h = await headers();
-  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
-  const contentLocale = h.get("x-content-locale");
+  const { locale, contentLocale, localePrefix } = await getContentLocale();
 
   const backmatter = getBackmatterSections(meta);
   const work = meta.slug;
   const resolvedToc = resolveTocTitles(meta.toc, contentLocale ?? meta.lang);
-  const localePrefix = contentLocale && contentLocale !== defaultLocale ? `/${contentLocale}` : "";
   const slugPrefix = ref === "main" ? `${localePrefix}/${work}` : `${localePrefix}/${work}/${ref}`;
 
   if (BACKMATTER_SLUGS.has(fileSlug)) {
     const bm = await renderBackmatter(fileSlug, meta);
     if (!bm) notFound();
     return (
-      <div className="flex">
-        <SidebarBook work={work} localePrefix={localePrefix} toc={resolvedToc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
-        <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+      <ContentArticle sidebar={<SidebarBook work={work} localePrefix={localePrefix} toc={resolvedToc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />}>
           <h1 className="text-2xl font-bold mb-8">{bm.title}</h1>
           <div className="content-prose" dangerouslySetInnerHTML={{ __html: bm.html }} />
-        </article>
-      </div>
+      </ContentArticle>
     );
   }
 
@@ -124,9 +119,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   );
 
   return (
-    <div className="flex">
-      <SidebarBook work={work} localePrefix={localePrefix} toc={resolvedToc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
-      <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+    <ContentArticle sidebar={<SidebarBook work={work} localePrefix={localePrefix} toc={resolvedToc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />}>
         <PrevNextNav position="top" prev={prev ? { href: prevHref!, label: prev.title as string } : null} next={next ? { href: nextHref!, label: next.title as string } : null} center={authorCenter} ariaLabel="Kapitelnavigation" />
         <div className="mb-6 text-sm flex items-center gap-2" style={{ color: "var(--text-secondary)" }}>
           <span>
@@ -147,7 +140,6 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
         <FootnoteTooltips />
         <HistoryTracker title={`${displayName} – ${tocEntry?.title as string ?? fileSlug}`} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: bookChapterJsonLd(meta, { title: tocEntry?.title as string ?? fileSlug, author: tocEntry?.author }, `${slugPrefix}/${fileSlug}`) }} />
-      </article>
-    </div>
+    </ContentArticle>
   );
 }

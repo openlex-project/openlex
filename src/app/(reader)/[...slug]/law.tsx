@@ -6,8 +6,9 @@ import { getLawContent, getLawProvisions } from "@/lib/content";
 import { resolveLawVersion } from "@/lib/law-version";
 import { formatDate } from "@/lib/format-date";
 import { getProvider } from "@/lib/git-provider";
-import { t, defaultLocale, type Locale } from "@/lib/i18n";
-import { headers } from "next/headers";
+import { t, defaultLocale } from "@/lib/i18n";
+import { getContentLocale } from "@/lib/content-locale";
+import { ContentArticle } from "@/components/content-article";
 import { findLawBreadcrumb, resolveLawTocTitles } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
 import { SidebarLaw } from "@/components/sidebar-law";
@@ -62,9 +63,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   }
   if (!nr) notFound();
 
-  const h = await headers();
-  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
-  const contentLocale = h.get("x-content-locale");
+  const { locale, contentLocale, localePrefix } = await getContentLocale();
 
   const [result, provisions] = await Promise.all([
     getLawContent(meta.repo, meta.slug, nr, ref, contentLocale ?? undefined),
@@ -85,7 +84,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   const related = registry.relatedIndex.get(`/${meta.slug}/${nr}`) ?? [];
 
   const resolvedToc = resolveLawTocTitles(meta.toc, contentLocale ?? meta.lang);
-  const { display: displayTitle } = resolveDisplay(meta, contentLocale ?? undefined);
+  const { display: displayTitle } = resolveDisplay(meta, contentLocale);
   const breadcrumb = findLawBreadcrumb(resolvedToc, nr);
   const idx = provisions.indexOf(parseInt(nr, 10));
   const prevNr = provisions[idx - 1];
@@ -96,9 +95,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   const pageTitle = `${unitLabel} ${nr} ${displayTitle}`;
 
   return (
-    <div className="flex">
-      <SidebarLaw law={meta.slug} title={displayTitle} unitLabel={unitLabel} toc={resolvedToc} provisions={provisions} activeNr={nr} localePrefix={contentLocale && contentLocale !== defaultLocale ? `/${contentLocale}` : ""} />
-      <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+    <ContentArticle sidebar={<SidebarLaw law={meta.slug} title={displayTitle} unitLabel={unitLabel} toc={resolvedToc} provisions={provisions} activeNr={nr} localePrefix={localePrefix} />}>
         {breadcrumb.length > 1 && (
           <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">
             <span>{displayTitle}</span>
@@ -129,15 +126,14 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         <h1 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
           {pageTitle}
           <ContentActions title={pageTitle} contentType="law" />
-          <span className="text-sm font-normal"><ContentLanguageLinks translations={meta.translations} currentPath={contentLocale && contentLocale !== defaultLocale ? `/${contentLocale}/${meta.slug}/${nr}` : `/${meta.slug}/${nr}`} /></span>
+          <span className="text-sm font-normal"><ContentLanguageLinks translations={meta.translations} currentPath={`${localePrefix}/${meta.slug}/${nr}`} /></span>
         </h1>
         <RelatedContent links={related} />
         <div className="content-prose whitespace-pre-line">{result.content}</div>
         <PrevNextNav position="bottom" prev={prevNav} next={nextNav} ariaLabel="Provision navigation" />
         {meta.license && <SetLicense value={meta.license} />}
         <HistoryTracker title={`${unitLabel} ${nr} ${displayTitle}`} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: lawJsonLd(meta, nr, `/${meta.slug}/${nr}`, contentLocale ?? undefined) }} />
-      </article>
-    </div>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: lawJsonLd(meta, nr, `/${meta.slug}/${nr}`, contentLocale) }} />
+    </ContentArticle>
   );
 }

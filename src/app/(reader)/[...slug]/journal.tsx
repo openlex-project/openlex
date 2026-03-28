@@ -1,11 +1,12 @@
 import { notFound, redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { type ContentRegistry, type JournalEntry, type JournalArticle, resolveDisplay } from "@/lib/registry";
 import { getJournalArticleContent } from "@/lib/content";
 import { SetLicense } from "@/components/license-context";
 import { renderMarkdown } from "@/lib/markdown";
 import { SidebarJournal } from "@/components/sidebar-journal";
-import { t, defaultLocale, type Locale } from "@/lib/i18n";
+import { t, defaultLocale } from "@/lib/i18n";
+import { getContentLocale } from "@/lib/content-locale";
+import { ContentArticle } from "@/components/content-article";
 import Link from "next/link";
 import { HistoryTracker } from "@/components/history-tracker";
 import { ContentActions } from "@/components/content-actions";
@@ -76,19 +77,14 @@ function AuthorLine({ article }: { article: JournalArticle }) {
 }
 
 export default async function JournalPage({ entry: journal, rest }: Props) {
-  const h = await headers();
-  const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
-  const contentLocale = h.get("x-content-locale");
-  const localePrefix = contentLocale && contentLocale !== defaultLocale ? `/${contentLocale}` : "";
+  const { locale, contentLocale, localePrefix } = await getContentLocale();
   const base = `${localePrefix}/${journal.slug}`;
   const issueWord = t(locale, "issue.word");
 
   // Overview
   if (rest.length === 0) {
     return (
-      <div className="flex">
-        <SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} />
-        <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+      <ContentArticle sidebar={<SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} />}>
           <h1 className="text-2xl font-bold mb-1">{resolveDisplay(journal).title}</h1>
           {journal.issn && <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>ISSN {journal.issn}</p>}
           <div className="space-y-6">
@@ -108,8 +104,8 @@ export default async function JournalPage({ entry: journal, rest }: Props) {
               </section>
             ))}
           </div>
-        </article>
-      </div>
+      </ContentArticle>
+
     );
   }
 
@@ -139,9 +135,7 @@ export default async function JournalPage({ entry: journal, rest }: Props) {
     }
 
     return (
-      <div className="flex">
-        <SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
-        <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+      <ContentArticle sidebar={<SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />}>
           <h1 className="text-2xl font-bold mb-1">{resolveDisplay(journal).display} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
           <div className="space-y-6 mt-6">
             {[...sections.entries()].map(([section, articles]) => (
@@ -161,8 +155,8 @@ export default async function JournalPage({ entry: journal, rest }: Props) {
               </section>
             ))}
           </div>
-        </article>
-      </div>
+      </ContentArticle>
+
     );
   }
 
@@ -184,9 +178,7 @@ export default async function JournalPage({ entry: journal, rest }: Props) {
     const articleBase = `${base}/${year}/${issueNr}`;
 
     return (
-      <div className="flex">
-        <SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
-        <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+      <ContentArticle sidebar={<SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />}>
           <PrevNextNav position="top" prev={prev ? { href: `${articleBase}/${prev.slug}`, label: authorLastNames(prev) } : null} next={next ? { href: `${articleBase}/${next.slug}`, label: authorLastNames(next) } : null} center={<AuthorLine article={article} />} ariaLabel="Article navigation" />
           <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title}
             <ContentActions title={`${article.title} – ${resolveDisplay(journal).display}`} contentType="journal" />
@@ -204,8 +196,8 @@ export default async function JournalPage({ entry: journal, rest }: Props) {
           <SetLicense value={journal.license} />
           <HistoryTracker title={article.title} />
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: articleJsonLd(journal, article, year!, issueNr!, `${base}/${year}/${issueNr}/${articleSlug}`) }} />
-        </article>
-      </div>
+      </ContentArticle>
+
     );
   }
 
