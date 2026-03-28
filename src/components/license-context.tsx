@@ -91,7 +91,7 @@ export function LicenseDisplay() {
       href={ccDeedUrl(cc.path, locale)}
       target="_blank"
       rel="noopener license"
-      className="inline-flex items-center gap-0.5 hover:underline"
+      className="inline-flex items-center gap-0.5 hover:underline align-middle"
       title={license}
     >
       {cc.icons.map((icon) => <CcIcon key={icon} type={icon} />)}

@@ -52,7 +52,7 @@ export default async function ReaderLayout({
           {site.branding?.footer?.map((item, i) => {
             const sep = i > 0 ? " · " : "";
             if (typeof item === "string") {
-              if (item === "license") return <span key="license">{sep}<LicenseDisplay /></span>;
+              if (item === "license") return <span key="license" className="inline-flex items-center">{sep}<LicenseDisplay /></span>;
               return <span key={item}>{sep}{item}</span>;
             }
             const key = item.text ?? item.slug ?? item.href ?? `footer-${i}`;
