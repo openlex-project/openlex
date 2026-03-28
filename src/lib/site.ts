@@ -1,55 +1,65 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
+import { z } from "zod";
 
-export interface CategoryConfig {
-  key: string;
-  label: Record<string, string>;
-}
+const categorySchema = z.object({
+  key: z.string(),
+  label: z.record(z.string(), z.string()),
+});
 
-export interface FooterItem {
-  text?: string;
-  license?: boolean;
-  slug?: string;
-  href?: string;
-  label?: Record<string, string>;
-}
+const footerItemSchema = z.object({
+  text: z.string().optional(),
+  license: z.union([z.boolean(), z.null()]).optional(),
+  slug: z.string().optional(),
+  href: z.string().optional(),
+  label: z.record(z.string(), z.string()).optional(),
+});
 
-export interface AnalyticsConfig {
-  provider: "vercel" | "plausible" | "matomo" | "umami" | "goatcounter";
-  domain?: string;
-  url?: string;
-  site_id?: string;
-}
+const analyticsSchema = z.object({
+  provider: z.enum(["vercel", "plausible", "matomo", "umami", "goatcounter"]),
+  domain: z.string().optional(),
+  url: z.string().url().optional(),
+  site_id: z.string().optional(),
+});
 
-export interface BrandingConfig {
-  tagline?: Record<string, string>;
-  brand_hue?: number;
-  footer?: FooterItem[];
-}
+const brandingSchema = z.object({
+  tagline: z.record(z.string(), z.string()).optional(),
+  brand_hue: z.number().min(0).max(360).optional(),
+  footer: z.array(footerItemSchema).optional(),
+});
 
-export interface FeaturesConfig {
-  sharing?: string[];
-  export?: { formats: string[]; require_auth?: boolean };
-  related_content_display?: "badge" | "sidebar";
-  analytics?: AnalyticsConfig;
-  revalidate?: number | false;
-  rate_limit?: number;
-  error_tracking?: { provider: "sentry"; dsn_env?: string };
-}
+const featuresSchema = z.object({
+  sharing: z.array(z.string()).optional(),
+  export: z.object({ formats: z.array(z.string()), require_auth: z.boolean().optional() }).optional(),
+  related_content_display: z.enum(["badge", "sidebar"]).optional(),
+  analytics: analyticsSchema.optional(),
+  revalidate: z.union([z.number(), z.literal(false)]).optional(),
+  rate_limit: z.number().optional(),
+  error_tracking: z.object({ provider: z.literal("sentry"), dsn_env: z.string().optional() }).optional(),
+});
 
-export interface SiteConfig {
-  name: string;
-  default_locale: string;
-  base_url?: string;
-  branding?: BrandingConfig;
-  content_repos?: string[];
-  categories?: CategoryConfig[];
-  features?: FeaturesConfig;
-  logo_text?: boolean;
-  template?: string;
+const siteConfigSchema = z.object({
+  name: z.string({ message: "site.yaml: 'name' is required" }),
+  default_locale: z.string({ message: "site.yaml: 'default_locale' is required" }),
+  base_url: z.string().url("site.yaml: 'base_url' must be a valid URL").optional(),
+  branding: brandingSchema.optional(),
+  content_repos: z.array(z.string().regex(/^(github|gitlab):\/\//, "content_repos entries must start with github:// or gitlab://")).optional(),
+  categories: z.array(categorySchema).optional(),
+  features: featuresSchema.optional(),
+  logo_text: z.boolean().optional(),
+  template: z.string().optional(),
+  home: z.array(z.record(z.string(), z.unknown())).optional(),
+});
+
+export type CategoryConfig = z.infer<typeof categorySchema>;
+export type FooterItem = z.infer<typeof footerItemSchema>;
+export type AnalyticsConfig = z.infer<typeof analyticsSchema>;
+export type BrandingConfig = z.infer<typeof brandingSchema>;
+export type FeaturesConfig = z.infer<typeof featuresSchema>;
+export type SiteConfig = z.infer<typeof siteConfigSchema> & {
   home?: import("@/lib/template").HomeSection[];
-}
+};
 
 let cached: { data: SiteConfig; ts: number } | null = null;
 const SITE_TTL = 5 * 60_000;
@@ -58,9 +68,14 @@ export function loadSiteConfig(): SiteConfig {
   if (cached && Date.now() - cached.ts < SITE_TTL) return cached.data;
   try {
     const raw = readFileSync(join(process.cwd(), "site.yaml"), "utf-8");
-    cached = { data: parse(raw) as SiteConfig, ts: Date.now() };
+    const parsed = siteConfigSchema.parse(parse(raw));
+    cached = { data: parsed as SiteConfig, ts: Date.now() };
   } catch (err) {
-    throw new Error(`Failed to load site.yaml: ${err instanceof Error ? err.message : err}. Ensure site.yaml exists in the project root.`);
+    if (err instanceof z.ZodError) {
+      const issues = err.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
+      throw new Error(`Invalid site.yaml:\n${issues}`);
+    }
+    throw new Error(`Failed to load site.yaml: ${err instanceof Error ? err.message : err}`);
   }
   return cached.data;
 }
