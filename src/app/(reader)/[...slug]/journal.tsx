@@ -78,14 +78,16 @@ function AuthorLine({ article }: { article: JournalArticle }) {
 export default async function JournalPage({ entry: journal, rest }: Props) {
   const h = await headers();
   const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
-  const base = `/${journal.slug}`;
+  const contentLocale = h.get("x-content-locale");
+  const localePrefix = contentLocale && contentLocale !== defaultLocale ? `/${contentLocale}` : "";
+  const base = `${localePrefix}/${journal.slug}`;
   const issueWord = t(locale, "issue.word");
 
   // Overview
   if (rest.length === 0) {
     return (
       <div className="flex">
-        <SidebarJournal journal={journal.slug} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} />
+        <SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <h1 className="text-2xl font-bold mb-1">{resolveDisplay(journal).title}</h1>
           {journal.issn && <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>ISSN {journal.issn}</p>}
@@ -138,7 +140,7 @@ export default async function JournalPage({ entry: journal, rest }: Props) {
 
     return (
       <div className="flex">
-        <SidebarJournal journal={journal.slug} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
+        <SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <h1 className="text-2xl font-bold mb-1">{resolveDisplay(journal).display} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
           <div className="space-y-6 mt-6">
@@ -172,7 +174,6 @@ export default async function JournalPage({ entry: journal, rest }: Props) {
     const article = issue.articles.find((a) => a.slug === articleSlug);
     if (!article) notFound();
 
-    const contentLocale = h.get("x-content-locale");
     const result = await getJournalArticleContent(journal.repo, year!, issueNr!, articleSlug!, contentLocale ?? undefined);
     if (!result) notFound();
     const html = await renderMarkdown(result.content, article.numbering ? { numbering: { schema: article.numbering } } : undefined);
@@ -184,7 +185,7 @@ export default async function JournalPage({ entry: journal, rest }: Props) {
 
     return (
       <div className="flex">
-        <SidebarJournal journal={journal.slug} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
+        <SidebarJournal journal={journal.slug} localePrefix={localePrefix} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <PrevNextNav position="top" prev={prev ? { href: `${articleBase}/${prev.slug}`, label: authorLastNames(prev) } : null} next={next ? { href: `${articleBase}/${next.slug}`, label: authorLastNames(next) } : null} center={<AuthorLine article={article} />} ariaLabel="Article navigation" />
           <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title}

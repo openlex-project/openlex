@@ -17,6 +17,7 @@ interface Props {
   activeSlug?: string;
   headings?: Heading[];
   backmatter?: BackmatterSection[];
+  localePrefix?: string;
 }
 
 function findExpandedKeys(toc: TocEntry[], slug: string, path: string[] = []): string[] {
@@ -48,9 +49,9 @@ function useActiveHeading(ids: string[]) {
   return activeId;
 }
 
-export function SidebarBook({ work, toc, edition, activeSlug, headings = [], backmatter = [] }: Props) {
+export function SidebarBook({ work, toc, edition, activeSlug, headings = [], backmatter = [], localePrefix = "" }: Props) {
   const pathname = usePathname();
-  const prefix = edition === "main" ? `/${work}` : `/${work}/${edition}`;
+  const prefix = edition === "main" ? `${localePrefix}/${work}` : `${localePrefix}/${work}/${edition}`;
   const activeKeys = useMemo(() => activeSlug ? findExpandedKeys(toc, activeSlug) : [], [toc, activeSlug]);
   const { expanded, toggle } = useExpandable(activeKeys);
   const headingIds = headings.map((h) => h.id);
@@ -100,7 +101,7 @@ export function SidebarBook({ work, toc, edition, activeSlug, headings = [], bac
       {backmatter.length > 0 && (
         <ul className="py-2 text-sm mt-2" style={{ borderTop: "1px solid var(--border-subtle)" }}>
           {backmatter.map((s) => {
-            const href = `/${work}/${s.id}`;
+            const href = `${prefix}/${s.id}`;
             const active = pathname === href;
             return (
               <li key={s.id}>

@@ -16,13 +16,14 @@ interface Props {
   activeYear?: string;
   activeIssue?: string;
   activeArticle?: string;
+  localePrefix?: string;
 }
 
-export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle }: Props) {
+export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", activeYear, activeIssue, activeArticle, localePrefix = "" }: Props) {
   const pathname = usePathname();
   const activeKeys = useMemo(() => activeYear && activeIssue ? [`${activeYear}-${activeIssue}`] : [], [activeYear, activeIssue]);
   const { expanded, toggle: toggleIssue } = useExpandable(activeKeys);
-  const base = `/${journal}`;
+  const base = `${localePrefix}/${journal}`;
 
   return (
     <SidebarShell>

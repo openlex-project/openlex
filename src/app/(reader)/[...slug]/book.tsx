@@ -74,14 +74,15 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   const backmatter = getBackmatterSections(meta);
   const work = meta.slug;
   const resolvedToc = resolveTocTitles(meta.toc, contentLocale ?? meta.lang);
-  const slugPrefix = ref === "main" ? `/${work}` : `/${work}/${ref}`;
+  const localePrefix = contentLocale && contentLocale !== defaultLocale ? `/${contentLocale}` : "";
+  const slugPrefix = ref === "main" ? `${localePrefix}/${work}` : `${localePrefix}/${work}/${ref}`;
 
   if (BACKMATTER_SLUGS.has(fileSlug)) {
     const bm = await renderBackmatter(fileSlug, meta);
     if (!bm) notFound();
     return (
       <div className="flex">
-        <SidebarBook work={work} toc={resolvedToc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
+        <SidebarBook work={work} localePrefix={localePrefix} toc={resolvedToc} edition={ref} activeSlug={fileSlug} backmatter={backmatter} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <h1 className="text-2xl font-bold mb-8">{bm.title}</h1>
           <div className="content-prose" dangerouslySetInnerHTML={{ __html: bm.html }} />
@@ -124,7 +125,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
 
   return (
     <div className="flex">
-      <SidebarBook work={work} toc={resolvedToc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
+      <SidebarBook work={work} localePrefix={localePrefix} toc={resolvedToc} edition={ref} activeSlug={fileSlug} headings={headings} backmatter={backmatter} />
       <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
         <PrevNextNav position="top" prev={prev ? { href: prevHref!, label: prev.title as string } : null} next={next ? { href: nextHref!, label: next.title as string } : null} center={authorCenter} ariaLabel="Kapitelnavigation" />
         <div className="mb-6 text-sm flex items-center gap-2" style={{ color: "var(--text-secondary)" }}>
@@ -132,9 +133,9 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
             {displayName} – {tocEntry?.title as string ?? fileSlug}
             {edition && <span className="ml-2" style={{ color: "var(--color-accent-600)" }}>({edition})</span>}
             {meta.comments_on && tocEntry?.provisions?.[0] && (
-              <> · <Link href={`/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</Link></>
+              <> · <Link href={`${localePrefix}/${meta.comments_on}/${tocEntry.provisions[0]}`} className="hover:underline" style={{ color: "var(--active-text)" }}>{t(locale, "law.link")}</Link></>
             )}
-            <ContentLanguageLinks translations={meta.translations} currentPath={`/${meta.slug}/${fileSlug}`} />
+            <ContentLanguageLinks translations={meta.translations} currentPath={`${localePrefix}/${meta.slug}/${fileSlug}`} />
           </span>
           <ContentActions title={`${displayName} – ${tocEntry?.title as string ?? fileSlug}`} contentType="book" />
         </div>
