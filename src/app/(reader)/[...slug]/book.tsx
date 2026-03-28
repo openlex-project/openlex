@@ -8,7 +8,7 @@ import { SetLicense } from "@/components/license-context";
 import { getProvider } from "@/lib/git-provider";
 import { renderMarkdown } from "@/lib/markdown";
 import { renderBackmatter } from "@/lib/backmatter";
-import { t, defaultLocale } from "@/lib/i18n";
+import { t, } from "@/lib/i18n";
 import { getContentLocale } from "@/lib/content-locale";
 import { ContentArticle } from "@/components/content-article";
 import { SidebarBook } from "@/components/sidebar-book";

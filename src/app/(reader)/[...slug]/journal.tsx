@@ -4,7 +4,7 @@ import { getJournalArticleContent } from "@/lib/content";
 import { SetLicense } from "@/components/license-context";
 import { renderMarkdown } from "@/lib/markdown";
 import { SidebarJournal } from "@/components/sidebar-journal";
-import { t, defaultLocale } from "@/lib/i18n";
+import { t, } from "@/lib/i18n";
 import { getContentLocale } from "@/lib/content-locale";
 import { ContentArticle } from "@/components/content-article";
 import Link from "next/link";
