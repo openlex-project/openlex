@@ -46,7 +46,7 @@ export function SidebarShell({ children, width = "w-72" }: Props) {
     <>
       {open && <button type="button" className="fixed inset-0 bg-black/30 z-30 lg:hidden cursor-default" onClick={toggle} aria-label={t("sidebar.close")} />}
       <aside
-        className={`${open ? `fixed inset-y-0 left-0 z-40 pt-[57px] lg:relative lg:pt-0 lg:z-auto ${width}` : "w-0 lg:w-10"} lg:sticky lg:top-[57px] h-[calc(100vh-57px)] shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out flex flex-col`}
+        className={`${open ? `fixed inset-y-0 left-0 z-40 pt-[57px] lg:relative lg:pt-0 lg:z-auto ${width}` : "w-0 lg:w-10"} lg:sticky lg:top-[57px] lg:max-h-[calc(100dvh-57px)] shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out flex flex-col`}
         style={{ background: "var(--surface)", borderRight: open ? "1px solid var(--border-subtle)" : undefined }}
         aria-label={t("sidebar.aria")}
       >
