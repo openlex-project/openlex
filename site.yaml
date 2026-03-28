@@ -26,7 +26,7 @@ branding:
 # Content repositories — GitHub or GitLab repos containing books, journals, or laws.
 # Format: github://org/repo, gitlab://group/project, gitlab://host/group/project (self-hosted)
 content_repos:
-  - github://openlex-project/oc-dsgvo
+  - github://openlex-project/openlex-demo-commentary
   - github://openlex-project/openlex-demo-law
 
 # Content categories — controls homepage sections and /category/[key] pages.

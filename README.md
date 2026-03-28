@@ -49,7 +49,7 @@ branding:
       label: { de: "Impressum", en: "Imprint" }
 
 content_repos:
-  - github://openlex-project/oc-dsgvo
+  - github://openlex-project/openlex-demo-commentary
   - github://openlex-project/openlex-demo-law
   # - gitlab://uni-berlin/kommentar-stgb
 
