@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSession, signIn, signOut, getProviders } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 import { useT } from "@/lib/i18n/useT";
 import { ProviderIcon } from "./provider-icon";
 import { User } from "lucide-react";
@@ -43,9 +44,11 @@ export default function UserButton({ hasFeedback }: { hasFeedback?: boolean }) {
   );
 
   return (
-    <div ref={ref} className="relative" onMouseEnter={enter} onMouseLeave={leave} onKeyDown={handleKeyDown}>
+    <nav ref={ref} className="relative" onMouseEnter={enter} onMouseLeave={leave} aria-label="User menu">
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
+        onKeyDown={handleKeyDown}
         className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-colors"
         style={{ color: "var(--text-secondary)" }}
         aria-expanded={open}
@@ -55,7 +58,7 @@ export default function UserButton({ hasFeedback }: { hasFeedback?: boolean }) {
         {session ? (
           <>
             {session.user?.image ? (
-              <img src={session.user.image} alt="" className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
+              <Image src={session.user.image} alt="" width={24} height={24} className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" unoptimized />
             ) : <User className="w-5 h-5" />}
             <span className="hidden sm:inline max-w-[120px] truncate">{session.user?.name}</span>
           </>
@@ -80,7 +83,7 @@ export default function UserButton({ hasFeedback }: { hasFeedback?: boolean }) {
               {menuLink("/history", t("nav.history"))}
               {hasFeedback && menuLink("/feedback", t("nav.feedback"))}
               <div className="border-t my-1" style={{ borderColor: "var(--border-subtle)" }} />
-              <button onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-tertiary)" }} role="menuitem" tabIndex={-1}>
+              <button type="button" onClick={() => signOut()} className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]" style={{ color: "var(--text-tertiary)" }} role="menuitem" tabIndex={-1}>
                 {t("nav.logout")}
               </button>
             </>
@@ -89,6 +92,7 @@ export default function UserButton({ hasFeedback }: { hasFeedback?: boolean }) {
               <div className="px-4 py-2 text-xs" style={{ color: "var(--text-tertiary)" }}>{t("login.subtitle")}</div>
               {providers!.map((p) => (
                   <button
+                    type="button"
                     key={p.id}
                     onClick={() => signIn(p.id, { callbackUrl: window.location.pathname })}
                     className="flex items-center gap-3 w-full px-4 py-2 text-sm transition-colors hover:bg-[var(--surface-secondary)]"
@@ -104,6 +108,6 @@ export default function UserButton({ hasFeedback }: { hasFeedback?: boolean }) {
           )}
         </div>
       )}
-    </div>
+    </nav>
   );
 }

@@ -35,17 +35,17 @@ const remarkAuthor: Plugin<[AuthorOptions?], Root> = (opts) => {
   }
 
   // Resolve toc author name
-  const tocName = opts?.tocAuthor
+  const _tocName = opts?.tocAuthor
     ? typeof opts.tocAuthor === "string" ? opts.tocAuthor : opts.tocAuthor.name
     : undefined;
 
   return (tree) => {
-    let hasInlineAuthor = false;
+    let _hasInlineAuthor = false;
 
     // First pass: check if ::: author exists (override)
     visit(tree, "containerDirective", (node) => {
       const n = node as unknown as DirectiveNode;
-      if (n.name === "author") hasInlineAuthor = true;
+      if (n.name === "author") _hasInlineAuthor = true;
     });
 
     // Process ::: author directives

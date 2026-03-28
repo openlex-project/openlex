@@ -7,9 +7,9 @@ const locales = (process.env.NEXT_PUBLIC_LOCALES ?? "en").split(",");
 const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? "en";
 
 export function LanguageSwitcher() {
-  if (locales.length <= 1) return null;
   const pathname = usePathname();
   const currentLocale = useLocale();
+  if (locales.length <= 1) return null;
 
   const buildHref = (locale: string) => {
     // Strip current locale prefix if present

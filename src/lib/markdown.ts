@@ -27,7 +27,7 @@ export interface RenderOptions {
 }
 
 function buildProcessor(opts?: RenderOptions) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: unified pipeline types are not fully compatible with plugin signatures
   let p = (unified() as any)
     .use(remarkParse)
     .use(remarkDirective)

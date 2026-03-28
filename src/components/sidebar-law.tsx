@@ -22,7 +22,7 @@ function findExpandedKeys(toc: LawTocNode[], nr: string, path: string[] = []): s
   for (const node of toc) {
     if (node.nr === nr) return path;
     if (node.children) {
-      const key = path.length + "-" + (node.label ?? (node.title as string));
+      const key = `${path.length}-${node.label ?? (node.title as string)}`;
       const found = findExpandedKeys(node.children, nr, [...path, key]);
       if (found.length) return found;
     }
@@ -49,12 +49,12 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle, localePrefix
     );
   }
 
-  const key = depth + "-" + (node.label ?? (node.title as string));
+  const key = `${depth}-${node.label ?? (node.title as string)}`;
   const isExpanded = expanded.has(key);
 
   return (
     <li>
-      <button onClick={() => onToggle(key)} aria-expanded={isExpanded}
+      <button type="button" onClick={() => onToggle(key)} aria-expanded={isExpanded}
         className="w-full flex items-center gap-1 px-4 py-1 text-sm text-left"
         style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: "var(--text-primary)" }}>
         <ChevronRight className={`w-3 h-3 shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`} />

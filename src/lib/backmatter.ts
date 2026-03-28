@@ -54,7 +54,7 @@ export async function renderBackmatter(section: string, meta: BookEntry): Promis
   if (section === "autorenverzeichnis") {
     const authors = collectAuthors(meta.toc);
     if (authors.length === 0) return null;
-    const html = "<dl>" + authors.map((a) => `<dt><strong>${escapeHtml(a.name)}</strong></dt>${a.orcid ? `<dd>ORCID: <a href="https://orcid.org/${escapeHtml(a.orcid)}">${escapeHtml(a.orcid)}</a></dd>` : ""}`).join("") + "</dl>";
+    const html = `<dl>${authors.map((a) => `<dt><strong>${escapeHtml(a.name)}</strong></dt>${a.orcid ? `<dd>ORCID: <a href="https://orcid.org/${escapeHtml(a.orcid)}">${escapeHtml(a.orcid)}</a></dd>` : ""}`).join("")}</dl>`;
     return { title: "Autorenverzeichnis", html };
   }
   return null;

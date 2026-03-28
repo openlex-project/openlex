@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
-import { log } from "@/lib/logger";
 
 export async function GET() {
   const checks: Record<string, "ok" | "error"> = {};

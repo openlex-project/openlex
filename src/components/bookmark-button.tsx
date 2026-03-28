@@ -38,7 +38,7 @@ export function BookmarkButton({ title }: { title?: string }) {
   };
 
   return (
-    <button
+    <button type="button"
       onClick={toggle}
       disabled={pending}
       className="inline-flex items-center gap-1 text-sm transition-colors p-1"

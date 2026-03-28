@@ -41,6 +41,7 @@ function useActiveHeading(ids: string[]) {
       (entries) => { for (const e of entries) { if (e.isIntersecting) { setActiveId(e.target.id); break; } } },
       { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
     );
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: forEach does not use return values
     els.forEach((el) => ob.observe(el));
     return () => ob.disconnect();
   }, [ids]);
@@ -66,7 +67,7 @@ export function SidebarBook({ work, toc, edition, activeSlug, headings = [], bac
       <li key={slug}>
         <div className="flex items-center">
           {hasChildren ? (
-            <button onClick={() => toggle(slug)} aria-expanded={isExpanded} className="pl-1 pr-0.5 py-1.5 shrink-0" style={{ paddingLeft: `${depth * 0.75 + 0.25}rem`, color: "var(--text-tertiary)" }}>
+            <button type="button" onClick={() => toggle(slug)} aria-expanded={isExpanded} className="pl-1 pr-0.5 py-1.5 shrink-0" style={{ paddingLeft: `${depth * 0.75 + 0.25}rem`, color: "var(--text-tertiary)" }}>
               <ChevronRight className={`w-3 h-3 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
             </button>
           ) : null}

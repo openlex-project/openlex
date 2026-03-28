@@ -39,13 +39,13 @@ export function ShareMenu({ title, siteName, targets }: { title: string; siteNam
 
   return (
     <div className="relative">
-      <button {...triggerProps} className="inline-flex items-center text-sm transition-colors p-1" style={{ color: "var(--text-tertiary)" }} aria-label={t("share.title")}>
+      <button type="button" {...triggerProps} className="inline-flex items-center text-sm transition-colors p-1" style={{ color: "var(--text-tertiary)" }} aria-label={t("share.title")}>
         <Share2 className="w-5 h-5" />
       </button>
       {open && (
         <div {...menuProps} className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-md border py-1 shadow-lg" style={{ background: "var(--surface)", borderColor: "var(--border)" }}>
           {targets.map((target) => (
-            <button key={target} role="menuitem" tabIndex={-1} onClick={() => handle(target)} className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+            <button type="button" key={target} role="menuitem" tabIndex={-1} onClick={() => handle(target)} className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
               {target === "copy" && copied ? <Check className="w-4 h-4" /> : icons[target]}
               {target === "copy" && copied ? t("share.copied") : t(`share.${target}`)}
             </button>

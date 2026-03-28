@@ -80,7 +80,7 @@ export function SearchBox() {
   };
 
   return (
-    <div ref={ref} className="relative w-full" role="search">
+    <search ref={ref} className="relative w-full">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text-tertiary)" }} />
         <input
@@ -110,10 +110,11 @@ export function SearchBox() {
             <p className="px-4 py-3 text-sm" style={{ color: "var(--text-tertiary)" }}>{t("search.empty", { q: query })}</p>
           )}
           {!loading && results.length > 0 && (
-            <ul id="search-listbox" role="listbox" className="max-h-96 overflow-y-auto py-1">
+            <div id="search-listbox" role="listbox" className="max-h-96 overflow-y-auto py-1">
               {results.map((r, i) => (
-                <li key={r.url} id={`search-option-${i}`} role="option" aria-selected={i === active}>
+                <div key={r.url} id={`search-option-${i}`} role="option" aria-selected={i === active} tabIndex={-1}>
                   <button
+                    type="button"
                     onClick={() => navigate(r.url)}
                     className="w-full text-left px-4 py-2.5 transition-colors"
                     style={{ color: "var(--text-primary)", background: i === active ? "var(--hover-bg)" : undefined }}
@@ -124,12 +125,12 @@ export function SearchBox() {
                     <div className="text-sm font-medium truncate">{r.meta.title ?? r.url}</div>
                     <div className="text-xs mt-0.5 line-clamp-2" style={{ color: "var(--text-tertiary)" }} dangerouslySetInnerHTML={{ __html: sanitizeExcerpt(r.excerpt) }} />
                   </button>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       )}
-    </div>
+    </search>
   );
 }

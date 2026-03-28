@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n/useT";
 
@@ -51,7 +52,7 @@ export default function ProfilePage() {
       {/* User info */}
       <section className="rounded-lg border p-4 space-y-2" style={{ borderColor: "var(--border)", background: "var(--surface-secondary)" }}>
         <div className="flex items-center gap-3">
-          {session.user?.image && <img src={session.user.image} alt="" className="w-12 h-12 rounded-full" referrerPolicy="no-referrer" />}
+          {session.user?.image && <Image src={session.user.image} alt="" width={48} height={48} className="w-12 h-12 rounded-full" referrerPolicy="no-referrer" unoptimized />}
           <div>
             <div className="font-medium" style={{ color: "var(--text-primary)" }}>{session.user?.name}</div>
             <div className="text-sm" style={{ color: "var(--text-tertiary)" }}>{session.user?.email}</div>
@@ -64,7 +65,7 @@ export default function ProfilePage() {
         <h2 className="text-lg font-semibold">{t("profile.settings")}</h2>
         <label className="flex items-center justify-between gap-4 cursor-pointer">
           <span className="text-sm" style={{ color: "var(--text-primary)" }}>{t("profile.historyEnabled")}</span>
-          <button
+          <button type="button"
             onClick={() => toggleSetting("history_enabled")}
             className="relative w-10 h-6 rounded-full transition-colors"
             style={{ background: settings.history_enabled !== "false" ? "var(--color-brand-600)" : "var(--text-tertiary)" }}
@@ -81,7 +82,7 @@ export default function ProfilePage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">{t("profile.dataExport")}</h2>
         <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("profile.dataExportDesc")}</p>
-        <button onClick={downloadData} className="text-sm px-4 py-2 rounded-lg border transition-colors" style={{ borderColor: "var(--border)", color: "var(--text-primary)" }}>
+        <button type="button" onClick={downloadData} className="text-sm px-4 py-2 rounded-lg border transition-colors" style={{ borderColor: "var(--border)", color: "var(--text-primary)" }}>
           {t("profile.downloadData")}
         </button>
       </section>
@@ -90,7 +91,7 @@ export default function ProfilePage() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold" style={{ color: "var(--color-danger, #dc2626)" }}>{t("profile.dangerZone")}</h2>
         {!showDelete ? (
-          <button onClick={() => setShowDelete(true)} className="text-sm px-4 py-2 rounded-lg border transition-colors" style={{ borderColor: "var(--color-danger, #dc2626)", color: "var(--color-danger, #dc2626)" }}>
+          <button type="button" onClick={() => setShowDelete(true)} className="text-sm px-4 py-2 rounded-lg border transition-colors" style={{ borderColor: "var(--color-danger, #dc2626)", color: "var(--color-danger, #dc2626)" }}>
             {t("profile.deleteAccount")}
           </button>
         ) : (
@@ -109,7 +110,7 @@ export default function ProfilePage() {
               aria-label={t("profile.deleteConfirm", { phrase: confirmPhrase })}
             />
             <div className="flex gap-2">
-              <button
+              <button type="button"
                 onClick={deleteAccount}
                 disabled={deleteInput !== confirmPhrase || deleting}
                 className="text-sm px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-40"
@@ -117,7 +118,7 @@ export default function ProfilePage() {
               >
                 {deleting ? "…" : t("profile.deleteAccountFinal")}
               </button>
-              <button onClick={() => { setShowDelete(false); setDeleteInput(""); }} className="text-sm px-4 py-2 rounded-lg border transition-colors" style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}>
+              <button type="button" onClick={() => { setShowDelete(false); setDeleteInput(""); }} className="text-sm px-4 py-2 rounded-lg border transition-colors" style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}>
                 {t("profile.cancel")}
               </button>
             </div>

@@ -1,5 +1,5 @@
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 import { parse } from "yaml";
 import { getProvider } from "@/lib/git-provider";
 import { log } from "@/lib/logger";
@@ -134,7 +134,7 @@ export async function loadTemplate(templateField?: string): Promise<TemplateConf
       config = await fetchRemoteTemplate(spec.repo, spec.ref);
     } catch (err) {
       log.error(err, "Failed to load remote template: %s", raw);
-      const b = BUILTIN["default"]!;
+      const b = BUILTIN.default!;
       config = { name: b.name, variants: b.variants, css: readBuiltinCss(b.cssFile) };
     }
   }

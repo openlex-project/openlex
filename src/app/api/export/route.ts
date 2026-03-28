@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildRegistry, type TocEntry } from "@/lib/registry";
 import { getBookContent, getLawContent } from "@/lib/content";
@@ -7,7 +7,6 @@ import { loadSiteConfig } from "@/lib/site";
 import { withSession } from "@/lib/api-utils";
 import { exportMarkdown } from "@/lib/export-md";
 import { rateLimit } from "@/lib/rate-limit";
-import { log } from "@/lib/logger";
 
 const exportParams = z.object({ path: z.string().min(1), format: z.enum(["md", "docx"]).default("md"), scope: z.enum(["page", "chapter", "law"]).default("page") });
 
@@ -52,7 +51,7 @@ export const GET = withSession("export GET", async (req, email) => {
       if (scope === "law") {
         const { provider: p, repo } = getProvider(entry.repo);
         const files = await p.listFiles(repo, entry.slug);
-        const nrs = files.filter((f) => f.endsWith(".md")).sort((a, b) => parseInt(a) - parseInt(b));
+        const nrs = files.filter((f) => f.endsWith(".md")).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
         for (const f of nrs) {
           const r = await getLawContent(entry.repo, entry.slug, f.replace(/\.md$/, ""), undefined, contentLocale); const raw = r?.content ?? null;
           if (raw) pages.push({ title: f.replace(/\.md$/, ""), markdown: raw });

@@ -29,7 +29,7 @@ const apiHosts = [...new Set((site.content_repos ?? []).map((r) => {
 }))];
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
+  metadataBase: new URL(site.base_url ?? `http://localhost:${process.env.PORT ?? 3000}`),
   title: site.name,
   description: site.branding?.tagline?.[site.default_locale] ?? "",
   icons: { icon: "/favicon.svg" },

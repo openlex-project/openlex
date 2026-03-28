@@ -50,7 +50,11 @@ export const POST = withAuth("feedback POST", async (req, email) => {
   if (match) labels.push(`${match[1]}-${match[2]}`);
 
   const title = `[${data.category}] ${data.selectedText?.slice(0, 60) || data.comment.slice(0, 60)}`;
-  const body = [`> 🤖 *Submitted via [OpenLex](${loadSiteConfig().base_url ?? "https://openlex.vercel.app"}) feedback system on behalf of a user.*`, `**Kategorie:** ${data.category}`, `**Fundstelle:** ${data.location}`, data.selectedText ? `**Markierter Text:**\n> ${data.selectedText}` : "", `**Kommentar:**\n${data.comment}`, `\n<!-- openlex-user: ${hashUserId(email)} -->`].filter(Boolean).join("\n\n");
+  const site = loadSiteConfig();
+  const siteName = site.name ?? "OpenLex";
+  const siteUrl = site.base_url;
+  const siteLink = siteUrl ? `[${siteName}](${siteUrl})` : siteName;
+  const body = [`> 🤖 *Submitted via ${siteLink} feedback system on behalf of a user.*`, `**Kategorie:** ${data.category}`, `**Fundstelle:** ${data.location}`, data.selectedText ? `**Markierter Text:**\n> ${data.selectedText}` : "", `**Kommentar:**\n${data.comment}`, `\n<!-- openlex-user: ${hashUserId(email)} -->`].filter(Boolean).join("\n\n");
 
   const result = await provider.createIssue(repo, title, body, labels);
   if (!result) return NextResponse.json({ error: "Failed to create issue" }, { status: 502 });

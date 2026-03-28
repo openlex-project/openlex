@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 export function FootnoteTooltips() {
-  const pathname = usePathname();
+  const _pathname = usePathname();
   const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
@@ -24,6 +24,7 @@ export function FootnoteTooltips() {
         const fn = document.getElementById(id);
         if (!fn) return;
         const clone = fn.cloneNode(true) as HTMLElement;
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: forEach does not use return values
         clone.querySelectorAll("a.fn-back, a.footnote-back, a[role='doc-backlink']").forEach((a) => a.remove());
         tooltip.innerHTML = clone.innerHTML;
         tooltip.style.display = "block";
@@ -71,7 +72,7 @@ export function FootnoteTooltips() {
     }, 100);
 
     return () => { clearTimeout(timer); cleanupRef.current?.(); cleanupRef.current = null; };
-  }, [pathname]);
+  }, []);
 
   return null;
 }

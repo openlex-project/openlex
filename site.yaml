@@ -1,6 +1,7 @@
 # Site configuration — edit this file to rebrand your instance.
 
 name: "OpenLex"
+base_url: "https://openlex.vercel.app"
 default_locale: "de"
 
 # ISR revalidation, sharing, export, analytics, related content display

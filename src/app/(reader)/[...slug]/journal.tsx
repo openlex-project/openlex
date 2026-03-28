@@ -7,7 +7,6 @@ import { renderMarkdown } from "@/lib/markdown";
 import { SidebarJournal } from "@/components/sidebar-journal";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
-import { BookmarkButton } from "@/components/bookmark-button";
 import { HistoryTracker } from "@/components/history-tracker";
 import { ContentActions } from "@/components/content-actions";
 import { PrevNextNav } from "@/components/prev-next-nav";
@@ -15,7 +14,7 @@ import { person, licenseUrl } from "@/lib/jsonld-utils";
 import { safeJsonLd } from "@/lib/escape-html";
 import type { Metadata } from "next";
 
-function articleJsonLd(journal: JournalEntry, article: JournalArticle, year: string, issue: string, url: string): string {
+function articleJsonLd(journal: JournalEntry, article: JournalArticle, year: string, _issue: string, url: string): string {
   return safeJsonLd({
     "@context": "https://schema.org",
     "@type": "ScholarlyArticle",
@@ -76,7 +75,7 @@ function AuthorLine({ article }: { article: JournalArticle }) {
   );
 }
 
-export default async function JournalPage({ registry, entry: journal, rest }: Props) {
+export default async function JournalPage({ entry: journal, rest }: Props) {
   const h = await headers();
   const locale = (h.get("x-ui-locale") ?? defaultLocale) as Locale;
   const base = `/${journal.slug}`;
@@ -119,7 +118,7 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
 
     if (!issue) {
       const page = parseInt(issueNr!, 10);
-      if (isNaN(page)) notFound();
+      if (Number.isNaN(page)) notFound();
       for (const iss of journal.issues.filter((i) => i.year === year)) {
         for (const a of iss.articles) {
           if (!a.pages) continue;

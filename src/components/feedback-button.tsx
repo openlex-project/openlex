@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, } from "react";
 import { useSession } from "next-auth/react";
 import { useT } from "@/lib/i18n/useT";
 
@@ -54,6 +54,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
   return (
     <>
       <button
+        type="button"
         ref={triggerRef}
         onClick={handleOpen}
         className="fixed bottom-6 right-6 rounded-full w-12 h-12 flex items-center justify-center shadow-lg text-white text-xl transition-transform hover:scale-105"
@@ -76,7 +77,7 @@ export function FeedbackButton({ repo }: { repo: string }) {
             else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
           }
         }}>
-          <div className="fixed inset-0 bg-black/20" onClick={handleClose} />
+          <button type="button" className="fixed inset-0 bg-black/20 cursor-default" onClick={handleClose} aria-label="Close" />
           <form
             ref={dialogRef}
             onSubmit={handleSubmit}

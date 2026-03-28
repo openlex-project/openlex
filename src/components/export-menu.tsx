@@ -33,7 +33,7 @@ export function ExportMenu({ formats, requireAuth, contentType }: { formats: str
 
   return (
     <div className="relative">
-      <button {...triggerProps} className="inline-flex items-center text-sm transition-colors p-1" style={{ color: "var(--text-tertiary)" }} aria-label={t("export.title")}>
+      <button type="button" {...triggerProps} className="inline-flex items-center text-sm transition-colors p-1" style={{ color: "var(--text-tertiary)" }} aria-label={t("export.title")}>
         <Download className="w-5 h-5" />
       </button>
       {open && (
@@ -41,12 +41,12 @@ export function ExportMenu({ formats, requireAuth, contentType }: { formats: str
           {formats.map((fmt) =>
             scopes.length ? (
               scopes.map((scope) => (
-                <button key={`${fmt}-${scope}`} role="menuitem" tabIndex={-1} onClick={() => download(fmt, scope)} className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                <button type="button" key={`${fmt}-${scope}`} role="menuitem" tabIndex={-1} onClick={() => download(fmt, scope)} className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                   {t(`export.${fmt}`)} · {t(`export.${scope}`)}
                 </button>
               ))
             ) : (
-              <button key={fmt} role="menuitem" tabIndex={-1} onClick={() => download(fmt)} className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+              <button type="button" key={fmt} role="menuitem" tabIndex={-1} onClick={() => download(fmt)} className="flex items-center gap-2 w-full px-3 py-1.5 text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                 {t(`export.${fmt}`)}
               </button>
             )

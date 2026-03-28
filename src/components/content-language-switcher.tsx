@@ -1,4 +1,4 @@
-import Link from "next/link";
+
 
 const locales = (process.env.NEXT_PUBLIC_LOCALES ?? "en").split(",");
 const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? "en";

@@ -28,7 +28,7 @@ export default function LoginPage() {
       ) : (
         <div className="space-y-3">
           {providers.map((p) => (
-            <button
+            <button type="button"
               key={p.id}
               onClick={() => signIn(p.id, { callbackUrl: "/" })}
               className="w-full flex items-center justify-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"

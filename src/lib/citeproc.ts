@@ -2,7 +2,6 @@
  * CSL citation engine powered by citeproc-js.
  * Resolves @citation_key references using CSL style + references data.
  */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const CSL = require("citeproc");
 import { parse } from "yaml";
 import { log } from "@/lib/logger";
@@ -101,7 +100,7 @@ export function createCitationEngine(
       try {
         engine.updateItems([...citedIds]);
         const bibResult = engine.makeBibliography();
-        if (!bibResult || !bibResult[1]) return "";
+        if (!bibResult?.[1]) return "";
         return bibResult[1].join("\n");
       } catch (err) {
         log.error(err, "citeproc: failed to generate bibliography");

@@ -51,10 +51,11 @@ export default async function ReaderLayout({
         <footer className="border-t px-6 py-4 text-sm flex items-center justify-center gap-1 flex-wrap" style={{ borderColor: "var(--border-subtle)", color: "var(--text-tertiary)" }}>
           {site.branding?.footer?.map((item, i) => {
             const sep = i > 0 ? " · " : "";
-            if (item.text) return <span key={i}>{sep}{item.text}</span>;
-            if ("license" in item) return <span key={i}>{sep}<LicenseDisplay /></span>;
-            if (item.slug) return <span key={i}>{sep}<Link href={`/${item.slug}`} className="hover:underline" style={{ color: "var(--text-secondary)" }}>{item.label?.[locale] ?? item.label?.[site.default_locale] ?? item.slug}</Link></span>;
-            if (item.href) return <span key={i}>{sep}<a href={item.href} target="_blank" rel="noopener" className="hover:underline" style={{ color: "var(--text-secondary)" }}>{item.label?.[locale] ?? item.label?.[site.default_locale] ?? item.href}</a></span>;
+            const key = item.text ?? item.slug ?? item.href ?? ("license" in item ? "license" : `footer-${i}`);
+            if (item.text) return <span key={key}>{sep}{item.text}</span>;
+            if ("license" in item) return <span key={key}>{sep}<LicenseDisplay /></span>;
+            if (item.slug) return <span key={key}>{sep}<Link href={`/${item.slug}`} className="hover:underline" style={{ color: "var(--text-secondary)" }}>{item.label?.[locale] ?? item.label?.[site.default_locale] ?? item.slug}</Link></span>;
+            if (item.href) return <span key={key}>{sep}<a href={item.href} target="_blank" rel="noopener" className="hover:underline" style={{ color: "var(--text-secondary)" }}>{item.label?.[locale] ?? item.label?.[site.default_locale] ?? item.href}</a></span>;
             return null;
           })}
         </footer>

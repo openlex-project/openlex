@@ -12,7 +12,7 @@ let pf: { search: (q: string, opts?: object) => Promise<PagefindSearch>; filters
 
 async function load() {
   if (pf) return pf;
-  // @ts-expect-error pagefind loaded from static files
+  // @ts-expect-error pagefind is loaded at runtime from /public/pagefind/ — no type declarations available
   pf = await import(/* webpackIgnore: true */ "/pagefind/pagefind.js");
   await pf!.init();
   return pf!;

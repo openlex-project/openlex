@@ -102,8 +102,8 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         {breadcrumb.length > 1 && (
           <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">
             <span>{displayTitle}</span>
-            {breadcrumb.slice(0, -1).map((node, i) => (
-              <span key={i}><span className="mx-1" aria-hidden="true">›</span>{node.label}{node.title ? ` ${node.title}` : ""}</span>
+            {breadcrumb.slice(0, -1).map((node) => (
+              <span key={`${node.label ?? ""}${node.title ?? ""}`}><span className="mx-1" aria-hidden="true">›</span>{node.label}{node.title ? ` ${node.title}` : ""}</span>
             ))}
           </nav>
         )}

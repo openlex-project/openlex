@@ -36,7 +36,6 @@ function SearchResults() {
     finally { setLoading(false); }
   }, [activeFilter]);
 
-  useEffect(() => { doSearch(query); }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Infinite scroll: load more when sentinel is visible
   useEffect(() => {
@@ -69,7 +68,7 @@ function SearchResults() {
         <aside className="mb-6 flex flex-wrap gap-2">
           {Object.entries(filters).map(([key, values]) =>
             Object.entries(values).map(([val, count]) => (
-              <button
+              <button type="button"
                 key={`${key}-${val}`}
                 onClick={() => toggleFilter(key, val)}
                 aria-pressed={activeFilter[key] === val}
@@ -94,8 +93,8 @@ function SearchResults() {
       ) : (
         <>
           <ul className="space-y-4">
-            {results.map((r, i) => (
-              <li key={`${r.url}-${i}`}>
+            {results.map((r) => (
+              <li key={r.url}>
                 <Link href={r.url} className="hover:underline font-medium" style={{ color: "var(--active-text)" }}>
                   {r.meta.title ?? r.url}
                 </Link>

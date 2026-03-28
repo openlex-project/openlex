@@ -1,5 +1,4 @@
 import { buildRegistry, resolveDisplay } from "@/lib/registry";
-import { resolveI18n } from "@/lib/i18n-utils";
 import { getLawProvisions } from "@/lib/content";
 import { loadSiteConfig } from "@/lib/site";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";

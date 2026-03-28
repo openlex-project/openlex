@@ -12,7 +12,7 @@ export function ContentNavDropdown({ groups, label }: { groups: NavGroup[]; labe
 
   return (
     <div className="relative hidden lg:block">
-      <button {...triggerProps} className="flex items-center gap-1.5 px-2 py-1 text-sm rounded-md hover:bg-[var(--surface-secondary)] transition-colors" style={{ color: "var(--text-secondary)" }}>
+      <button type="button" {...triggerProps} className="flex items-center gap-1.5 px-2 py-1 text-sm rounded-md hover:bg-[var(--surface-secondary)] transition-colors" style={{ color: "var(--text-secondary)" }}>
         <BookOpen className="w-4 h-4" />
         {label}
       </button>

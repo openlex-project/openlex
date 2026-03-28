@@ -13,7 +13,7 @@ export function t(locale: Locale, key: string, params?: Record<string, string>):
   if (key === "site.title") return site.name;
   if (key === "site.tagline") return site.branding?.tagline?.[locale] ?? site.branding?.tagline?.[defaultLocale] ?? "";
 
-  let str = dictionaries[locale]?.[key] ?? dictionaries[defaultLocale]?.[key] ?? (dictionaries["en"] ?? {})[key] ?? key;
+  let str = dictionaries[locale]?.[key] ?? dictionaries[defaultLocale]?.[key] ?? dictionaries.en?.[key] ?? key;
   if (params) {
     for (const [k, v] of Object.entries(params)) {
       str = str.replace(`{${k}}`, v);

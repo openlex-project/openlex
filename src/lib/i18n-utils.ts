@@ -18,7 +18,7 @@ export function normalizeI18n(val: unknown, lang: string): I18nString {
 /** Resolve an i18n record to a single string for the given language. */
 export function resolveI18n(val: I18nString | undefined, lang: string): string {
   if (!val) return "";
-  return val[lang] ?? val["en"] ?? Object.values(val)[0] ?? "";
+  return val[lang] ?? val.en ?? Object.values(val)[0] ?? "";
 }
 
 /** Resolve display strings for any content with i18n title/title_short. */

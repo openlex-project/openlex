@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const locales = (process.env.NEXT_PUBLIC_LOCALES ?? "en").split(",");
 const defaultLocale = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? "en";

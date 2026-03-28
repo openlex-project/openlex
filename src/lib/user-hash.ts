@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 
 /** Hash email to a privacy-safe identifier for issue tagging. */
 export function hashUserId(email: string): string {

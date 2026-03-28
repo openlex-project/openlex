@@ -100,14 +100,14 @@ const SCHEMAS: Record<string, { format: Record<string, string>; reset: Record<st
   decimal: { format: {}, reset: {} }, // handled specially
 };
 
-function levelKey(depth: number): string {
+function _levelKey(depth: number): string {
   return "#".repeat(depth);
 }
 
 function resolveConfig(opts: NumberingOptions): ResolvedConfig {
   const schemaName = opts.schema ?? "none";
   const isDecimal = schemaName === "decimal";
-  const base = SCHEMAS[schemaName] ?? SCHEMAS["none"]!;
+  const base = SCHEMAS[schemaName] ?? SCHEMAS.none!;
 
   const rawFormat = { ...base.format, ...opts.format };
   const rawReset = { ...base.reset, ...opts.reset };
@@ -201,7 +201,7 @@ function remarkNumbering(opts: NumberingOptions = {}): ReturnType<Plugin<[Number
         for (let i = 1; i <= depth; i++) {
           parts.push(counters.get(i) ?? 0);
         }
-        prefix = parts.join(".") + ".";
+        prefix = `${parts.join(".")}.`;
       } else {
         const fmt = config.format.get(depth);
         if (!fmt) return; // No format for this level → skip

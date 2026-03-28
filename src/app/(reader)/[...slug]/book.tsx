@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import dynamic from "next/dynamic";
-import { type TocEntry, type BookEntry, type ContentRegistry, resolveDisplay } from "@/lib/registry";
+import { type BookEntry, type ContentRegistry, resolveDisplay } from "@/lib/registry";
 import { getBookContent } from "@/lib/content";
 import { findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterSections, resolveTocTitles } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
@@ -44,8 +44,8 @@ interface Props {
 }
 
 export function bookMetadata(entry: BookEntry, rest: string[], siteName: string): Metadata {
-  const { title, display } = resolveDisplay(entry);
-  if (!rest.length) return { title: `${title} – ${siteName}`, openGraph: { title, images: [`/api/og?title=${encodeURIComponent(title)}`] } };
+  const { title: bookTitle } = resolveDisplay(entry);
+  if (!rest.length) return { title: `${bookTitle} – ${siteName}`, openGraph: { title: bookTitle, images: [`/api/og?title=${encodeURIComponent(bookTitle)}`] } };
   const resolved = resolveTocTitles(entry.toc, entry.lang);
   const chapter = findTocEntry(resolved, rest.join("/"));
   if (!chapter) return {};
@@ -116,7 +116,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
 
   const authorName = tocEntry?.author ? (typeof tocEntry.author === "string" ? tocEntry.author : tocEntry.author.name) : null;
   const authorOrcid = tocEntry?.author && typeof tocEntry.author === "object" ? tocEntry.author.orcid : null;
-  const authorLast = authorName?.split(" ").pop();
+  const _authorLast = authorName?.split(" ").pop();
 
   const authorCenter = authorName && (
     authorOrcid ? <a href={`https://orcid.org/${authorOrcid}`} target="_blank" rel="noopener" className="hover:underline">{authorName}</a> : authorName

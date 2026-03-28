@@ -1,4 +1,5 @@
 import type { AuthOptions } from "next-auth";
+
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import AppleProvider from "next-auth/providers/apple";
@@ -12,7 +13,7 @@ import { log } from "@/lib/logger";
 
 /* ─── Provider factories ─── */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: next-auth provider factories return incompatible generic types
 const FACTORIES: Record<string, (slot: SlotEnv) => any> = {
   github: (s) => GitHubProvider({ clientId: s.id, clientSecret: s.secret }),
   google: (s) => GoogleProvider({ clientId: s.id, clientSecret: s.secret }),

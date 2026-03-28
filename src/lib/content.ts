@@ -34,7 +34,7 @@ export async function getLawContent(repoUrl: string, slug: string, nr: string, r
 export async function getLawProvisions(repoUrl: string, slug: string): Promise<number[]> {
   const { provider: p, repo } = getProvider(repoUrl);
   const files = await p.listFiles(repo, slug);
-  return files.filter((f) => f.endsWith(".md")).map((f) => parseInt(f.replace(".md", ""), 10)).filter((n) => !isNaN(n)).sort((a, b) => a - b);
+  return files.filter((f) => f.endsWith(".md")).map((f) => parseInt(f.replace(".md", ""), 10)).filter((n) => !Number.isNaN(n)).sort((a, b) => a - b);
 }
 
 /**

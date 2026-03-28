@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import { buildRegistry } from "@/lib/registry";
 import { loadSiteConfig } from "@/lib/site";

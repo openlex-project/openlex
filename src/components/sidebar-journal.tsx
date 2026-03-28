@@ -34,7 +34,7 @@ export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", ac
           const isActive = iss.year === activeYear && iss.issue === activeIssue;
           return (
             <li key={key}>
-              <button onClick={() => toggleIssue(key)} aria-expanded={isExpanded}
+              <button type="button" onClick={() => toggleIssue(key)} aria-expanded={isExpanded}
                 className={`w-full flex items-center justify-between px-4 py-1.5 text-left ${isActive && !activeArticle ? "font-semibold" : ""}`}
                 style={{ color: isActive && !activeArticle ? "var(--active-text)" : "var(--text-primary)" }}>
                 <span>{issueLabel} {iss.issue}/{iss.year}</span>
@@ -50,7 +50,7 @@ export function SidebarJournal({ journal, title, issues, issueLabel = "Heft", ac
                         <Link href={href} className={`block px-3 py-1 text-xs leading-snug ${active ? "font-semibold" : ""}`}
                           style={{ color: active ? "var(--active-text)" : "var(--text-tertiary)", background: active ? "var(--active-bg)" : undefined }}>
                           <span className="font-medium">{a.authors[0]?.name.split(" ").pop()}</span>{" – "}
-                          <span>{a.title.length > 40 ? a.title.slice(0, 40) + "…" : a.title}</span>
+                          <span>{a.title.length > 40 ? `${a.title.slice(0, 40)}…` : a.title}</span>
                         </Link>
                       </li>
                     );

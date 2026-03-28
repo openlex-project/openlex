@@ -11,6 +11,7 @@ export function useExpandable(activeKeys: string[]) {
     setExpanded((prev) => {
       if (activeKeys.every((k) => prev.has(k))) return prev;
       const next = new Set(prev);
+      // biome-ignore lint/suspicious/useIterableCallbackReturn: forEach does not use return values
       activeKeys.forEach((k) => next.add(k));
       return next;
     });

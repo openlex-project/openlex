@@ -46,7 +46,7 @@ function IssueCard({ issue }: { issue: Issue }) {
 
   return (
     <li className="card overflow-hidden">
-      <button onClick={loadComments} className="w-full px-4 py-3 flex items-center gap-2 text-left">
+      <button type="button" onClick={loadComments} className="w-full px-4 py-3 flex items-center gap-2 text-left">
         <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${open ? "rotate-90" : ""}`} style={{ color: "var(--text-tertiary)" }} />
         <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${state === "open" ? "bg-green-500" : "bg-gray-400"}`} />
         <span className="text-sm font-medium flex-1 truncate" style={{ color: "var(--text-primary)" }}>{issue.title}</span>
@@ -58,8 +58,8 @@ function IssueCard({ issue }: { issue: Issue }) {
             <p className="text-xs py-3" style={{ color: "var(--text-tertiary)" }}>—</p>
           ) : (
             <ul className="py-2 space-y-3">
-              {comments.map((c, i) => (
-                <li key={i}>
+              {comments.map((c) => (
+                <li key={c.created_at}>
                   <div className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>{c.author} · {formatDate(c.created_at, locale)}</div>
                   <div className="text-sm mt-0.5 whitespace-pre-line" style={{ color: "var(--text-primary)" }}>{c.body}</div>
                 </li>
@@ -69,11 +69,11 @@ function IssueCard({ issue }: { issue: Issue }) {
           {state === "open" && (
             <div className="flex gap-2 mt-2">
               <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder={t("feedback.replyPlaceholder")} className="flex-1 text-sm px-3 py-1.5 rounded-md border" style={{ borderColor: "var(--border)", background: "var(--surface)", color: "var(--text-primary)" }} aria-label={t("feedback.replyPlaceholder")} />
-              <button onClick={sendReply} disabled={sending || !reply.trim()} className="text-sm px-3 py-1.5 rounded-md text-white disabled:opacity-50" style={{ background: "var(--color-brand-600)" }}>{t("feedback.send")}</button>
+              <button type="button" onClick={sendReply} disabled={sending || !reply.trim()} className="text-sm px-3 py-1.5 rounded-md text-white disabled:opacity-50" style={{ background: "var(--color-brand-600)" }}>{t("feedback.send")}</button>
             </div>
           )}
           <div className="flex items-center gap-2 mt-3">
-            {canClose && <button onClick={closeIssue} className="text-xs px-2 py-1 rounded border transition-colors hover:bg-[var(--surface-secondary)]" style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}>{t("feedback.close")}</button>}
+            {canClose && <button type="button" onClick={closeIssue} className="text-xs px-2 py-1 rounded border transition-colors hover:bg-[var(--surface-secondary)]" style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}>{t("feedback.close")}</button>}
             {closedByAuthor && <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>{t("feedback.closedByAuthor")}</span>}
             {state === "closed" && issue.closedByUser && <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>{t("feedback.closed")}</span>}
           </div>

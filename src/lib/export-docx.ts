@@ -46,8 +46,7 @@ function parseInline(text: string): TextRun[] {
   const runs: TextRun[] = [];
   const re = /\*\*(.+?)\*\*|\*(.+?)\*|\[(.+?)\]\(.+?\)/g;
   let last = 0;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(text))) {
+  for (const m of text.matchAll(re)) {
     if (m.index > last) runs.push(new TextRun(text.slice(last, m.index)));
     if (m[1]) runs.push(new TextRun({ text: m[1], bold: true }));
     else if (m[2]) runs.push(new TextRun({ text: m[2], italics: true }));
