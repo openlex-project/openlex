@@ -45,7 +45,8 @@ export function lawMetadata(entry: LawMeta, rest: string[], siteName: string, co
   const resolvedToc = resolveLawTocTitles(entry.toc, contentLocale ?? entry.lang);
   const tocPath = findLawBreadcrumb(resolvedToc, nr);
   const tocEntry = tocPath.length ? tocPath[tocPath.length - 1] : undefined;
-  const label = tocEntry?.title ? `${tocEntry.title} ${display}` : `${entry.unit_type === "article" ? "Art." : "§"} ${nr} ${display}`;
+  const isProvision = /^\d+\w*$/.test(nr);
+  const label = isProvision ? `${entry.unit_type === "article" ? "Art." : "§"} ${nr}${tocEntry?.title ? ` ${tocEntry.title}` : ""} ${display}` : `${tocEntry?.title ?? nr} ${display}`;
   return { title: `${label} – ${siteName}`, openGraph: { title: label, images: [`/api/og?title=${encodeURIComponent(label)}`] } };
 }
 
@@ -93,7 +94,8 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
   const nextNr = provisions[idx + 1];
 
   const tocEntry = breadcrumb.length ? breadcrumb[breadcrumb.length - 1] : undefined;
-  const itemTitle = tocEntry?.title ? `${tocEntry.title} ${displayTitle}` : `${unitLabel} ${nr} ${displayTitle}`;
+  const isProvision = /^\d+\w*$/.test(nr);
+  const itemTitle = isProvision ? `${unitLabel} ${nr}${tocEntry?.title ? ` ${tocEntry.title}` : ""} ${displayTitle}` : `${tocEntry?.title ?? nr} ${displayTitle}`;
 
   const prevNav = prevNr !== undefined ? { href: `/${meta.slug}/${prevNr}`, label: `${unitLabel} ${prevNr}` } : null;
   const nextNav = nextNr !== undefined ? { href: `/${meta.slug}/${nextNr}`, label: `${unitLabel} ${nextNr}` } : null;
