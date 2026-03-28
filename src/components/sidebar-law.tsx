@@ -15,6 +15,7 @@ interface Props {
   toc: LawTocNode[];
   provisions: number[];
   activeNr?: string;
+  localePrefix?: string;
 }
 
 function findExpandedKeys(toc: LawTocNode[], nr: string, path: string[] = []): string[] {
@@ -29,14 +30,14 @@ function findExpandedKeys(toc: LawTocNode[], nr: string, path: string[] = []): s
   return [];
 }
 
-function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
+function TocNode({ node, law, unitLabel, depth, expanded, onToggle, localePrefix }: {
   node: LawTocNode; law: string; unitLabel: string;
-  depth: number; expanded: Set<string>; onToggle: (key: string) => void;
+  depth: number; expanded: Set<string>; onToggle: (key: string) => void; localePrefix: string;
 }) {
   const pathname = usePathname();
 
   if (node.nr) {
-    const href = `/${law}/${node.nr}`;
+    const href = `${localePrefix}/${law}/${node.nr}`;
     const active = pathname === href;
     return (
       <li>
@@ -62,14 +63,14 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle }: {
       </button>
       {isExpanded && node.children && (
         <ul>{node.children.map((child, i) => (
-          <TocNode key={child.nr ?? `${i}-${child.label}`} node={child} law={law} unitLabel={unitLabel} depth={depth + 1} expanded={expanded} onToggle={onToggle} />
+          <TocNode key={child.nr ?? `${i}-${child.label}`} node={child} law={law} unitLabel={unitLabel} depth={depth + 1} expanded={expanded} onToggle={onToggle} localePrefix={localePrefix} />
         ))}</ul>
       )}
     </li>
   );
 }
 
-export function SidebarLaw({ law, title, unitLabel, toc, provisions, activeNr }: Props) {
+export function SidebarLaw({ law, title, unitLabel, toc, provisions, activeNr, localePrefix = "" }: Props) {
   const pathname = usePathname();
   const activeKeys = useMemo(() => activeNr ? findExpandedKeys(toc, activeNr) : [], [toc, activeNr]);
   const { expanded, toggle: onToggle } = useExpandable(activeKeys);
@@ -79,11 +80,11 @@ export function SidebarLaw({ law, title, unitLabel, toc, provisions, activeNr }:
       <div className="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-tertiary)" }}>{title}</div>
       {toc.length > 0 ? (
         <ul className="py-1">{toc.map((node, i) => (
-          <TocNode key={node.nr ?? `${i}-${node.label}`} node={node} law={law} unitLabel={unitLabel} depth={0} expanded={expanded} onToggle={onToggle} />
+          <TocNode key={node.nr ?? `${i}-${node.label}`} node={node} law={law} unitLabel={unitLabel} depth={0} expanded={expanded} onToggle={onToggle} localePrefix={localePrefix} />
         ))}</ul>
       ) : (
         <ul className="py-1 text-sm">{provisions.map((nr) => {
-          const href = `/${law}/${nr}`;
+          const href = `${localePrefix}/${law}/${nr}`;
           const active = pathname === href;
           return (
             <li key={nr}><Link href={href} className={`block px-4 py-1.5 ${active ? "font-semibold" : ""}`} style={{ color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>{unitLabel} {nr}</Link></li>

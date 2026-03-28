@@ -94,7 +94,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
 
   return (
     <div className="flex">
-      <SidebarLaw law={meta.slug} title={meta.title_short ?? meta.title} unitLabel={unitLabel} toc={resolvedToc} provisions={provisions} activeNr={nr} />
+      <SidebarLaw law={meta.slug} title={meta.title_short ?? meta.title} unitLabel={unitLabel} toc={resolvedToc} provisions={provisions} activeNr={nr} localePrefix={contentLocale && contentLocale !== defaultLocale ? `/${contentLocale}` : ""} />
       <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
         {breadcrumb.length > 1 && (
           <nav className="text-xs mb-4 flex flex-wrap gap-1" style={{ color: "var(--text-tertiary)" }} aria-label="Breadcrumb">
@@ -126,7 +126,7 @@ export default async function LawPage({ registry, entry: meta, rest }: Props) {
         <h1 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
           {pageTitle}
           <ContentActions title={pageTitle} contentType="law" />
-          <span className="text-sm font-normal"><ContentLanguageLinks translations={meta.translations} currentPath={`/${meta.slug}/${nr}`} /></span>
+          <span className="text-sm font-normal"><ContentLanguageLinks translations={meta.translations} currentPath={contentLocale && contentLocale !== defaultLocale ? `/${contentLocale}/${meta.slug}/${nr}` : `/${meta.slug}/${nr}`} /></span>
         </h1>
         <RelatedContent links={related} />
         <div className="content-prose whitespace-pre-line">{result.content}</div>
