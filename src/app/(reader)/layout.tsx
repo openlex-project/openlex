@@ -29,7 +29,7 @@ export default async function ReaderLayout({
 
   return (
     <LicenseProvider>
-      <div className="min-h-screen flex flex-col">
+      <div className="h-dvh flex flex-col">
         <a href="#main-content" className="skip-link">
           {t(locale, "skip")}
         </a>
@@ -47,7 +47,7 @@ export default async function ReaderLayout({
             <UserButton hasFeedback={hasFeedback} />
           </div>
         </header>
-        <main id="main-content" className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1 overflow-auto min-h-0">{children}</main>
         <footer className="border-t px-6 py-4 text-sm flex items-center justify-center gap-1 flex-wrap" style={{ borderColor: "var(--border-subtle)", color: "var(--text-tertiary)" }}>
           {site.branding?.footer?.map((item, i) => {
             const sep = i > 0 ? " · " : "";
