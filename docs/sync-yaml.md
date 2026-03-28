@@ -1,6 +1,6 @@
 # sync.yaml
 
-The `sync.yaml` file is located in the root directory of a law repo (e.g., `openlex-laws`) and defines all contained laws.
+The `sync.yaml` file is located in the root directory of a law repo (e.g., `openlex-demo-law`) and defines all contained laws.
 
 ## Schema
 
@@ -58,7 +58,7 @@ Both read `sync.yaml` and only process laws matching their source type.
 To set up the deploy hook:
 
 1. Create a [Vercel Deploy Hook](https://vercel.com/docs/deploy-hooks) for the OpenLex project
-2. Add it as a repository secret `VERCEL_DEPLOY_HOOK` in the openlex-laws repo settings
+2. Add it as a repository secret `VERCEL_DEPLOY_HOOK` in the openlex-demo-law repo settings
 
 ```yaml
 # .github/workflows/sync.yml (excerpt)
@@ -81,7 +81,7 @@ pip install -r requirements.txt  # pyyaml, beautifulsoup4
 Each law has its own directory in the repo, named after the slug:
 
 ```
-openlex-laws/
+openlex-demo-law/
   sync.yaml
   requirements.txt
   scripts/
@@ -108,3 +108,32 @@ Markdown files contain plain legal text without frontmatter.
 - `license` is shown in the page footer. Laws are typically public domain ("Gemeinfrei").
 - `category` groups laws on the homepage. If omitted, defaults to `law`.
 - A law repo can contain multiple laws (mono-repo).
+
+## Supplements
+
+Supplements are additional content synced alongside provisions (articles/sections). Defined under `supplements` per law:
+
+```yaml
+supplements:
+  recitals:
+    label: { de: "Erwägungsgründe", en: "Recitals" }
+    title_short: { de: "EG", en: "Rec." }
+    source: eurlex
+    prefix: "rec"
+    mapping:
+      5: [39, 74]
+  annexes:
+    label: { de: "Anhänge", en: "Annexes" }
+    title_short: { de: "Anhang", en: "Annex" }
+    source: eurlex
+    prefix: "annex"
+```
+
+| Field | Description |
+|---|---|
+| `label` | Section heading in the TOC sidebar |
+| `title_short` | Prefix for individual items (e.g., "Rec. 1", "Annex III") |
+| `prefix` | Filename prefix: `rec-1.md`, `annex-3.md` |
+| `mapping` | Optional: maps provision numbers to supplement numbers (recitals only) |
+
+Supplements are written as flat files alongside provisions and appear in the auto-generated `toc.yaml`. Annexes use their actual titles from the source document instead of `title_short`.

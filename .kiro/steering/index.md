@@ -31,6 +31,7 @@ OpenLex is an open-access platform for legal literature (commentaries, journals,
 - Only disable a rule if it is genuinely inapplicable to the codebase (e.g., `noDangerouslySetInnerHtml` for intentional Markdown rendering). Every disabled rule requires a comment explaining why.
 - Husky enforces quality gates: pre-commit runs `biome lint` + `tsc --noEmit`, pre-push runs `next build`. No code reaches the remote that doesn't pass all checks.
 - When the linter reports errors, fix the code. Do not whack-a-mole rules to "off" or "warn".
+- When changing code or configuration, check if documentation needs updating (`/docs/`, `README.md`, steering). Docs must stay in sync with the implementation.
 
 ## Code Conventions
 

@@ -148,4 +148,4 @@ translations: ["en"]
 - Root `content/` = default language (no subfolder needed)
 - `content/{locale}/` = translations
 - Only translated files need to exist — missing translations fall back to the default language
-- URLs: `/oc-dsgvo/art-5` (default), `/en/oc-dsgvo/art-5` (English)
+- URLs: `/openlex-demo-commentary/art-5` (default), `/en/openlex-demo-commentary/art-5` (English)

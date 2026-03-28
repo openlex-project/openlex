@@ -8,7 +8,7 @@ The `site.yaml` file is located in the project root and configures the site iden
 # ─── Identity ───
 name: "OpenLex"
 default_locale: "de"
-# base_url: "https://openlex.example.com"  # optional, only for self-hosted
+base_url: "https://openlex.example.com"
 
 # ─── Branding ───
 branding:
@@ -18,14 +18,14 @@ branding:
   brand_hue: 265                # oklch hue (0–360)
   footer:
     - text: "© OpenLex"
-    - license:
+    - license
     - slug: impressum
       label: { de: "Impressum", en: "Imprint" }
 
 # ─── Content ───
 content_repos:
-  - github://openlex-project/oc-dsgvo
-  - github://openlex-project/openlex-laws
+  - github://openlex-project/openlex-demo-commentary
+  - github://openlex-project/openlex-demo-law
   # - gitlab://uni-berlin/kommentar-stgb
   # - gitlab://git.uni-berlin.de/group/project  # self-hosted
 
@@ -55,7 +55,7 @@ features:
 |---|---|---|---|
 | `name` | string | ✓ | Site name (header, metadata) |
 | `default_locale` | string | ✓ | Default locale (`de`, `en`, etc.) |
-| `base_url` | string | | Base URL for self-hosted deployments. Vercel/Netlify auto-detect. |
+| `base_url` | string | | Production URL. Required for OG images, canonical URLs, hreflang tags. |
 | `branding` | object | | Tagline, color hue, footer. See below. |
 | `content_repos` | array | ✓ | Git repos. Format: `github://org/repo`, `gitlab://group/project`, `gitlab://host/group/project` |
 | `categories` | array | | Content categories for homepage and listing pages |
@@ -73,7 +73,7 @@ branding:
   brand_hue: 150
   footer:
     - text: "© JuraOpen"
-    - license:
+    - license
 ```
 
 | Field | Type | Description |
@@ -100,7 +100,7 @@ branding:
 ```yaml
 footer:
   - text: "© 2026 OpenLex"
-  - license:
+  - license
   - slug: impressum
     label: { de: "Impressum", en: "Imprint" }
   - href: "https://github.com/openlex-project/openlex"
