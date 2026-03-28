@@ -7,7 +7,7 @@
     "build": "tsx scripts/build-search-index.ts && next build",
     "start": "next start",
     "lint": "eslint",
-    "prepare": "husky"
+    "prepare": "if test -d .git; then husky; fi"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
