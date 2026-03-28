@@ -3,7 +3,7 @@ import { getProvider } from "./git-provider";
 import { loadSiteConfig } from "./site";
 import { log } from "./logger";
 import { findTocEntry } from "./toc-utils";
-import { normalizeI18n, resolveI18n, type I18nString } from "./i18n-utils";
+import { normalizeI18n, resolveI18n, resolveDisplay, type I18nString } from "./i18n-utils";
 
 /* ─── Types ─── */
 
