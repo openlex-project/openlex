@@ -43,7 +43,7 @@ function TocNode({ node, law, unitLabel, depth, expanded, onToggle, localePrefix
       <li>
         <Link href={href} className={`block px-4 py-1 text-sm truncate ${active ? "font-semibold" : ""}`}
           style={{ paddingLeft: `${depth * 0.75 + 1}rem`, color: active ? "var(--active-text)" : "var(--text-secondary)", background: active ? "var(--active-bg)" : undefined }}>
-          {unitLabel} {node.nr}{node.title ? ` ${node.title as string}` : ""}
+          {/^\d+\w*$/.test(node.nr!) ? <>{unitLabel} {node.nr}{node.title ? ` ${node.title}` : ""}</> : (node.title || node.nr)}
         </Link>
       </li>
     );
