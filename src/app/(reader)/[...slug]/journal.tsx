@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { type ContentRegistry, type JournalEntry, type JournalArticle } from "@/lib/registry";
+import { type ContentRegistry, type JournalEntry, type JournalArticle, resolveDisplay } from "@/lib/registry";
 import { getJournalArticleContent } from "@/lib/content";
 import { SetLicense } from "@/components/license-context";
 import { renderMarkdown } from "@/lib/markdown";
@@ -23,7 +23,7 @@ function articleJsonLd(journal: JournalEntry, article: JournalArticle, year: str
     author: article.authors.map(person),
     isPartOf: {
       "@type": "Periodical",
-      name: journal.title,
+      name: resolveDisplay(journal).title,
       ...(journal.issn && { issn: journal.issn }),
     },
     ...(article.doi && { identifier: { "@type": "PropertyValue", propertyID: "DOI", value: article.doi } }),
@@ -41,7 +41,7 @@ interface Props {
 }
 
 export function journalMetadata(entry: JournalEntry, rest: string[], siteName: string): Metadata {
-  const short = entry.title_short ?? entry.title;
+  const short = resolveDisplay(entry).display;
   if (rest.length >= 3) {
     const [year, issue, artSlug] = rest;
     const iss = entry.issues.find((i) => i.year === year && i.issue === issue);
@@ -50,7 +50,7 @@ export function journalMetadata(entry: JournalEntry, rest: string[], siteName: s
       return { title: `${art.title} – ${short} – ${siteName}`, openGraph: { title: art.title, description: art.authors.map((a) => a.name).join(", "), images: [`/api/og?title=${encodeURIComponent(art.title)}&sub=${encodeURIComponent(short)}`] } };
     }
   }
-  return { title: `${entry.title} – ${siteName}`, openGraph: { title: entry.title, images: [`/api/og?title=${encodeURIComponent(entry.title)}`] } };
+  return { title: `${resolveDisplay(entry).title} – ${siteName}`, openGraph: { title: resolveDisplay(entry).title, images: [`/api/og?title=${encodeURIComponent(resolveDisplay(entry).title)}`] } };
 }
 
 function authorNames(a: JournalArticle) {
@@ -86,9 +86,9 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
   if (rest.length === 0) {
     return (
       <div className="flex">
-        <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} />
+        <SidebarJournal journal={journal.slug} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
-          <h1 className="text-2xl font-bold mb-1">{journal.title}</h1>
+          <h1 className="text-2xl font-bold mb-1">{resolveDisplay(journal).title}</h1>
           {journal.issn && <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>ISSN {journal.issn}</p>}
           <div className="space-y-6">
             {journal.issues.map((iss) => (
@@ -139,9 +139,9 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
 
     return (
       <div className="flex">
-        <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
+        <SidebarJournal journal={journal.slug} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
-          <h1 className="text-2xl font-bold mb-1">{journal.title_short ?? journal.title} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
+          <h1 className="text-2xl font-bold mb-1">{resolveDisplay(journal).display} {t(locale, "issue.label", { issue: issueNr!, year: year! })}</h1>
           <div className="space-y-6 mt-6">
             {[...sections.entries()].map(([section, articles]) => (
               <section key={section}>
@@ -185,16 +185,16 @@ export default async function JournalPage({ registry, entry: journal, rest }: Pr
 
     return (
       <div className="flex">
-        <SidebarJournal journal={journal.slug} title={journal.title_short ?? journal.title} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
+        <SidebarJournal journal={journal.slug} title={resolveDisplay(journal).display} issues={journal.issues} issueLabel={issueWord} activeYear={year} activeIssue={issueNr} activeArticle={articleSlug} />
         <article className="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
           <PrevNextNav position="top" prev={prev ? { href: `${articleBase}/${prev.slug}`, label: authorLastNames(prev) } : null} next={next ? { href: `${articleBase}/${next.slug}`, label: authorLastNames(next) } : null} center={<AuthorLine article={article} />} ariaLabel="Article navigation" />
           <h1 className="text-xl sm:text-2xl font-bold mb-1 flex items-center gap-2">{article.title}
-            <ContentActions title={`${article.title} – ${journal.title_short ?? journal.title}`} contentType="journal" />
+            <ContentActions title={`${article.title} – ${resolveDisplay(journal).display}`} contentType="journal" />
           </h1>
           <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
             <AuthorLine article={article} />
             {article.pages && ` · ${t(locale, "page.abbr")} ${article.pages}`}
-            {` · ${journal.title_short ?? journal.title} ${issueNr}/${year}`}
+            {` · ${resolveDisplay(journal).display} ${issueNr}/${year}`}
             {article.doi && (
               <> · <a href={`https://doi.org/${article.doi}`} target="_blank" rel="noopener" className="hover:underline" style={{ color: "var(--active-text)" }}>DOI: {article.doi}</a></>
             )}

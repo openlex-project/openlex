@@ -17,7 +17,7 @@ for (const envFile of [".env.local", ".env"]) {
 }
 
 async function main() {
-  const { buildRegistry } = await import("../src/lib/registry");
+  const { buildRegistry, resolveDisplay } = await import("../src/lib/registry");
   const { getBookContent, getLawContent, getJournalArticleContent } = await import("../src/lib/content");
   const pagefind = await import("pagefind");
   const { index } = await pagefind.createIndex({ forceLanguage: "de" });
@@ -27,7 +27,7 @@ async function main() {
   let count = 0;
 
   for (const [slug, meta] of registry.books) {
-    const displayName = meta.title_short ?? meta.title;
+    const displayName = resolveDisplay(meta).display;
     for (const entry of meta.toc) {
       const fileSlug = entry.file.replace(/\.md$/, "");
       const result = await getBookContent(meta.repo, fileSlug);
@@ -53,7 +53,7 @@ async function main() {
   }
 
   for (const [slug, meta] of registry.laws) {
-    const displayName = meta.title_short ?? meta.title;
+    const displayName = resolveDisplay(meta).display;
     const unitLabel = meta.unit_type === "article" ? "Art." : "§";
     // Index known law files by listing directory
     const { getProvider } = await import("../src/lib/git-provider");
@@ -76,7 +76,7 @@ async function main() {
   }
 
   for (const [slug, journal] of registry.journals) {
-    const displayName = journal.title_short ?? journal.title;
+    const displayName = resolveDisplay(journal).display;
     for (const issue of journal.issues) {
       for (const article of issue.articles) {
         const r2 = await getJournalArticleContent(journal.repo, issue.year, issue.issue, article.slug); const content = r2?.content ?? null;

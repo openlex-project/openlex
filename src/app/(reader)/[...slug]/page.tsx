@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import type { Metadata } from "next";
@@ -32,7 +33,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   switch (content.type) {
     case "book": return bookMetadata(content.entry, rest, site.name);
-    case "law": return lawMetadata(content.entry, rest, site.name);
+    case "law": {
+      const h = await headers();
+      return lawMetadata(content.entry, rest, site.name, h.get("x-content-locale") ?? undefined);
+    }
     case "journal": return journalMetadata(content.entry, rest, site.name);
   }
 }

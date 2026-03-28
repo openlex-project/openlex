@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { buildRegistry } from "@/lib/registry";
+import { buildRegistry, resolveDisplay } from "@/lib/registry";
 import { getLawProvisions } from "@/lib/content";
 import { loadSiteConfig } from "@/lib/site";
 import { safeJsonLd } from "@/lib/escape-html";
@@ -82,14 +82,14 @@ export default async function Home() {
           if (entry.type === "book") {
             const b = entry.entry;
             const first = b.toc[0]?.file.replace(/\.md$/, "") ?? "";
-            cards.push({ href: `/${b.slug}/${first}`, title: b.title_short ?? b.title, subtitle: b.editors.map((e) => e.name).join(", ") });
+            cards.push({ href: `/${b.slug}/${first}`, title: resolveDisplay(b).display, subtitle: b.editors.map((e) => e.name).join(", ") });
           } else if (entry.type === "law") {
             const l = entry.entry;
             const provisions = await getLawProvisions(l.repo, l.slug);
-            cards.push({ href: `/${l.slug}/${provisions[0] ?? 1}`, title: l.title_short ?? l.title });
+            cards.push({ href: `/${l.slug}/${provisions[0] ?? 1}`, title: resolveDisplay(l).display });
           } else if (entry.type === "journal") {
             const j = entry.entry;
-            cards.push({ href: `/${j.slug}`, title: j.title_short ?? j.title });
+            cards.push({ href: `/${j.slug}`, title: resolveDisplay(j).display });
           }
         }
         if (cards.length === 0) return null;
@@ -111,9 +111,9 @@ export default async function Home() {
       case "recent": {
         const limit = section.limit ?? 5;
         const all = [
-          ...[...books.values()].map((b) => ({ title: b.title_short ?? b.title, href: `/${b.slug}/${b.toc[0]?.file.replace(/\.md$/, "") ?? ""}` })),
-          ...[...journals.values()].map((j) => ({ title: j.title_short ?? j.title, href: `/${j.slug}` })),
-          ...[...laws.values()].map((l) => ({ title: l.title_short ?? l.title, href: `/${l.slug}` })),
+          ...[...books.values()].map((b) => ({ title: resolveDisplay(b).display, href: `/${b.slug}/${b.toc[0]?.file.replace(/\.md$/, "") ?? ""}` })),
+          ...[...journals.values()].map((j) => ({ title: resolveDisplay(j).display, href: `/${j.slug}` })),
+          ...[...laws.values()].map((l) => ({ title: resolveDisplay(l).display, href: `/${l.slug}` })),
         ].slice(0, limit);
         if (all.length === 0) return null;
         return (

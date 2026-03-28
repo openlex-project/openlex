@@ -1,4 +1,5 @@
-import { buildRegistry } from "@/lib/registry";
+import { buildRegistry, resolveDisplay } from "@/lib/registry";
+import { resolveI18n } from "@/lib/i18n-utils";
 import { getLawProvisions } from "@/lib/content";
 import { loadSiteConfig } from "@/lib/site";
 import { t, defaultLocale, type Locale } from "@/lib/i18n";
@@ -18,12 +19,12 @@ export async function ContentNav({ locale }: { locale: Locale }) {
       if (entryCat !== cat.key) continue;
       if (entry.type === "book") {
         const first = entry.entry.toc[0]?.file.replace(/\.md$/, "");
-        items.push({ href: `/${slug}/${first ?? ""}`, label: entry.entry.title_short ?? entry.entry.title });
+        items.push({ href: `/${slug}/${first ?? ""}`, label: resolveDisplay(entry.entry).display });
       } else if (entry.type === "law") {
         const provisions = await getLawProvisions(entry.entry.repo, slug);
-        items.push({ href: `/${slug}/${provisions[0] ?? 1}`, label: entry.entry.title_short ?? entry.entry.title });
+        items.push({ href: `/${slug}/${provisions[0] ?? 1}`, label: resolveDisplay(entry.entry).display });
       } else if (entry.type === "journal") {
-        items.push({ href: `/${slug}`, label: entry.entry.title_short ?? entry.entry.title });
+        items.push({ href: `/${slug}`, label: resolveDisplay(entry.entry).display });
       }
     }
     if (items.length) groups.push({ label: cat.label[locale] ?? cat.label[defaultLocale] ?? cat.key, items });

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { buildRegistry } from "@/lib/registry";
+import { buildRegistry, resolveDisplay } from "@/lib/registry";
 import { getLawProvisions } from "@/lib/content";
 import { loadSiteConfig } from "@/lib/site";
 import { defaultLocale, type Locale } from "@/lib/i18n";
@@ -28,8 +28,8 @@ export default async function CategoryPage({ params }: Props) {
     const firstSlug = b.toc[0]?.file.replace(/\.md$/, "") ?? "";
     items.push({
       href: `/${b.slug}/${firstSlug}`,
-      title: b.title_short ?? b.title,
-      subtitle: b.title_short ? b.title : undefined,
+      title: resolveDisplay(b).display,
+      subtitle: resolveDisplay(b).titleShort ? resolveDisplay(b).title : undefined,
       detail: b.editors.map((e) => e.name).join(", "),
     });
   }
@@ -38,8 +38,8 @@ export default async function CategoryPage({ params }: Props) {
     if ((j.category ?? "journal") !== key) continue;
     items.push({
       href: `/${j.slug}`,
-      title: j.title_short ?? j.title,
-      subtitle: j.title_short ? j.title : undefined,
+      title: resolveDisplay(j).display,
+      subtitle: resolveDisplay(j).titleShort ? resolveDisplay(j).title : undefined,
       detail: [j.issn && `ISSN ${j.issn}`, j.issues.length > 0 && `${j.issues.length} issues`].filter(Boolean).join(" · ") || undefined,
     });
   }
@@ -48,10 +48,11 @@ export default async function CategoryPage({ params }: Props) {
     if ((l.category ?? "law") !== key) continue;
     const provisions = await getLawProvisions(l.repo, l.slug);
     const first = provisions[0] ?? 1;
+    const { title, titleShort, display } = resolveDisplay(l);
     items.push({
       href: `/${l.slug}/${first}`,
-      title: l.title_short ?? l.title,
-      subtitle: l.title_short ? l.title : undefined,
+      title: display,
+      subtitle: titleShort ? title : undefined,
     });
   }
 

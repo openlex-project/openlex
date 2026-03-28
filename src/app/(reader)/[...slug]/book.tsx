@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import dynamic from "next/dynamic";
-import { type TocEntry, type BookEntry, type ContentRegistry } from "@/lib/registry";
+import { type TocEntry, type BookEntry, type ContentRegistry, resolveDisplay } from "@/lib/registry";
 import { getBookContent } from "@/lib/content";
 import { findTocEntry, findTocNeighbors, extractHeadingsFromHtml, getBackmatterSections, resolveTocTitles } from "@/lib/toc-utils";
 import { SetLicense } from "@/components/license-context";
@@ -32,7 +32,7 @@ function bookChapterJsonLd(meta: BookEntry, chapter: { title: string; author?: s
     "@type": "Chapter",
     name: chapter.title,
     author: authors,
-    isPartOf: { "@type": "Book", name: meta.title, editor: meta.editors.map(person), inLanguage: meta.lang, ...(licenseUrl(meta.license) && { license: licenseUrl(meta.license) }) },
+    isPartOf: { "@type": "Book", name: resolveDisplay(meta).title, editor: meta.editors.map(person), inLanguage: meta.lang, ...(licenseUrl(meta.license) && { license: licenseUrl(meta.license) }) },
     url,
   });
 }
@@ -44,11 +44,12 @@ interface Props {
 }
 
 export function bookMetadata(entry: BookEntry, rest: string[], siteName: string): Metadata {
-  if (!rest.length) return { title: `${entry.title} – ${siteName}`, openGraph: { title: entry.title, images: [`/api/og?title=${encodeURIComponent(entry.title)}`] } };
+  const { title, display } = resolveDisplay(entry);
+  if (!rest.length) return { title: `${title} – ${siteName}`, openGraph: { title, images: [`/api/og?title=${encodeURIComponent(title)}`] } };
   const resolved = resolveTocTitles(entry.toc, entry.lang);
   const chapter = findTocEntry(resolved, rest.join("/"));
   if (!chapter) return {};
-  const short = entry.title_short ?? entry.title;
+  const short = resolveDisplay(entry).display;
   const ct = chapter.title as string;
   const t = `${ct} – ${short}`;
   return { title: `${t} – ${siteName}`, openGraph: { title: t, images: [`/api/og?title=${encodeURIComponent(ct)}&sub=${encodeURIComponent(short)}`] } };
@@ -108,7 +109,7 @@ export default async function BookPage({ registry, entry: meta, rest }: Props) {
   });
   const headings = extractHeadingsFromHtml(html);
 
-  const displayName = meta.title_short ?? meta.title;
+  const displayName = resolveDisplay(meta).display;
   const edition = ref === "main" ? null : t(locale, "edition.label", { ref: ref.replace("ed", "") });
   const prevHref = prev ? `${slugPrefix}/${prev.file.replace(/\.md$/, "")}` : null;
   const nextHref = next ? `${slugPrefix}/${next.file.replace(/\.md$/, "")}` : null;

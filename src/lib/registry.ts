@@ -21,9 +21,9 @@ export interface Heading { level: number; text: string; id: string }
 export interface BookMeta {
   slug: string;
   type: "book" | "journal";
-  title: string;
-  title_short?: string;
-  subtitle?: string;
+  title: I18nString;
+  title_short?: I18nString;
+  subtitle?: I18nString;
   lang: string;
   license: string;
   category?: string;
@@ -39,8 +39,8 @@ export interface BookMeta {
 
 export interface LawMeta {
   slug: string;
-  title: string;
-  title_short?: string;
+  title: I18nString;
+  title_short?: I18nString;
   unit_type: "article" | "section";
   lang: string;
   license?: string;
@@ -50,6 +50,8 @@ export interface LawMeta {
   feedbackEnabled: boolean;
   translations?: string[];
 }
+
+export { resolveDisplay } from "./i18n-utils";
 
 export interface LawTocNode { label?: string; title: string | I18nString; nr?: string; children?: LawTocNode[] }
 
@@ -148,9 +150,9 @@ async function _buildRegistry(): Promise<ContentRegistry> {
         const lang = (raw.lang as string) ?? "en";
         const meta: BookMeta = {
           ...(raw as unknown as BookMeta),
-          title: resolveI18n(normalizeI18n(raw.title, lang), lang),
-          title_short: resolveI18n(normalizeI18n(raw.title_short, lang), lang) || undefined,
-          subtitle: resolveI18n(normalizeI18n(raw.subtitle, lang), lang) || undefined,
+          title: normalizeI18n(raw.title, lang),
+          title_short: raw.title_short ? normalizeI18n(raw.title_short, lang) : undefined,
+          subtitle: raw.subtitle ? normalizeI18n(raw.subtitle, lang) : undefined,
         };
         if (meta.type === "journal") {
           const jmeta = meta as BookMeta & { doi_prefix?: string };
@@ -167,7 +169,9 @@ async function _buildRegistry(): Promise<ContentRegistry> {
         const sync = parse(syncRaw) as SyncYaml;
         await Promise.all(Object.entries(sync.laws).map(async ([slug, law]) => {
           const tocRaw = await p.fetchFile(repo, `${slug}/toc.yaml`);
-          laws.set(slug, { slug, title: resolveI18n(normalizeI18n(law.title, law.lang), law.lang), title_short: resolveI18n(normalizeI18n(law.title_short, law.lang), law.lang) || undefined, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback), translations: law.translations });
+          const titleI18n = normalizeI18n(law.title, law.lang);
+          const titleShortI18n = law.title_short ? normalizeI18n(law.title_short, law.lang) : undefined;
+          laws.set(slug, { slug, title: titleI18n, title_short: titleShortI18n, unit_type: law.unit_type as LawMeta["unit_type"], lang: law.lang, license: law.license, category: law.category, repo: repoUrl, toc: tocRaw ? (parse(tocRaw) as LawTocNode[]) : [], feedbackEnabled: !!(p.supportsIssues && law.feedback), translations: law.translations });
         }));
       }
     } catch (err) { log.error(err, "Failed to load content repo: %s", repoUrl); }
@@ -200,9 +204,9 @@ function buildRelatedIndex(books: Map<string, BookEntry>, journals: Map<string, 
     const parts = path.split("/");
     const entry = slugMap.get(parts[0]!);
     if (!entry) return null;
-    if (entry.type === "law") return { type: "law", path: `/${path}`, name: `${entry.entry.title_short ?? entry.entry.title} ${parts[1] ?? ""}`.trim() };
-    if (entry.type === "book") { const toc = findTocEntry(entry.entry.toc, parts.slice(1).join("/")); return { type: "book", path: `/${path}`, name: `${entry.entry.title_short ?? entry.entry.title}${toc ? ` – ${toc.title}` : ""}` }; }
-    if (entry.type === "journal") return { type: "journal", path: `/${path}`, name: entry.entry.title_short ?? entry.entry.title };
+    if (entry.type === "law") return { type: "law", path: `/${path}`, name: `${resolveDisplay(entry.entry).display} ${parts[1] ?? ""}`.trim() };
+    if (entry.type === "book") { const toc = findTocEntry(entry.entry.toc, parts.slice(1).join("/")); return { type: "book", path: `/${path}`, name: `${resolveDisplay(entry.entry).display}${toc ? ` – ${toc.title}` : ""}` }; }
+    if (entry.type === "journal") return { type: "journal", path: `/${path}`, name: resolveDisplay(entry.entry).display };
     return null;
   };
 

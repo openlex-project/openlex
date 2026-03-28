@@ -20,3 +20,11 @@ export function resolveI18n(val: I18nString | undefined, lang: string): string {
   if (!val) return "";
   return val[lang] ?? val["en"] ?? Object.values(val)[0] ?? "";
 }
+
+/** Resolve display strings for any content with i18n title/title_short. */
+export function resolveDisplay(meta: { title: I18nString; title_short?: I18nString; lang: string }, locale?: string) {
+  const lang = locale ?? meta.lang;
+  const title = resolveI18n(meta.title, lang);
+  const titleShort = resolveI18n(meta.title_short, lang);
+  return { title, titleShort: titleShort || undefined, display: titleShort || title };
+}
