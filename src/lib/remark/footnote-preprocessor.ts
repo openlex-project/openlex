@@ -9,8 +9,6 @@
  * Uses a balanced-bracket parser to correctly handle nested brackets.
  */
 
-const FN_MARKER_PREFIX = "<!-- fn:";
-const FN_MARKER_SUFFIX = " -->";
 
 /** Find the matching closing bracket, handling nested brackets. */
 function findClosingBracket(text: string, openPos: number): number {
