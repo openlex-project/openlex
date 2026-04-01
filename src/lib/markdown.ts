@@ -65,7 +65,7 @@ export async function renderMarkdown(
     const needsCustom = opts?.numbering || (opts?.cslXml && opts?.referencesYaml);
     const proc = needsCustom ? buildProcessor(opts) : defaultProcessor;
     const result = await proc.process(normalizeFencedDivs(preprocessed));
-    const footnoteHtml = await buildFootnoteSection(notes);
+    const footnoteHtml = await buildFootnoteSection(notes, proc);
     return String(result) + footnoteHtml;
   } catch (err) {
     log.error(err, "Markdown render failed");

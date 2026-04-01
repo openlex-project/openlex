@@ -216,8 +216,10 @@ function buildRelatedIndex(books: Map<string, BookEntry>, journals: Map<string, 
   // provisions[] → law pages
   for (const [slug, book] of books) {
     if (!book.comments_on) continue;
+    const bookDisplay = resolveDisplay(book).display;
     const walk = (entries: TocEntry[]) => { for (const e of entries) {
-      if (e.provisions) for (const nr of e.provisions) add(`/${slug}/${e.file.replace(/\.md$/, "")}`, `/${book.comments_on}/${nr}`, { type: "book", path: `/${slug}/${e.file.replace(/\.md$/, "")}`, name: `${book.title_short ?? book.title} – ${e.title}` });
+      const tocTitle = typeof e.title === "string" ? e.title : resolveI18n(e.title, book.lang);
+      if (e.provisions) for (const nr of e.provisions) add(`/${slug}/${e.file.replace(/\.md$/, "")}`, `/${book.comments_on}/${nr}`, { type: "book", path: `/${slug}/${e.file.replace(/\.md$/, "")}`, name: `${bookDisplay} – ${tocTitle}` });
       if (e.children) walk(e.children);
     }};
     walk(book.toc);
@@ -225,8 +227,10 @@ function buildRelatedIndex(books: Map<string, BookEntry>, journals: Map<string, 
 
   // related[] → bidirectional
   for (const [slug, book] of books) {
+    const bookDisplay = resolveDisplay(book).display;
     const walk = (entries: TocEntry[]) => { for (const e of entries) {
-      if (e.related) { const src = `/${slug}/${e.file.replace(/\.md$/, "")}`; const srcLink: RelatedLink = { type: "book", path: src, name: `${book.title_short ?? book.title} – ${e.title}` };
+      const tocTitle = typeof e.title === "string" ? e.title : resolveI18n(e.title, book.lang);
+      if (e.related) { const src = `/${slug}/${e.file.replace(/\.md$/, "")}`; const srcLink: RelatedLink = { type: "book", path: src, name: `${bookDisplay} – ${tocTitle}` };
         for (const t of e.related) { const tl = resolveLink(t); if (tl) { add(src, `/${t}`, srcLink); add(`/${t}`, src, tl); } } }
       if (e.children) walk(e.children);
     }};

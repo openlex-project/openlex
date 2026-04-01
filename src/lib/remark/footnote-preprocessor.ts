@@ -59,14 +59,9 @@ export function extractFootnotes(markdown: string): ExtractedFootnotes {
   return { text: result, notes };
 }
 
-/** Build the footnotes section HTML from extracted notes. Notes are rendered as inline Markdown. */
-export async function buildFootnoteSection(notes: string[]): Promise<string> {
+/** Build the footnotes section HTML from extracted notes, using the provided processor for rendering. */
+export async function buildFootnoteSection(notes: string[], proc: { process: (md: string) => Promise<{ toString(): string }> }): Promise<string> {
   if (notes.length === 0) return "";
-  const { unified } = await import("unified");
-  const remarkParse = (await import("remark-parse")).default;
-  const remarkRehype = (await import("remark-rehype")).default;
-  const rehypeStringify = (await import("rehype-stringify")).default;
-  const proc = unified().use(remarkParse).use(remarkRehype, { allowDangerousHtml: true }).use(rehypeStringify, { allowDangerousHtml: true });
 
   const items = await Promise.all(
     notes.map(async (text, i) => {
