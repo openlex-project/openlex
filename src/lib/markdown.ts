@@ -7,7 +7,7 @@ import rehypeStringify from "rehype-stringify";
 import remarkMarginNumbers from "./remark/remark-margin-numbers";
 import remarkDirectiveHandlers from "./remark/remark-directive-handlers";
 import remarkAuthor from "./remark/remark-author";
-import remarkInlineFootnotes from "./remark/remark-inline-footnotes";
+import { extractFootnotes, buildFootnoteSection } from "./remark/footnote-preprocessor";
 import remarkNumbering, { type NumberingOptions } from "./remark/remark-numbering";
 import remarkCitations from "./remark/remark-citations";
 import { createCitationEngine, parseReferencesYaml } from "./citeproc";
@@ -42,8 +42,6 @@ function buildProcessor(opts?: RenderOptions) {
     p = p.use(remarkCitations, { engine, suppressBibliography: true });
   }
 
-  p = p.use(remarkInlineFootnotes);
-
   if (opts?.numbering) {
     p = p.use(remarkNumbering, opts.numbering);
   }
@@ -62,10 +60,13 @@ export async function renderMarkdown(
   opts?: RenderOptions,
 ): Promise<string> {
   try {
+    // Extract ^[...] footnotes before parsing (handles nested Markdown inside footnotes)
+    const { text: preprocessed, notes } = extractFootnotes(markdown);
     const needsCustom = opts?.numbering || (opts?.cslXml && opts?.referencesYaml);
     const proc = needsCustom ? buildProcessor(opts) : defaultProcessor;
-    const result = await proc.process(normalizeFencedDivs(markdown));
-    return String(result);
+    const result = await proc.process(normalizeFencedDivs(preprocessed));
+    const footnoteHtml = await buildFootnoteSection(notes);
+    return String(result) + footnoteHtml;
   } catch (err) {
     log.error(err, "Markdown render failed");
     return `<p style="color:red">Render error</p>`;
