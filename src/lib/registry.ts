@@ -208,7 +208,7 @@ function buildRelatedIndex(books: Map<string, BookEntry>, journals: Map<string, 
     const entry = slugMap.get(parts[0]!);
     if (!entry) return null;
     if (entry.type === "law") return { type: "law", path: `/${path}`, name: `${resolveDisplay(entry.entry).display} ${parts[1] ?? ""}`.trim() };
-    if (entry.type === "book") { const toc = findTocEntry(entry.entry.toc, parts.slice(1).join("/")); return { type: "book", path: `/${path}`, name: `${resolveDisplay(entry.entry).display}${toc ? ` – ${toc.title}` : ""}` }; }
+    if (entry.type === "book") { const toc = findTocEntry(entry.entry.toc, parts.slice(1).join("/")); const tocTitle = toc ? (typeof toc.title === "string" ? toc.title : resolveI18n(toc.title, entry.entry.lang)) : ""; return { type: "book", path: `/${path}`, name: `${resolveDisplay(entry.entry).display}${tocTitle ? ` – ${tocTitle}` : ""}` }; }
     if (entry.type === "journal") return { type: "journal", path: `/${path}`, name: resolveDisplay(entry.entry).display };
     return null;
   };
