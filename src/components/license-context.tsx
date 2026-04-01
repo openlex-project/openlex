@@ -83,8 +83,11 @@ export function LicenseDisplay() {
   const locale = useLocale();
   if (!license) return null;
 
-  // Public domain — no license display needed
-  if (license.toLowerCase().includes("publicdomain") || license === "CC0-1.0") return null;
+  // Public domain — show localized label
+  const pdLabels: Record<string, string> = { de: "Gemeinfrei", en: "Public Domain", fr: "Domaine public" };
+  if (license.toLowerCase().includes("publicdomain") || license === "CC0-1.0") {
+    return <span>{pdLabels[locale] ?? pdLabels.en}</span>;
+  }
 
   const cc = parseCcLicense(license);
   if (!cc) return <span>{license}</span>;
