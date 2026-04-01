@@ -83,6 +83,9 @@ export function LicenseDisplay() {
   const locale = useLocale();
   if (!license) return null;
 
+  // Public domain — no license display needed
+  if (license.toLowerCase().includes("publicdomain") || license === "CC0-1.0") return null;
+
   const cc = parseCcLicense(license);
   if (!cc) return <span>{license}</span>;
 
